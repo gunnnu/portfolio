@@ -46,6 +46,47 @@
     -webkit-font-smoothing: antialiased;
   }
 
+  /* ---------- 3D background ---------- */
+
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    display: block;
+  }
+
+  #bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(14,16,19,0) 0%, rgba(14,16,19,0.65) 62%, var(--bg) 100%),
+      linear-gradient(180deg, rgba(14,16,19,0.15) 0%, var(--bg) 100%);
+  }
+
+  header, main, footer { position: relative; z-index: 1; }
+
+  /* ---------- Scroll reveal ---------- */
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px) scale(0.98);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .project-card, .timeline-item { transition: none !important; }
+  }
+
   h1, h2, h3 {
     font-family: 'Fraunces', serif;
     font-weight: 600;
@@ -147,16 +188,34 @@
 
   /* ---------- Work ---------- */
 
-  .projects { display: grid; gap: 24px; }
+  .projects { display: grid; gap: 24px; perspective: 1200px; }
 
   .project-card {
+    position: relative;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 10px;
     padding: 28px 32px;
-    transition: border-color 0.15s ease, transform 0.15s ease;
+    transform-style: preserve-3d;
+    transition: border-color 0.2s ease, transform 0.12s ease-out, box-shadow 0.2s ease;
+    will-change: transform;
+    overflow: hidden;
   }
-  .project-card:hover { border-color: var(--mint-dim); transform: translateY(-2px); }
+  .project-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 0%), rgba(94, 230, 193, 0.10), transparent 55%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .project-card:hover {
+    border-color: var(--mint-dim);
+    box-shadow: 0 20px 40px -20px rgba(94, 230, 193, 0.25);
+  }
+  .project-card:hover::before { opacity: 1; }
+  .project-card > * { position: relative; }
 
   .project-head {
     display: flex;
@@ -242,6 +301,9 @@
 </head>
 <body>
 
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+<div id="bg-overlay" aria-hidden="true"></div>
+
 <header>
   <nav class="wrap">
     <a href="#about" class="brand">gunpreet<span>.</span>singh</a>
@@ -257,7 +319,7 @@
 <main>
 
   <!-- ================= ABOUT ================= -->
-  <section id="about" class="wrap">
+  <section id="about" class="wrap reveal">
     <span class="eyebrow mono">// About</span>
     <h1>Gunpreet Singh</h1>
     <p class="role">Full-stack engineer building fast, reliable products end to end — from data model to pixel.</p>
@@ -279,11 +341,11 @@
 
   <!-- ================= WORK ================= -->
   <section id="work" class="wrap">
-    <h2 class="section-title"><span class="mono eyebrow">// Work</span>Selected projects</h2>
+    <h2 class="section-title reveal"><span class="mono eyebrow">// Work</span>Selected projects</h2>
 
     <div class="projects">
       <!-- PLACEHOLDER PROJECT 1 -->
-      <article class="project-card">
+      <article class="project-card reveal">
         <div class="project-head">
           <h3>Project Alpha</h3>
           <div class="project-links">
@@ -298,7 +360,7 @@
       </article>
 
       <!-- PLACEHOLDER PROJECT 2 -->
-      <article class="project-card">
+      <article class="project-card reveal">
         <div class="project-head">
           <h3>Project Beta</h3>
           <div class="project-links">
@@ -313,7 +375,7 @@
       </article>
 
       <!-- PLACEHOLDER PROJECT 3 -->
-      <article class="project-card">
+      <article class="project-card reveal">
         <div class="project-head">
           <h3>Project Gamma</h3>
           <div class="project-links">
@@ -331,11 +393,11 @@
 
   <!-- ================= EXPERIENCE ================= -->
   <section id="experience" class="wrap">
-    <h2 class="section-title"><span class="mono eyebrow">// Experience</span>Where I've worked</h2>
+    <h2 class="section-title reveal"><span class="mono eyebrow">// Experience</span>Where I've worked</h2>
 
     <div class="timeline">
       <!-- PLACEHOLDER ROLE 1 -->
-      <div class="timeline-item">
+      <div class="timeline-item reveal">
         <div class="dates">2023 — Present</div>
         <div>
           <h3>Senior Software Engineer</h3>
@@ -345,7 +407,7 @@
       </div>
 
       <!-- PLACEHOLDER ROLE 2 -->
-      <div class="timeline-item">
+      <div class="timeline-item reveal">
         <div class="dates">2021 — 2023</div>
         <div>
           <h3>Software Engineer</h3>
@@ -355,7 +417,7 @@
       </div>
 
       <!-- PLACEHOLDER ROLE 3 -->
-      <div class="timeline-item">
+      <div class="timeline-item reveal">
         <div class="dates">2019 — 2021</div>
         <div>
           <h3>Junior Developer</h3>
@@ -368,10 +430,10 @@
 
   <!-- ================= CONTACT ================= -->
   <section id="contact" class="wrap">
-    <h2 class="section-title"><span class="mono eyebrow">// Contact</span>Get in touch</h2>
+    <h2 class="section-title reveal"><span class="mono eyebrow">// Contact</span>Get in touch</h2>
     <p class="lead">Open to new opportunities and interesting problems. The fastest way to reach me is email.</p>
 
-    <div class="contact-links">
+    <div class="contact-links reveal">
       <!-- PLACEHOLDER: replace with your real email -->
       <a href="mailto:hello@gunpreet-singh.com"><span class="label">Email</span>hello@gunpreet-singh.com</a>
       <!-- PLACEHOLDER: replace with your real GitHub -->
@@ -386,6 +448,138 @@
 <footer>
   © 2026 Gunpreet Singh — built with plain HTML, CSS &amp; JS
 </footer>
+
+<script>
+  // Scroll-reveal: fade/rise elements into place as they enter the viewport
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && revealEls.length) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach((el) => io.observe(el));
+  } else {
+    revealEls.forEach((el) => el.classList.add('is-visible'));
+  }
+
+  // Card tilt: subtle 3D rotation + spotlight following the cursor
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) {
+    document.querySelectorAll('.project-card').forEach((card) => {
+      const maxTilt = 8;
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const px = (e.clientX - rect.left) / rect.width;
+        const py = (e.clientY - rect.top) / rect.height;
+        const rotY = (px - 0.5) * maxTilt * 2;
+        const rotX = (0.5 - py) * maxTilt * 2;
+        card.style.transform = `translateY(-2px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        card.style.setProperty('--mx', `${px * 100}%`);
+        card.style.setProperty('--my', `${py * 100}%`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+      });
+    });
+  }
+</script>
+
+<script type="module">
+  // Ambient 3D background: wireframe icosahedron + drifting particle field
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const canvas = document.getElementById('bg-canvas');
+
+  if (canvas && !reduceMotion) {
+    try {
+      const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+      camera.position.z = 9;
+
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const mint = 0x5ee6c1;
+
+      // Wireframe icosahedron
+      const icoGeo = new THREE.IcosahedronGeometry(3.4, 1);
+      const icoEdges = new THREE.EdgesGeometry(icoGeo);
+      const icoMesh = new THREE.LineSegments(
+        icoEdges,
+        new THREE.LineBasicMaterial({ color: mint, transparent: true, opacity: 0.22 })
+      );
+      scene.add(icoMesh);
+
+      const icoGeo2 = new THREE.IcosahedronGeometry(2.1, 0);
+      const icoEdges2 = new THREE.EdgesGeometry(icoGeo2);
+      const icoMesh2 = new THREE.LineSegments(
+        icoEdges2,
+        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 })
+      );
+      scene.add(icoMesh2);
+
+      // Particle field
+      const particleCount = 260;
+      const positions = new Float32Array(particleCount * 3);
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 30;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 4;
+      }
+      const particleGeo = new THREE.BufferGeometry();
+      particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particles = new THREE.Points(
+        particleGeo,
+        new THREE.PointsMaterial({ color: mint, size: 0.045, transparent: true, opacity: 0.5 })
+      );
+      scene.add(particles);
+
+      let targetX = 0, targetY = 0;
+      window.addEventListener('mousemove', (e) => {
+        targetX = (e.clientX / window.innerWidth - 0.5) * 0.6;
+        targetY = (e.clientY / window.innerHeight - 0.5) * 0.6;
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      let visible = true;
+      document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!visible) return;
+        const t = clock.getElapsedTime();
+
+        icoMesh.rotation.y = t * 0.06;
+        icoMesh.rotation.x = t * 0.03;
+        icoMesh2.rotation.y = -t * 0.045;
+        icoMesh2.rotation.x = t * 0.02;
+        particles.rotation.y = t * 0.015;
+
+        camera.position.x += (targetX - camera.position.x) * 0.02;
+        camera.position.y += (-targetY - camera.position.y) * 0.02;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    } catch (err) {
+      // WebGL unavailable or CDN unreachable — page still works without the background
+      console.warn('3D background disabled:', err);
+    }
+  }
+</script>
 
 </body>
 </html>
