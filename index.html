@@ -3,33 +3,52 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Gunpreet Singh — Full-Stack Engineer</title>
-<meta name="description" content="Gunpreet Singh — full-stack engineer. Projects, experience, and contact." />
-<meta name="theme-color" content="#0E1013" />
+<title>Gunpreet Singh · Full-Stack Engineer</title>
+<meta name="description" content="Gunpreet Singh, full-stack engineer. Projects, experience, and contact." />
+<meta name="theme-color" content="#191815" />
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Gunpreet Singh — Full-Stack Engineer" />
+<meta property="og:title" content="Gunpreet Singh · Full-Stack Engineer" />
 <meta property="og:description" content="Projects, experience, and contact." />
 <meta property="og:url" content="https://gunpreet-singh.com" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230E1013'/%3E%3Ctext x='32' y='42' font-family='monospace' font-size='28' font-weight='700' fill='%235EE6C1' text-anchor='middle'%3EGS%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%23191815'/%3E%3Crect x='4' y='4' width='56' height='56' rx='3' fill='none' stroke='%23E2A33B' stroke-width='2'/%3E%3Ctext x='32' y='41' font-family='monospace' font-size='24' font-weight='700' fill='%23E2A33B' text-anchor='middle'%3EGS%3C/text%3E%3C/svg%3E" />
+
+<!--
+  THESIS: A personal site usually wears dev-portfolio-as-landing-page clothes;
+  this one refuses the pitch and reads as a precision instrument console —
+  calibrated, labeled, operated rather than sold.
+  OWN-WORLD: warm graphite panel base, brass/amber signal accent (not
+  mint/cyan glow on near-black), IBM Plex Sans + Plex Mono throughout,
+  tick-rule dividers, riveted module corners, tabular numerals, stamped
+  plate labels.
+  STORY: visitor reads it like powering on a bench instrument — nameplate
+  first, labeled modules for work, a calibrated scale for experience, a
+  patch panel for contact.
+  FIRST VIEWPORT: nameplate module with engraved name/role, a live canvas
+  oscilloscope trace as the calibration readout, tick-rule beneath.
+  FORM: scientific instrument control panel — new-work direction, candidate
+  4/7, seed 93d71abf, assigned (degraded roll, no challengers dealt).
+-->
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --bg: #0E1013;
-    --bg-raised: #15181D;
-    --bg-card: #181B20;
-    --border: #262B33;
-    --text: #E9ECEF;
-    --text-dim: #9AA3AD;
-    --text-faint: #5B6572;
-    --mint: #5EE6C1;
-    --mint-dim: #3FA88C;
-    --max-width: 880px;
+    --bg: #191815;
+    --panel: #211f1b;
+    --panel-raised: #262420;
+    --line: #3a352c;
+    --line-soft: #2a2721;
+    --text: #ede7dc;
+    --text-dim: #a89d8b;
+    --text-faint: #6f6656;
+    --accent: #e2a33b;
+    --accent-dim: #8c6a2e;
+    --accent-wash: rgba(226, 163, 59, 0.1);
+    --max-width: 900px;
   }
 
   * { box-sizing: border-box; }
@@ -39,67 +58,30 @@
   body {
     margin: 0;
     background: var(--bg);
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
     color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ---------- 3D background ---------- */
-
-  #bg-canvas {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 0;
-    display: block;
-  }
-
-  #bg-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(14,16,19,0) 0%, rgba(14,16,19,0.65) 62%, var(--bg) 100%),
-      linear-gradient(180deg, rgba(14,16,19,0.15) 0%, var(--bg) 100%);
-  }
-
-  header, main, footer { position: relative; z-index: 1; }
-
-  /* ---------- Scroll reveal ---------- */
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(28px) scale(0.98);
-    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .reveal.is-visible {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .reveal { opacity: 1; transform: none; transition: none; }
-    .project-card, .timeline-item { transition: none !important; }
-  }
-
-  h1, h2, h3 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    letter-spacing: -0.01em;
-    margin: 0;
-  }
-
   a { color: inherit; text-decoration: none; }
 
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   .mono {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
-    letter-spacing: 0.02em;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
   }
 
   .wrap {
@@ -108,205 +90,435 @@
     padding: 0 24px;
   }
 
-  /* ---------- Header / Nav ---------- */
+  h1, h2, h3 {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
+  }
+
+  /* ---------- Tick rule ---------- */
+
+  .tick-rule {
+    height: 8px;
+    background-image: repeating-linear-gradient(
+      90deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 12px
+    );
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-size: 100% 8px;
+    border-bottom: 1px solid var(--line);
+    opacity: 0.8;
+  }
+
+  /* ---------- Header ---------- */
 
   header {
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(14, 16, 19, 0.85);
-    backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border);
+    background: rgba(25, 24, 21, 0.92);
+    backdrop-filter: blur(6px);
   }
 
   nav.wrap {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 64px;
+    height: 60px;
   }
 
   .brand {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand .stamp {
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid var(--accent);
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+  .brand .name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
     color: var(--text);
   }
-  .brand span { color: var(--mint); }
 
   .nav-links {
     display: flex;
-    gap: 28px;
+    gap: 4px;
     list-style: none;
     margin: 0;
     padding: 0;
   }
-
   .nav-links a {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.8rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
     color: var(--text-dim);
-    transition: color 0.15s ease;
+    padding: 6px 12px;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    display: inline-block;
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
   }
-  .nav-links a:hover { color: var(--mint); }
-
-  /* ---------- Hero / About ---------- */
-
-  section { padding: 96px 0; border-bottom: 1px solid var(--border); }
-  section:last-of-type { border-bottom: none; }
-
-  .eyebrow {
-    color: var(--mint);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 16px;
+  .nav-links a:hover {
+    color: var(--accent);
+    border-color: var(--line);
+    background: var(--panel);
   }
 
-  #about h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); line-height: 1.15; }
-  #about .role { color: var(--text-dim); font-size: 1.15rem; margin-top: 16px; max-width: 60ch; }
-  #about p.bio { margin-top: 28px; color: var(--text-dim); max-width: 62ch; font-size: 1rem; }
+  /* ---------- Section label (plate, not a floating eyebrow) ---------- */
 
-  .hero-links { display: flex; gap: 20px; margin-top: 32px; flex-wrap: wrap; }
-  .hero-links a {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.82rem;
-    color: var(--text);
-    border: 1px solid var(--border);
-    padding: 10px 18px;
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 44px;
+    padding-top: 28px;
+  }
+  .plate-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    background: var(--accent-wash);
+    padding: 3px 8px;
+    border-radius: 2px;
+    white-space: nowrap;
+    transform: translateY(-2px);
+  }
+  .section-head h2 {
+    font-size: clamp(1.5rem, 3vw, 1.9rem);
+  }
+
+  section { padding: 64px 0 24px; position: relative; }
+  section + section { border-top: 1px solid var(--line); }
+
+  /* ---------- About / nameplate ---------- */
+
+  #about { padding-top: 56px; }
+
+  .nameplate {
+    background: var(--panel);
+    border: 1px solid var(--line);
     border-radius: 6px;
-    transition: border-color 0.15s ease, color 0.15s ease;
-  }
-  .hero-links a:hover { border-color: var(--mint); color: var(--mint); }
-  .hero-links a.primary { background: var(--mint); color: #0E1013; border-color: var(--mint); font-weight: 500; }
-  .hero-links a.primary:hover { opacity: 0.9; color: #0E1013; }
-
-  /* ---------- Section headings ---------- */
-
-  h2.section-title {
-    font-size: clamp(1.6rem, 3vw, 2rem);
-    margin-bottom: 48px;
-  }
-
-  /* ---------- Work ---------- */
-
-  .projects { display: grid; gap: 24px; perspective: 1200px; }
-
-  .project-card {
+    padding: 40px;
     position: relative;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 28px 32px;
-    transform-style: preserve-3d;
-    transition: border-color 0.2s ease, transform 0.12s ease-out, box-shadow 0.2s ease;
-    will-change: transform;
-    overflow: hidden;
+    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 36px;
+    align-items: center;
   }
-  .project-card::before {
+  .nameplate::before, .nameplate::after {
     content: "";
     position: absolute;
-    inset: 0;
-    background: radial-gradient(500px circle at var(--mx, 50%) var(--my, 0%), rgba(94, 230, 193, 0.10), transparent 55%);
-    opacity: 0;
-    transition: opacity 0.25s ease;
-    pointer-events: none;
+    top: 12px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--line);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
   }
-  .project-card:hover {
-    border-color: var(--mint-dim);
-    box-shadow: 0 20px 40px -20px rgba(94, 230, 193, 0.25);
-  }
-  .project-card:hover::before { opacity: 1; }
-  .project-card > * { position: relative; }
+  .nameplate::before { left: 12px; }
+  .nameplate::after { right: 12px; }
 
-  .project-head {
+  .nameplate h1 {
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    line-height: 1.1;
+  }
+  .nameplate .role {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-top: 14px;
+    letter-spacing: 0.02em;
+  }
+  .nameplate p.bio {
+    color: var(--text-dim);
+    margin-top: 20px;
+    max-width: 66ch;
+    font-size: 0.98rem;
+  }
+
+  .controls { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
+  .key {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    padding: 10px 16px;
+    border-radius: 4px;
+    transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .key:hover { border-color: var(--accent-dim); color: var(--accent); }
+  .key:active { transform: translateY(1px); border-bottom-width: 1px; }
+  .key.primary {
+    background: linear-gradient(180deg, #f0b658, var(--accent));
+    color: #1a1509;
+    border-color: var(--accent);
+  }
+  .key.primary:hover { color: #1a1509; filter: brightness(1.05); }
+
+  .readout {
+    background: #131211;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    aspect-ratio: 4 / 3;
+    position: relative;
+    overflow: hidden;
+  }
+  .readout canvas { width: 100%; height: 100%; display: block; }
+  .readout .readout-label {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 720px) {
+    .nameplate { grid-template-columns: 1fr; }
+    .readout { max-width: 320px; }
+  }
+
+  /* ---------- Work / modules ---------- */
+
+  .modules { display: grid; gap: 18px; }
+
+  .module {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 26px 28px;
+    box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.55);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  }
+  .module:hover {
+    border-color: var(--accent-dim);
+    box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
+    transform: translateY(-2px);
+  }
+
+  .module-head {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
     gap: 16px;
     flex-wrap: wrap;
   }
+  .module h3 { font-size: 1.2rem; }
 
-  .project-card h3 { font-size: 1.3rem; color: var(--text); }
-
-  .project-links { display: flex; gap: 16px; }
-  .project-links a { color: var(--mint); font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; white-space: nowrap; }
-  .project-links a:hover { text-decoration: underline; }
-
-  .project-card p.desc { color: var(--text-dim); margin: 12px 0 18px; max-width: 68ch; }
-
-  .stack { display: flex; flex-wrap: wrap; gap: 8px; }
-  .stack span {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--mint);
-    background: rgba(94, 230, 193, 0.08);
-    border: 1px solid rgba(94, 230, 193, 0.25);
-    padding: 4px 10px;
-    border-radius: 4px;
-  }
-
-  /* ---------- Experience ---------- */
-
-  .timeline { display: flex; flex-direction: column; gap: 36px; }
-
-  .timeline-item {
-    display: grid;
-    grid-template-columns: 160px 1fr;
-    gap: 24px;
-  }
-
-  .timeline-item .dates {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--text-faint);
-    padding-top: 4px;
-  }
-
-  .timeline-item h3 { font-size: 1.15rem; }
-  .timeline-item .company { color: var(--mint); font-size: 0.95rem; margin-top: 4px; display: block; }
-  .timeline-item p.summary { color: var(--text-dim); margin-top: 10px; max-width: 60ch; }
-
-  /* ---------- Contact ---------- */
-
-  #contact h2.section-title { margin-bottom: 20px; }
-  #contact p.lead { color: var(--text-dim); max-width: 56ch; margin-bottom: 36px; }
-
-  .contact-links { display: flex; flex-direction: column; gap: 14px; }
-  .contact-links a {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
-    color: var(--text);
+  .status {
     display: inline-flex;
-    align-items: baseline;
-    gap: 12px;
-    width: fit-content;
-    border-bottom: 1px solid transparent;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    color: var(--text-faint);
   }
-  .contact-links a .label { color: var(--text-faint); font-size: 0.78rem; min-width: 84px; }
-  .contact-links a:hover { color: var(--mint); border-color: var(--mint); }
+  .status .led {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-wash);
+  }
+
+  .module p.desc { color: var(--text-dim); margin: 12px 0 16px; max-width: 68ch; font-size: 0.95rem; }
+
+  .spec {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    border-top: 1px solid var(--line-soft);
+    padding-top: 12px;
+    margin-top: 4px;
+  }
+  .spec b { color: var(--text-dim); font-weight: 500; }
+
+  .module-links { display: flex; gap: 12px; margin-top: 14px; }
+  .module-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    border: 1px solid var(--accent-dim);
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .module-links a:hover { background: var(--accent-wash); }
+
+  /* ---------- Experience / calibrated scale ---------- */
+
+  .scale { position: relative; padding-left: 28px; }
+  .scale::before {
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 6px;
+    bottom: 6px;
+    width: 1px;
+    background: var(--line);
+  }
+
+  .scale-item { position: relative; padding: 0 0 40px 24px; }
+  .scale-item:last-child { padding-bottom: 4px; }
+  .scale-item::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 6px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 2px solid var(--accent);
+  }
+
+  .scale-item .dates {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.03em;
+  }
+  .scale-item h3 { font-size: 1.08rem; margin-top: 6px; }
+  .scale-item .company { color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; display: block; margin-top: 3px; }
+  .scale-item p.summary { color: var(--text-dim); margin-top: 10px; max-width: 66ch; font-size: 0.93rem; }
+
+  /* ---------- Contact / patch panel ---------- */
+
+  #contact p.lead { color: var(--text-dim); max-width: 65ch; margin-bottom: 32px; font-size: 0.98rem; }
+
+  .patch-panel {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 8px;
+  }
+  .jack {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+  }
+  .jack:hover { background: var(--panel-raised); }
+  .jack + .jack { border-top: 1px solid var(--line-soft); }
+  .jack .ch {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    width: 34px;
+    flex-shrink: 0;
+  }
+  .jack .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent-dim);
+    flex-shrink: 0;
+  }
+  .jack:hover .dot { background: var(--accent); border-color: var(--accent); }
+  .jack .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    min-width: 70px;
+  }
+  .jack .value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.92rem;
+    color: var(--text);
+  }
+  .jack:hover .value { color: var(--accent); }
 
   footer {
-    padding: 32px 0 48px;
+    padding: 28px 0 40px;
     color: var(--text-faint);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.04em;
     text-align: center;
   }
 
+  /* ---------- Reveal ---------- */
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible { opacity: 1; transform: none; }
+  .reveal.flicker.is-visible { animation: flicker-in 0.5s steps(1, end); }
+  @keyframes flicker-in {
+    0% { opacity: 0; }
+    30% { opacity: 1; }
+    45% { opacity: 0.4; }
+    60% { opacity: 1; }
+    100% { opacity: 1; }
+  }
+
   @media (max-width: 640px) {
-    section { padding: 64px 0; }
-    .nav-links { gap: 16px; }
-    .timeline-item { grid-template-columns: 1fr; gap: 6px; }
+    section { padding: 44px 0 16px; }
+    .nameplate { padding: 26px; }
+
+    nav.wrap {
+      height: auto;
+      flex-wrap: wrap;
+      row-gap: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .nav-links {
+      width: 100%;
+      overflow-x: auto;
+      justify-content: flex-start;
+      gap: 2px;
+    }
+    .nav-links a { padding: 6px 10px; }
+  }
+
+  @media (max-width: 380px) {
+    .brand .name { display: none; }
   }
 </style>
 </head>
 <body>
 
-<canvas id="bg-canvas" aria-hidden="true"></canvas>
-<div id="bg-overlay" aria-hidden="true"></div>
-
 <header>
   <nav class="wrap">
-    <a href="#about" class="brand">gunpreet<span>.</span>singh</a>
+    <div class="brand">
+      <span class="stamp">GS</span>
+      <span class="name">gunpreet-singh</span>
+    </div>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
       <li><a href="#work">Work</a></li>
@@ -314,78 +526,86 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
+  <div class="tick-rule"></div>
 </header>
 
 <main>
 
   <!-- ================= ABOUT ================= -->
-  <section id="about" class="wrap reveal">
-    <span class="eyebrow mono">// About</span>
-    <h1>Gunpreet Singh</h1>
-    <p class="role">Full-stack engineer building fast, reliable products end to end — from data model to pixel.</p>
-    <!-- PLACEHOLDER: replace with your real bio (2-4 sentences) -->
-    <p class="bio">
-      I'm a full-stack engineer who enjoys taking products from idea to production —
-      designing APIs, shipping frontends, and keeping the whole thing fast and maintainable.
-      Currently focused on TypeScript, React, and distributed backends.
-    </p>
-    <div class="hero-links">
-      <!-- PLACEHOLDER: replace with your real resume link -->
-      <a href="/resume.pdf" class="primary">Resume ↗</a>
-      <!-- PLACEHOLDER: replace with your real GitHub -->
-      <a href="https://github.com/your-username" target="_blank" rel="noopener">GitHub</a>
-      <!-- PLACEHOLDER: replace with your real LinkedIn -->
-      <a href="https://linkedin.com/in/your-username" target="_blank" rel="noopener">LinkedIn</a>
+  <section id="about" class="wrap">
+    <div class="nameplate reveal">
+      <div>
+        <h1>Gunpreet Singh</h1>
+        <div class="role">FULL-STACK ENGINEER</div>
+        <!-- PLACEHOLDER: replace with your real bio (2-4 sentences) -->
+        <p class="bio">
+          I build fast, reliable products end to end: from data model to pixel.
+          Currently focused on TypeScript, React, and distributed backends, with
+          a habit of shipping the whole thing rather than just the parts that are fun.
+        </p>
+        <div class="controls">
+          <!-- PLACEHOLDER: replace with your real resume link -->
+          <a href="/resume.pdf" class="key primary">RESUME ↗</a>
+          <!-- PLACEHOLDER: replace with your real GitHub -->
+          <a href="https://github.com/your-username" class="key" target="_blank" rel="noopener">GITHUB</a>
+          <!-- PLACEHOLDER: replace with your real LinkedIn -->
+          <a href="https://linkedin.com/in/your-username" class="key" target="_blank" rel="noopener">LINKEDIN</a>
+        </div>
+      </div>
+      <div class="readout">
+        <canvas id="scope" aria-hidden="true"></canvas>
+        <span class="readout-label">CH1 · SIGNAL</span>
+      </div>
     </div>
   </section>
 
   <!-- ================= WORK ================= -->
   <section id="work" class="wrap">
-    <h2 class="section-title reveal"><span class="mono eyebrow">// Work</span>Selected projects</h2>
+    <div class="section-head reveal">
+      <span class="plate-tag">§ WORK</span>
+      <h2>Modules</h2>
+    </div>
 
-    <div class="projects">
+    <div class="modules">
       <!-- PLACEHOLDER PROJECT 1 -->
-      <article class="project-card reveal">
-        <div class="project-head">
+      <article class="module reveal flicker">
+        <div class="module-head">
           <h3>Project Alpha</h3>
-          <div class="project-links">
-            <a href="#" target="_blank" rel="noopener">Live ↗</a>
-            <a href="#" target="_blank" rel="noopener">Code ↗</a>
-          </div>
+          <span class="status"><span class="led"></span>ACTIVE</span>
         </div>
         <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="stack">
-          <span>TypeScript</span><span>React</span><span>Node.js</span><span>PostgreSQL</span>
+        <div class="spec"><b>STACK</b> · TypeScript · React · Node.js · PostgreSQL</div>
+        <div class="module-links">
+          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
+          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
         </div>
       </article>
 
       <!-- PLACEHOLDER PROJECT 2 -->
-      <article class="project-card reveal">
-        <div class="project-head">
+      <article class="module reveal flicker">
+        <div class="module-head">
           <h3>Project Beta</h3>
-          <div class="project-links">
-            <a href="#" target="_blank" rel="noopener">Live ↗</a>
-            <a href="#" target="_blank" rel="noopener">Code ↗</a>
-          </div>
+          <span class="status"><span class="led"></span>ACTIVE</span>
         </div>
         <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="stack">
-          <span>Python</span><span>FastAPI</span><span>Redis</span><span>Docker</span>
+        <div class="spec"><b>STACK</b> · Python · FastAPI · Redis · Docker</div>
+        <div class="module-links">
+          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
+          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
         </div>
       </article>
 
       <!-- PLACEHOLDER PROJECT 3 -->
-      <article class="project-card reveal">
-        <div class="project-head">
+      <article class="module reveal flicker">
+        <div class="module-head">
           <h3>Project Gamma</h3>
-          <div class="project-links">
-            <a href="#" target="_blank" rel="noopener">Live ↗</a>
-            <a href="#" target="_blank" rel="noopener">Code ↗</a>
-          </div>
+          <span class="status"><span class="led"></span>ACTIVE</span>
         </div>
         <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="stack">
-          <span>Go</span><span>gRPC</span><span>AWS</span><span>Terraform</span>
+        <div class="spec"><b>STACK</b> · Go · gRPC · AWS · Terraform</div>
+        <div class="module-links">
+          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
+          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
         </div>
       </article>
     </div>
@@ -393,64 +613,73 @@
 
   <!-- ================= EXPERIENCE ================= -->
   <section id="experience" class="wrap">
-    <h2 class="section-title reveal"><span class="mono eyebrow">// Experience</span>Where I've worked</h2>
+    <div class="section-head reveal">
+      <span class="plate-tag">§ EXPERIENCE</span>
+      <h2>Service record</h2>
+    </div>
 
-    <div class="timeline">
+    <div class="scale">
       <!-- PLACEHOLDER ROLE 1 -->
-      <div class="timeline-item reveal">
-        <div class="dates">2023 — Present</div>
-        <div>
-          <h3>Senior Software Engineer</h3>
-          <span class="company">Company Name</span>
-          <p class="summary">One or two lines on scope and impact — what you owned, what shipped, what improved.</p>
-        </div>
+      <div class="scale-item reveal">
+        <div class="dates">2023–PRESENT</div>
+        <h3>Senior Software Engineer</h3>
+        <span class="company">Company Name</span>
+        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
       </div>
 
       <!-- PLACEHOLDER ROLE 2 -->
-      <div class="timeline-item reveal">
-        <div class="dates">2021 — 2023</div>
-        <div>
-          <h3>Software Engineer</h3>
-          <span class="company">Previous Company</span>
-          <p class="summary">One or two lines on scope and impact — what you owned, what shipped, what improved.</p>
-        </div>
+      <div class="scale-item reveal">
+        <div class="dates">2021–2023</div>
+        <h3>Software Engineer</h3>
+        <span class="company">Previous Company</span>
+        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
       </div>
 
       <!-- PLACEHOLDER ROLE 3 -->
-      <div class="timeline-item reveal">
-        <div class="dates">2019 — 2021</div>
-        <div>
-          <h3>Junior Developer</h3>
-          <span class="company">First Company</span>
-          <p class="summary">One or two lines on scope and impact — what you owned, what shipped, what improved.</p>
-        </div>
+      <div class="scale-item reveal">
+        <div class="dates">2019–2021</div>
+        <h3>Junior Developer</h3>
+        <span class="company">First Company</span>
+        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
       </div>
     </div>
   </section>
 
   <!-- ================= CONTACT ================= -->
   <section id="contact" class="wrap">
-    <h2 class="section-title reveal"><span class="mono eyebrow">// Contact</span>Get in touch</h2>
-    <p class="lead">Open to new opportunities and interesting problems. The fastest way to reach me is email.</p>
+    <div class="section-head reveal">
+      <span class="plate-tag">§ CONTACT</span>
+      <h2>Patch panel</h2>
+    </div>
+    <p class="lead reveal">Open to new opportunities and interesting problems. The fastest way to reach me is email.</p>
 
-    <div class="contact-links reveal">
+    <div class="patch-panel reveal">
       <!-- PLACEHOLDER: replace with your real email -->
-      <a href="mailto:hello@gunpreet-singh.com"><span class="label">Email</span>hello@gunpreet-singh.com</a>
+      <a class="jack" href="mailto:hello@gunpreet-singh.com">
+        <span class="ch">CH1</span><span class="dot"></span>
+        <span class="label">EMAIL</span><span class="value">hello@gunpreet-singh.com</span>
+      </a>
       <!-- PLACEHOLDER: replace with your real GitHub -->
-      <a href="https://github.com/your-username" target="_blank" rel="noopener"><span class="label">GitHub</span>github.com/your-username</a>
+      <a class="jack" href="https://github.com/your-username" target="_blank" rel="noopener">
+        <span class="ch">CH2</span><span class="dot"></span>
+        <span class="label">GITHUB</span><span class="value">github.com/your-username</span>
+      </a>
       <!-- PLACEHOLDER: replace with your real LinkedIn -->
-      <a href="https://linkedin.com/in/your-username" target="_blank" rel="noopener"><span class="label">LinkedIn</span>linkedin.com/in/your-username</a>
+      <a class="jack" href="https://linkedin.com/in/your-username" target="_blank" rel="noopener">
+        <span class="ch">CH3</span><span class="dot"></span>
+        <span class="label">LINKEDIN</span><span class="value">linkedin.com/in/your-username</span>
+      </a>
     </div>
   </section>
 
 </main>
 
 <footer>
-  © 2026 Gunpreet Singh — built with plain HTML, CSS &amp; JS
+  UNIT · GUNPREET SINGH · REV 2026.07 · PLAIN HTML / CSS / JS
 </footer>
 
 <script>
-  // Scroll-reveal: fade/rise elements into place as they enter the viewport
+  // Scroll reveal
   const revealEls = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && revealEls.length) {
     const io = new IntersectionObserver((entries) => {
@@ -466,119 +695,92 @@
     revealEls.forEach((el) => el.classList.add('is-visible'));
   }
 
-  // Card tilt: subtle 3D rotation + spotlight following the cursor
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!reduceMotion) {
-    document.querySelectorAll('.project-card').forEach((card) => {
-      const maxTilt = 8;
-      card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const px = (e.clientX - rect.left) / rect.width;
-        const py = (e.clientY - rect.top) / rect.height;
-        const rotY = (px - 0.5) * maxTilt * 2;
-        const rotX = (0.5 - py) * maxTilt * 2;
-        card.style.transform = `translateY(-2px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-        card.style.setProperty('--mx', `${px * 100}%`);
-        card.style.setProperty('--my', `${py * 100}%`);
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.transform = '';
-      });
-    });
-  }
-</script>
+  // Oscilloscope calibration readout, native canvas, no external deps
+  (function scope() {
+    const canvas = document.getElementById('scope');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const accent = '#e2a33b';
+    const gridColor = 'rgba(226, 163, 59, 0.08)';
 
-<script type="module">
-  // Ambient 3D background: wireframe icosahedron + drifting particle field
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const canvas = document.getElementById('bg-canvas');
-
-  if (canvas && !reduceMotion) {
-    try {
-      const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
-      camera.position.z = 9;
-
-      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setSize(window.innerWidth, window.innerHeight);
-
-      const mint = 0x5ee6c1;
-
-      // Wireframe icosahedron
-      const icoGeo = new THREE.IcosahedronGeometry(3.4, 1);
-      const icoEdges = new THREE.EdgesGeometry(icoGeo);
-      const icoMesh = new THREE.LineSegments(
-        icoEdges,
-        new THREE.LineBasicMaterial({ color: mint, transparent: true, opacity: 0.22 })
-      );
-      scene.add(icoMesh);
-
-      const icoGeo2 = new THREE.IcosahedronGeometry(2.1, 0);
-      const icoEdges2 = new THREE.EdgesGeometry(icoGeo2);
-      const icoMesh2 = new THREE.LineSegments(
-        icoEdges2,
-        new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.08 })
-      );
-      scene.add(icoMesh2);
-
-      // Particle field
-      const particleCount = 260;
-      const positions = new Float32Array(particleCount * 3);
-      for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 30;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 20 - 4;
-      }
-      const particleGeo = new THREE.BufferGeometry();
-      particleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const particles = new THREE.Points(
-        particleGeo,
-        new THREE.PointsMaterial({ color: mint, size: 0.045, transparent: true, opacity: 0.5 })
-      );
-      scene.add(particles);
-
-      let targetX = 0, targetY = 0;
-      window.addEventListener('mousemove', (e) => {
-        targetX = (e.clientX / window.innerWidth - 0.5) * 0.6;
-        targetY = (e.clientY / window.innerHeight - 0.5) * 0.6;
-      });
-
-      window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
-      let visible = true;
-      document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
-
-      const clock = new THREE.Clock();
-      function animate() {
-        requestAnimationFrame(animate);
-        if (!visible) return;
-        const t = clock.getElapsedTime();
-
-        icoMesh.rotation.y = t * 0.06;
-        icoMesh.rotation.x = t * 0.03;
-        icoMesh2.rotation.y = -t * 0.045;
-        icoMesh2.rotation.x = t * 0.02;
-        particles.rotation.y = t * 0.015;
-
-        camera.position.x += (targetX - camera.position.x) * 0.02;
-        camera.position.y += (-targetY - camera.position.y) * 0.02;
-        camera.lookAt(0, 0, 0);
-
-        renderer.render(scene, camera);
-      }
-      animate();
-    } catch (err) {
-      // WebGL unavailable or CDN unreachable — page still works without the background
-      console.warn('3D background disabled:', err);
+    let w, h, dpr;
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = canvas.clientWidth;
+      h = canvas.clientHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      drawGrid();
     }
-  }
+
+    function drawGrid() {
+      ctx.fillStyle = '#131211';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      const step = 24;
+      for (let x = 0; x <= w; x += step) {
+        ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); ctx.stroke();
+      }
+      for (let y = 0; y <= h; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); ctx.stroke();
+      }
+    }
+
+    function drawWave(t) {
+      const midY = h / 2;
+      const amp = h * 0.22;
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 3) {
+        const p = x / w;
+        const y = midY
+          + Math.sin(p * 14 + t) * amp * 0.55
+          + Math.sin(p * 5 - t * 1.4) * amp * 0.3
+          + Math.sin(p * 27 + t * 0.6) * amp * 0.08;
+        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = accent;
+      ctx.lineWidth = 2;
+      ctx.shadowColor = accent;
+      ctx.shadowBlur = 6;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    if (reduceMotion) {
+      drawWave(0.6);
+      return;
+    }
+
+    let raf;
+    let visible = true;
+    document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+
+    let t = 0;
+    function frame() {
+      raf = requestAnimationFrame(frame);
+      if (!visible) return;
+      t += 0.02;
+      ctx.fillStyle = 'rgba(19, 18, 17, 0.22)';
+      ctx.fillRect(0, 0, w, h);
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      const step = 24;
+      for (let x = 0; x <= w; x += step) {
+        ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); ctx.stroke();
+      }
+      for (let y = 0; y <= h; y += step) {
+        ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); ctx.stroke();
+      }
+      drawWave(t);
+    }
+    frame();
+  })();
 </script>
 
 </body>
