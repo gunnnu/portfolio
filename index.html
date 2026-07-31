@@ -5,50 +5,49 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Gunpreet Singh · Full-Stack Engineer</title>
 <meta name="description" content="Gunpreet Singh, full-stack engineer. Projects, experience, and contact." />
-<meta name="theme-color" content="#191815" />
+<meta name="theme-color" content="#f2ede4" />
 
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Gunpreet Singh · Full-Stack Engineer" />
 <meta property="og:description" content="Projects, experience, and contact." />
 <meta property="og:url" content="https://gunpreet-singh.com" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%23191815'/%3E%3Crect x='4' y='4' width='56' height='56' rx='3' fill='none' stroke='%23E2A33B' stroke-width='2'/%3E%3Ctext x='32' y='41' font-family='monospace' font-size='24' font-weight='700' fill='%23E2A33B' text-anchor='middle'%3EGS%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23191512'/%3E%3Ctext x='32' y='43' font-family='sans-serif' font-size='30' font-weight='900' fill='%23f2ede4' text-anchor='middle'%3EGS%3C/text%3E%3C/svg%3E" />
 
 <!--
-  THESIS: A personal site usually wears dev-portfolio-as-landing-page clothes;
-  this one refuses the pitch and reads as a precision instrument console —
-  calibrated, labeled, operated rather than sold.
-  OWN-WORLD: warm graphite panel base, brass/amber signal accent (not
-  mint/cyan glow on near-black), IBM Plex Sans + Plex Mono throughout,
-  tick-rule dividers, riveted module corners, tabular numerals, stamped
-  plate labels.
-  STORY: visitor reads it like powering on a bench instrument — nameplate
-  first, labeled modules for work, a calibrated scale for experience, a
-  patch panel for contact.
-  FIRST VIEWPORT: nameplate module with engraved name/role, a live canvas
-  oscilloscope trace as the calibration readout, tick-rule beneath.
-  FORM: scientific instrument control panel — new-work direction, candidate
-  4/7, seed 93d71abf, assigned (degraded roll, no challengers dealt).
+  THESIS: A dev portfolio is usually a soft dark-mode product page; this one
+  is a printed masthead — huge typography as the interface itself, flat,
+  sharp-cornered, and confident rather than glowing or tilting to prove depth.
+  OWN-WORLD: warm chalky paper + near-black ink, one rust-red signal color,
+  a single grotesk family (Archivo) carrying every size from huge display to
+  small caps labels, stark solid 1px rules instead of soft shadowed cards,
+  0-radius corners throughout, a fixed CSS grain overlay for tactile paper
+  texture. Sourced from current (2026) "tactile brutalism / editorial"
+  design-trend coverage, not the prior instrument-panel world, which this
+  redesign fully replaces.
+  STORY: reads like an editorial masthead — huge name first, an index of
+  work, a tabular record of experience, a bold closing colophon.
+  FIRST VIEWPORT: the name itself, full width, kinetic wipe-in on load.
+  FORM: tactile brutalism / editorial index — user-directed (Dribbble/
+  Pinterest-sourced trend research), not the dice-rolled process; a
+  user-pinned direction beats the roll.
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --bg: #191815;
-    --panel: #211f1b;
-    --panel-raised: #262420;
-    --line: #3a352c;
-    --line-soft: #2a2721;
-    --text: #ede7dc;
-    --text-dim: #a89d8b;
-    --text-faint: #6f6656;
-    --accent: #e2a33b;
-    --accent-dim: #8c6a2e;
-    --accent-wash: rgba(226, 163, 59, 0.1);
-    --max-width: 900px;
+    --paper: #f2ede4;
+    --paper-deep: #e6dfd0;
+    --ink: #191512;
+    --ink-dim: #6b6255;
+    --ink-faint: #9c9284;
+    --line: #191512;
+    --line-soft: #cfc6b4;
+    --accent: #c23b1f;
+    --max-width: 1080px;
   }
 
   * { box-sizing: border-box; }
@@ -57,64 +56,52 @@
 
   body {
     margin: 0;
-    background: var(--bg);
-    background-image:
-      linear-gradient(var(--line-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size: 48px 48px;
-    background-position: -1px -1px;
-    color: var(--text);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Archivo', system-ui, sans-serif;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+
+  /* Tactile grain overlay — pure CSS/SVG, no dependency */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+    pointer-events: none;
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   a { color: inherit; text-decoration: none; }
 
-  a:focus-visible, button:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-
-  .mono {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
-  }
-
-  .wrap {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
   h1, h2, h3 {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-weight: 700;
+    font-family: 'Archivo', sans-serif;
+    font-weight: 900;
     letter-spacing: -0.02em;
     margin: 0;
     text-wrap: balance;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .reveal { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
+  .wrap {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 0 28px;
   }
 
-  /* ---------- Tick rule ---------- */
+  .caps {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+  }
 
-  .tick-rule {
-    height: 8px;
-    background-image: repeating-linear-gradient(
-      90deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 12px
-    );
-    background-position: bottom;
-    background-repeat: repeat-x;
-    background-size: 100% 8px;
-    border-bottom: 1px solid var(--line);
-    opacity: 0.8;
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
   }
 
   /* ---------- Header ---------- */
@@ -123,15 +110,15 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    background: rgba(25, 24, 21, 0.92);
-    backdrop-filter: blur(6px);
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
   }
 
   nav.wrap {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
+    height: 64px;
   }
 
   .brand {
@@ -140,368 +127,261 @@
     gap: 10px;
   }
   .brand .stamp {
-    width: 26px;
-    height: 26px;
-    border: 1.5px solid var(--accent);
-    border-radius: 3px;
+    width: 28px;
+    height: 28px;
+    background: var(--ink);
+    color: var(--paper);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--accent);
+    font-weight: 900;
+    font-size: 0.78rem;
   }
-  .brand .name {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.85rem;
-    letter-spacing: 0.02em;
-    color: var(--text);
-  }
+  .brand .name { font-weight: 700; font-size: 0.95rem; }
 
   .nav-links {
     display: flex;
-    gap: 4px;
+    gap: 24px;
     list-style: none;
     margin: 0;
     padding: 0;
   }
   .nav-links a {
-    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    color: var(--text-dim);
-    padding: 6px 12px;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    display: inline-block;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.15s ease, color 0.15s ease;
   }
-  .nav-links a:hover {
-    color: var(--accent);
-    border-color: var(--line);
-    background: var(--panel);
+  .nav-links a:hover { border-color: var(--accent); color: var(--accent); }
+
+  a:focus-visible, button:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
   }
 
-  /* ---------- Section label (plate, not a floating eyebrow) ---------- */
+  @media (max-width: 640px) {
+    nav.wrap {
+      height: auto;
+      flex-wrap: wrap;
+      row-gap: 10px;
+      padding-top: 12px;
+      padding-bottom: 12px;
+    }
+    .nav-links {
+      width: 100%;
+      gap: 16px;
+      overflow-x: auto;
+    }
+  }
+  @media (max-width: 380px) {
+    .brand .name { display: none; }
+  }
+
+  /* ---------- Section framing ---------- */
+
+  section { padding: 72px 0; border-bottom: 1px solid var(--line); position: relative; }
+  section:last-of-type { border-bottom: none; }
 
   .section-head {
     display: flex;
     align-items: baseline;
-    gap: 14px;
-    margin-bottom: 44px;
-    padding-top: 28px;
-  }
-  .plate-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    border: 1px solid var(--accent-dim);
-    background: var(--accent-wash);
-    padding: 3px 8px;
-    border-radius: 2px;
-    white-space: nowrap;
-    transform: translateY(-2px);
-  }
-  .section-head h2 {
-    font-size: clamp(1.5rem, 3vw, 1.9rem);
-  }
-
-  section { padding: 64px 0 24px; position: relative; }
-  section + section { border-top: 1px solid var(--line); }
-
-  /* ---------- About / nameplate ---------- */
-
-  #about { padding-top: 56px; }
-
-  .nameplate {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 40px;
-    position: relative;
-    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 36px;
-    align-items: center;
-  }
-  .nameplate::before, .nameplate::after {
-    content: "";
-    position: absolute;
-    top: 12px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--line);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
-  }
-  .nameplate::before { left: 12px; }
-  .nameplate::after { right: 12px; }
-
-  .nameplate h1 {
-    font-size: clamp(2rem, 4.4vw, 3rem);
-    line-height: 1.1;
-  }
-  .nameplate .role {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--accent);
-    margin-top: 14px;
-    letter-spacing: 0.02em;
-  }
-  .nameplate p.bio {
-    color: var(--text-dim);
-    margin-top: 20px;
-    max-width: 66ch;
-    font-size: 0.98rem;
-  }
-
-  .controls { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
-  .key {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    color: var(--text);
-    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
-    border: 1px solid var(--line);
-    border-bottom-width: 2px;
-    padding: 10px 16px;
-    border-radius: 4px;
-    transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease, color 0.15s ease;
-  }
-  .key:hover { border-color: var(--accent-dim); color: var(--accent); }
-  .key:active { transform: translateY(1px); border-bottom-width: 1px; }
-  .key.primary {
-    background: linear-gradient(180deg, #f0b658, var(--accent));
-    color: #1a1509;
-    border-color: var(--accent);
-  }
-  .key.primary:hover { color: #1a1509; filter: brightness(1.05); }
-
-  .readout {
-    background: #131211;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    aspect-ratio: 4 / 3;
-    position: relative;
-    overflow: hidden;
-  }
-  .readout canvas { width: 100%; height: 100%; display: block; }
-  .readout .readout-label {
-    position: absolute;
-    bottom: 8px;
-    left: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
-  }
-
-  @media (max-width: 720px) {
-    .nameplate { grid-template-columns: 1fr; }
-    .readout { max-width: 320px; }
-  }
-
-  /* ---------- Work / modules ---------- */
-
-  .modules { display: grid; gap: 18px; }
-
-  .module {
-    position: relative;
-    overflow: hidden;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 26px 28px;
-    box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.55);
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    will-change: transform;
-  }
-  .module:hover {
-    border-color: var(--accent-dim);
-    box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
-    transform: translateY(-2px);
-  }
-  /* Vanilla-Tilt sets its own inline transform when it loads, which always
-     wins over the translateY hover rule above — that rule is just the
-     no-JS/blocked-CDN fallback. */
-
-  .module-head {
-    display: flex;
     justify-content: space-between;
-    align-items: baseline;
     gap: 16px;
+    margin-bottom: 40px;
     flex-wrap: wrap;
   }
-  .module h3 { font-size: 1.2rem; }
-
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.66rem;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
-  }
-  .status .led {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-wash);
-  }
-
-  .module p.desc { color: var(--text-dim); margin: 12px 0 16px; max-width: 68ch; font-size: 0.95rem; }
-
-  .spec {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-faint);
-    border-top: 1px solid var(--line-soft);
-    padding-top: 12px;
-    margin-top: 4px;
-  }
-  .spec b { color: var(--text-dim); font-weight: 500; }
-
-  .module-links { display: flex; gap: 12px; margin-top: 14px; }
-  .module-links a {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    border: 1px solid var(--accent-dim);
-    padding: 5px 10px;
-    border-radius: 3px;
-    transition: background 0.15s ease, color 0.15s ease;
-  }
-  .module-links a:hover { background: var(--accent-wash); }
-
-  /* ---------- Experience / calibrated scale ---------- */
-
-  .scale { position: relative; padding-left: 28px; }
-  .scale::before {
-    content: "";
-    position: absolute;
-    left: 3px;
-    top: 6px;
-    bottom: 6px;
-    width: 1px;
-    background: var(--line);
-  }
-
-  .scale-item { position: relative; padding: 0 0 40px 24px; }
-  .scale-item:last-child { padding-bottom: 4px; }
-  .scale-item::before {
-    content: "";
-    position: absolute;
-    left: -1px;
-    top: 6px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--panel);
-    border: 2px solid var(--accent);
-  }
-
-  .scale-item .dates {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
+  .section-head .index-no {
+    font-weight: 700;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.03em;
   }
-  .scale-item h3 { font-size: 1.08rem; margin-top: 6px; }
-  .scale-item .company { color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; display: block; margin-top: 3px; }
-  .scale-item p.summary { color: var(--text-dim); margin-top: 10px; max-width: 66ch; font-size: 0.93rem; }
+  .section-head h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); }
 
-  /* ---------- Contact / patch panel ---------- */
+  /* ---------- Masthead / About ---------- */
 
-  #contact p.lead { color: var(--text-dim); max-width: 65ch; margin-bottom: 32px; font-size: 0.98rem; }
+  #about { padding-top: 48px; padding-bottom: 56px; }
 
-  .patch-panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 8px;
+  .masthead .role { margin-top: 8px; }
+
+  .masthead h1 {
+    font-size: clamp(3rem, 11vw, 8.5rem);
+    line-height: 0.92;
+    overflow: hidden;
   }
-  .jack {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 14px 16px;
-    border-radius: 4px;
+  .masthead h1 .line {
+    display: block;
+    overflow: hidden;
+  }
+  .masthead h1 .line span {
+    display: inline-block;
+    will-change: transform;
+  }
+
+  .masthead .sub {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin-top: 32px;
+    align-items: start;
+  }
+  .masthead .bio { color: var(--ink-dim); max-width: 60ch; font-size: 1.05rem; }
+  .masthead .role { color: var(--accent); }
+
+  .controls { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; align-items: center; }
+  .btn-solid {
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    padding: 14px 22px;
     transition: background 0.15s ease;
   }
-  .jack:hover { background: var(--panel-raised); }
-  .jack + .jack { border-top: 1px solid var(--line-soft); }
-  .jack .ch {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--text-faint);
-    width: 34px;
-    flex-shrink: 0;
+  .btn-solid:hover { background: var(--accent); }
+  .link-underline {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 2px;
+    transition: border-color 0.15s ease, color 0.15s ease;
   }
-  .jack .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 1.5px solid var(--accent-dim);
-    flex-shrink: 0;
-  }
-  .jack:hover .dot { background: var(--accent); border-color: var(--accent); }
-  .jack .label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--text-faint);
-    min-width: 70px;
-  }
-  .jack .value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.92rem;
-    color: var(--text);
-  }
-  .jack:hover .value { color: var(--accent); }
+  .link-underline:hover { border-color: var(--accent); color: var(--accent); }
 
-  footer {
-    padding: 28px 0 40px;
-    color: var(--text-faint);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.04em;
-    text-align: center;
+  @media (max-width: 720px) {
+    .masthead .sub { grid-template-columns: 1fr; }
   }
 
-  /* ---------- Reveal ----------
-     Content is visible by default (no JS dependency). GSAP + ScrollTrigger
-     only hide-then-animate elements after confirming it loaded, so a blocked
-     CDN degrades to "everything just visible" rather than permanently hidden. */
+  /* ---------- Work / Index ---------- */
+
+  .index-list { display: flex; flex-direction: column; }
+
+  .index-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: baseline;
+    padding: 28px 0;
+    border-top: 1px solid var(--line-soft);
+    transition: color 0.15s ease;
+  }
+  .index-list .index-row:last-child { border-bottom: 1px solid var(--line-soft); }
+  .index-row:hover { color: var(--accent); }
+
+  .index-row .no {
+    font-weight: 700;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .index-row:hover .no { color: var(--accent); }
+
+  .index-row .main h3 {
+    font-size: clamp(1.4rem, 3vw, 2.1rem);
+    font-weight: 800;
+  }
+  .index-row .desc { color: var(--ink-dim); margin-top: 8px; max-width: 62ch; font-size: 0.98rem; }
+  .index-row:hover .desc { color: inherit; opacity: 0.75; }
+  .index-row .stack {
+    margin-top: 10px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
+    color: var(--ink-faint);
+  }
+  .index-row:hover .stack { color: inherit; opacity: 0.6; }
+
+  .index-row .links {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+    text-align: right;
+  }
+  .index-row .links a {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 1px solid currentColor;
+  }
 
   @media (max-width: 640px) {
-    section { padding: 44px 0 16px; }
-    .nameplate { padding: 26px; }
-
-    nav.wrap {
-      height: auto;
-      flex-wrap: wrap;
-      row-gap: 8px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-    .nav-links {
-      width: 100%;
-      overflow-x: auto;
-      justify-content: flex-start;
-      gap: 2px;
-    }
-    .nav-links a { padding: 6px 10px; }
+    .index-row { grid-template-columns: 1fr; }
+    .index-row .links { align-items: flex-start; flex-direction: row; gap: 16px; }
   }
 
-  @media (max-width: 380px) {
-    .brand .name { display: none; }
+  /* ---------- Experience / Record ---------- */
+
+  .record-list { display: flex; flex-direction: column; }
+  .record-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 24px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .record-list .record-row:last-child { border-bottom: 1px solid var(--line-soft); }
+  .record-row .dates {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+  .record-row h3 { font-size: 1.15rem; font-weight: 800; }
+  .record-row .company { color: var(--accent); font-weight: 700; font-size: 0.85rem; display: block; margin-top: 4px; }
+  .record-row .summary { color: var(--ink-dim); margin-top: 8px; max-width: 60ch; font-size: 0.95rem; }
+
+  @media (max-width: 640px) {
+    .record-row { grid-template-columns: 1fr; gap: 6px; }
+  }
+
+  /* ---------- Contact / Colophon ---------- */
+
+  #contact { padding-bottom: 56px; }
+  #contact .lead {
+    font-size: clamp(2.2rem, 7vw, 5rem);
+    font-weight: 900;
+    line-height: 1.02;
+    margin: 0;
+  }
+  #contact .lead-email {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: clamp(1.2rem, 3.4vw, 2rem);
+    font-weight: 800;
+    border-bottom: 3px solid var(--accent);
+    word-break: break-word;
+  }
+  #contact .lead-email:hover { color: var(--accent); }
+
+  .contact-links { display: flex; gap: 28px; margin-top: 36px; flex-wrap: wrap; }
+  .contact-links a {
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    border-bottom: 2px solid var(--line);
+    padding-bottom: 2px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .contact-links a:hover { border-color: var(--accent); color: var(--accent); }
+
+  footer {
+    padding: 22px 0 36px;
+    text-align: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.68rem;
+    color: var(--ink-faint);
   }
 </style>
 </head>
@@ -511,7 +391,7 @@
   <nav class="wrap">
     <div class="brand">
       <span class="stamp">GS</span>
-      <span class="name">gunpreet-singh</span>
+      <span class="name">Gunpreet Singh</span>
     </div>
     <ul class="nav-links">
       <li><a href="#about">About</a></li>
@@ -520,322 +400,205 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
   </nav>
-  <div class="tick-rule"></div>
 </header>
 
 <main>
 
-  <!-- ================= ABOUT ================= -->
+  <!-- ================= ABOUT / MASTHEAD ================= -->
   <section id="about" class="wrap">
-    <div class="nameplate reveal">
-      <div>
-        <h1>Gunpreet Singh</h1>
-        <div class="role">FULL-STACK ENGINEER</div>
-        <!-- PLACEHOLDER: replace with your real bio (2-4 sentences) -->
-        <p class="bio">
-          I build fast, reliable products end to end: from data model to pixel.
-          Currently focused on TypeScript, React, and distributed backends, with
-          a habit of shipping the whole thing rather than just the parts that are fun.
-        </p>
+    <div class="masthead">
+      <h1 id="masthead-name">
+        <span class="line"><span>Gunpreet</span></span>
+        <span class="line"><span>Singh</span></span>
+      </h1>
+      <div class="sub">
+        <div>
+          <div class="caps role">Full&#8209;stack engineer</div>
+          <!-- PLACEHOLDER: replace with your real bio (2-4 sentences) -->
+          <p class="bio">
+            I build fast, reliable products end to end: from data model to pixel.
+            Currently focused on TypeScript, React, and distributed backends, with
+            a habit of shipping the whole thing rather than just the parts that are fun.
+          </p>
+        </div>
         <div class="controls">
           <!-- PLACEHOLDER: replace with your real resume link -->
-          <a href="/resume.pdf" class="key primary">RESUME ↗</a>
+          <a href="/resume.pdf" class="btn-solid">Resume ↗</a>
           <!-- PLACEHOLDER: replace with your real GitHub -->
-          <a href="https://github.com/your-username" class="key" target="_blank" rel="noopener">GITHUB</a>
+          <a href="https://github.com/your-username" class="link-underline" target="_blank" rel="noopener">GitHub</a>
           <!-- PLACEHOLDER: replace with your real LinkedIn -->
-          <a href="https://linkedin.com/in/your-username" class="key" target="_blank" rel="noopener">LINKEDIN</a>
+          <a href="https://linkedin.com/in/your-username" class="link-underline" target="_blank" rel="noopener">LinkedIn</a>
         </div>
-      </div>
-      <div class="readout">
-        <canvas id="scope" aria-hidden="true"></canvas>
-        <span class="readout-label">CH1 · SIGNAL</span>
       </div>
     </div>
   </section>
 
-  <!-- ================= WORK ================= -->
+  <!-- ================= WORK / INDEX ================= -->
   <section id="work" class="wrap">
-    <div class="section-head reveal">
-      <span class="plate-tag">§ WORK</span>
-      <h2>Modules</h2>
+    <div class="section-head">
+      <h2>Work</h2>
+      <span class="caps index-no">Index — 3 entries</span>
     </div>
 
-    <div class="modules">
+    <div class="index-list">
       <!-- PLACEHOLDER PROJECT 1 -->
-      <article class="module reveal flicker">
-        <div class="module-head">
+      <article class="index-row">
+        <span class="no">01</span>
+        <div class="main">
           <h3>Project Alpha</h3>
-          <span class="status"><span class="led"></span>ACTIVE</span>
+          <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
+          <div class="stack">TypeScript · React · Node.js · PostgreSQL</div>
         </div>
-        <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="spec"><b>STACK</b> · TypeScript · React · Node.js · PostgreSQL</div>
-        <div class="module-links">
-          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
-          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
+        <div class="links">
+          <a href="#" target="_blank" rel="noopener">Live ↗</a>
+          <a href="#" target="_blank" rel="noopener">Code ↗</a>
         </div>
       </article>
 
       <!-- PLACEHOLDER PROJECT 2 -->
-      <article class="module reveal flicker">
-        <div class="module-head">
+      <article class="index-row">
+        <span class="no">02</span>
+        <div class="main">
           <h3>Project Beta</h3>
-          <span class="status"><span class="led"></span>ACTIVE</span>
+          <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
+          <div class="stack">Python · FastAPI · Redis · Docker</div>
         </div>
-        <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="spec"><b>STACK</b> · Python · FastAPI · Redis · Docker</div>
-        <div class="module-links">
-          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
-          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
+        <div class="links">
+          <a href="#" target="_blank" rel="noopener">Live ↗</a>
+          <a href="#" target="_blank" rel="noopener">Code ↗</a>
         </div>
       </article>
 
       <!-- PLACEHOLDER PROJECT 3 -->
-      <article class="module reveal flicker">
-        <div class="module-head">
+      <article class="index-row">
+        <span class="no">03</span>
+        <div class="main">
           <h3>Project Gamma</h3>
-          <span class="status"><span class="led"></span>ACTIVE</span>
+          <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
+          <div class="stack">Go · gRPC · AWS · Terraform</div>
         </div>
-        <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="spec"><b>STACK</b> · Go · gRPC · AWS · Terraform</div>
-        <div class="module-links">
-          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
-          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
+        <div class="links">
+          <a href="#" target="_blank" rel="noopener">Live ↗</a>
+          <a href="#" target="_blank" rel="noopener">Code ↗</a>
         </div>
       </article>
     </div>
   </section>
 
-  <!-- ================= EXPERIENCE ================= -->
+  <!-- ================= EXPERIENCE / RECORD ================= -->
   <section id="experience" class="wrap">
-    <div class="section-head reveal">
-      <span class="plate-tag">§ EXPERIENCE</span>
-      <h2>Service record</h2>
+    <div class="section-head">
+      <h2>Experience</h2>
+      <span class="caps index-no">Record — 2019 to present</span>
     </div>
 
-    <div class="scale">
+    <div class="record-list">
       <!-- PLACEHOLDER ROLE 1 -->
-      <div class="scale-item reveal">
-        <div class="dates">2023–PRESENT</div>
-        <h3>Senior Software Engineer</h3>
-        <span class="company">Company Name</span>
-        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+      <div class="record-row">
+        <div class="dates">2023—Present</div>
+        <div>
+          <h3>Senior Software Engineer</h3>
+          <span class="company">Company Name</span>
+          <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+        </div>
       </div>
 
       <!-- PLACEHOLDER ROLE 2 -->
-      <div class="scale-item reveal">
-        <div class="dates">2021–2023</div>
-        <h3>Software Engineer</h3>
-        <span class="company">Previous Company</span>
-        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+      <div class="record-row">
+        <div class="dates">2021—2023</div>
+        <div>
+          <h3>Software Engineer</h3>
+          <span class="company">Previous Company</span>
+          <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+        </div>
       </div>
 
       <!-- PLACEHOLDER ROLE 3 -->
-      <div class="scale-item reveal">
-        <div class="dates">2019–2021</div>
-        <h3>Junior Developer</h3>
-        <span class="company">First Company</span>
-        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+      <div class="record-row">
+        <div class="dates">2019—2021</div>
+        <div>
+          <h3>Junior Developer</h3>
+          <span class="company">First Company</span>
+          <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- ================= CONTACT ================= -->
+  <!-- ================= CONTACT / COLOPHON ================= -->
   <section id="contact" class="wrap">
-    <div class="section-head reveal">
-      <span class="plate-tag">§ CONTACT</span>
-      <h2>Patch panel</h2>
+    <div class="section-head">
+      <h2>Contact</h2>
+      <span class="caps index-no">Open to work</span>
     </div>
-    <p class="lead reveal">Open to new opportunities and interesting problems. The fastest way to reach me is email.</p>
 
-    <div class="patch-panel reveal">
-      <!-- PLACEHOLDER: replace with your real email -->
-      <a class="jack" href="mailto:hello@gunpreet-singh.com">
-        <span class="ch">CH1</span><span class="dot"></span>
-        <span class="label">EMAIL</span><span class="value">hello@gunpreet-singh.com</span>
-      </a>
+    <!-- PLACEHOLDER: replace with your real email -->
+    <p class="lead">Let's talk.</p>
+    <a class="lead-email" href="mailto:hello@gunpreet-singh.com">hello@gunpreet-singh.com</a>
+
+    <div class="contact-links">
       <!-- PLACEHOLDER: replace with your real GitHub -->
-      <a class="jack" href="https://github.com/your-username" target="_blank" rel="noopener">
-        <span class="ch">CH2</span><span class="dot"></span>
-        <span class="label">GITHUB</span><span class="value">github.com/your-username</span>
-      </a>
+      <a href="https://github.com/your-username" target="_blank" rel="noopener">GitHub</a>
       <!-- PLACEHOLDER: replace with your real LinkedIn -->
-      <a class="jack" href="https://linkedin.com/in/your-username" target="_blank" rel="noopener">
-        <span class="ch">CH3</span><span class="dot"></span>
-        <span class="label">LINKEDIN</span><span class="value">linkedin.com/in/your-username</span>
-      </a>
+      <a href="https://linkedin.com/in/your-username" target="_blank" rel="noopener">LinkedIn</a>
     </div>
   </section>
 
 </main>
 
 <footer>
-  UNIT · GUNPREET SINGH · REV 2026.07 · PLAIN HTML / CSS / JS
+  Gunpreet Singh · Rev 2026.07 · Plain HTML / CSS / JS
 </footer>
 
 <script type="module">
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const revealEls = document.querySelectorAll('.reveal');
-  const flickerEls = document.querySelectorAll('.reveal.flicker');
-  const plainEls = document.querySelectorAll('.reveal:not(.flicker)');
 
-  // Scroll reveal: GSAP + ScrollTrigger. Elements start visible in plain
-  // HTML/CSS; only hidden-then-animated once GSAP is confirmed loaded, so a
-  // blocked CDN degrades to "everything already visible", never stuck hidden.
-  (async function reveal() {
-    if (reduceMotion || !revealEls.length) return;
+  // Kinetic masthead entrance + scroll reveals: GSAP. Content is correct and
+  // fully visible in plain HTML/CSS with no JS; GSAP only hides-then-animates
+  // after confirming it loaded, so a blocked CDN just leaves everything
+  // statically visible rather than stuck hidden.
+  (async function motion() {
+    if (reduceMotion) return;
     try {
       const gsap = (await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm')).default;
       const { ScrollTrigger } = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger/+esm');
       gsap.registerPlugin(ScrollTrigger);
 
-      gsap.set(plainEls, { opacity: 0, y: 16 });
-      plainEls.forEach((el) => {
+      // Masthead: each line wipes up into place, staggered
+      const lines = document.querySelectorAll('#masthead-name .line span');
+      if (lines.length) {
+        gsap.set(lines, { yPercent: 110 });
+        gsap.to(lines, { yPercent: 0, duration: 0.9, ease: 'power4.out', stagger: 0.1, delay: 0.1 });
+      }
+
+      // Index/record rows: hard-edged slide-in from the left, not a soft fade
+      const rows = document.querySelectorAll('.index-row, .record-row');
+      rows.forEach((el) => {
+        gsap.set(el, { opacity: 0, x: -24 });
         gsap.to(el, {
+          opacity: 1,
+          x: 0,
+          duration: 0.5,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' },
+        });
+      });
+
+      // Contact lead: same wipe treatment as the masthead, smaller scale
+      const lead = document.querySelectorAll('#contact .lead, #contact .lead-email');
+      if (lead.length) {
+        gsap.set(lead, { opacity: 0, y: 20 });
+        gsap.to(lead, {
           opacity: 1,
           y: 0,
           duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+          stagger: 0.08,
+          ease: 'power3.out',
+          scrollTrigger: { trigger: lead[0], start: 'top 88%', toggleActions: 'play none none none' },
         });
-      });
-
-      // Module panels "power on": a quick flicker rather than a plain fade,
-      // so not every section uses an identical entrance.
-      gsap.set(flickerEls, { opacity: 0 });
-      flickerEls.forEach((el) => {
-        const tl = gsap.timeline({
-          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-        });
-        tl.to(el, { opacity: 1, duration: 0.12 })
-          .to(el, { opacity: 0.4, duration: 0.08 })
-          .to(el, { opacity: 1, duration: 0.15 });
-      });
+      }
     } catch (err) {
-      console.warn('Scroll reveal disabled (GSAP unavailable):', err);
-    }
-  })();
-
-  // Module tilt: Vanilla-Tilt. The CSS :hover lift is the fallback if this
-  // doesn't load.
-  (async function tilt() {
-    if (reduceMotion) return;
-    try {
-      const VanillaTilt = (await import('https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/+esm')).default;
-      VanillaTilt.init(document.querySelectorAll('.module'), {
-        max: 6,
-        speed: 400,
-        perspective: 1200,
-        glare: true,
-        'max-glare': 0.1,
-        scale: 1.01,
-      });
-    } catch (err) {
-      console.warn('Card tilt disabled (Vanilla-Tilt unavailable):', err);
-    }
-  })();
-
-  // Oscilloscope calibration readout: Three.js WebGL scene with bloom
-  // post-processing for the phosphor-trace glow, replacing the earlier
-  // Canvas 2D version now that the skill's real technique is available.
-  (async function scope() {
-    const canvas = document.getElementById('scope');
-    const container = canvas ? canvas.parentElement : null;
-    if (!canvas || !container) return;
-
-    try {
-      const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
-      const { EffectComposer } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js');
-      const { RenderPass } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js');
-      const { UnrealBloomPass } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js');
-
-      const amber = 0xe2a33b;
-
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x131211);
-
-      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
-      camera.position.set(0, 0.7, 2.4);
-      camera.lookAt(0, 0, 0);
-
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-
-      const composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.1, 0.4, 0.15);
-      composer.addPass(bloom);
-
-      // Graph-paper grid, laid flat like a scope's screen viewed at an angle
-      const grid = new THREE.GridHelper(3.2, 16, 0x8c6a2e, 0x3a352c);
-      grid.position.y = -0.35;
-      scene.add(grid);
-
-      // Waveform line with a touch of depth (not perfectly flat)
-      const POINTS = 140;
-      const positions = new Float32Array(POINTS * 3);
-      const waveGeo = new THREE.BufferGeometry();
-      waveGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const waveMat = new THREE.LineBasicMaterial({ color: amber });
-      const wave = new THREE.Line(waveGeo, waveMat);
-      scene.add(wave);
-
-      function updateWave(t) {
-        const pos = waveGeo.attributes.position.array;
-        for (let i = 0; i < POINTS; i++) {
-          const p = i / (POINTS - 1);
-          const x = (p - 0.5) * 2.8;
-          const y = Math.sin(p * 14 + t) * 0.32
-            + Math.sin(p * 5 - t * 1.4) * 0.16
-            + Math.sin(p * 27 + t * 0.6) * 0.05;
-          const z = Math.sin(p * 6 + t * 0.5) * 0.12;
-          pos[i * 3] = x;
-          pos[i * 3 + 1] = y;
-          pos[i * 3 + 2] = z;
-        }
-        waveGeo.attributes.position.needsUpdate = true;
-      }
-
-      function resize() {
-        const w = container.clientWidth;
-        const h = container.clientHeight;
-        if (!w || !h) return;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h, false);
-        composer.setSize(w, h);
-      }
-
-      const ro = new ResizeObserver(resize);
-      ro.observe(container);
-      resize();
-
-      if (reduceMotion) {
-        updateWave(0.6);
-        composer.render();
-        return;
-      }
-
-      let targetX = 0;
-      window.addEventListener('mousemove', (e) => {
-        targetX = (e.clientX / window.innerWidth - 0.5) * 0.6;
-      });
-
-      let visible = true;
-      document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
-
-      const clock = new THREE.Clock();
-      function animate() {
-        requestAnimationFrame(animate);
-        if (!visible) return;
-        const t = clock.getElapsedTime();
-        updateWave(t);
-        camera.position.x += (targetX - camera.position.x) * 0.03;
-        camera.lookAt(0, 0, 0);
-        composer.render();
-      }
-      animate();
-    } catch (err) {
-      console.warn('Oscilloscope WebGL scene disabled (Three.js unavailable):', err);
+      console.warn('Motion disabled (GSAP unavailable):', err);
     }
   })();
 </script>
