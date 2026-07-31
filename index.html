@@ -311,18 +311,24 @@
   .modules { display: grid; gap: 18px; }
 
   .module {
+    position: relative;
+    overflow: hidden;
     background: var(--panel);
     border: 1px solid var(--line);
     border-radius: 6px;
     padding: 26px 28px;
     box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.55);
     transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    will-change: transform;
   }
   .module:hover {
     border-color: var(--accent-dim);
     box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
     transform: translateY(-2px);
   }
+  /* Vanilla-Tilt sets its own inline transform when it loads, which always
+     wins over the translateY hover rule above — that rule is just the
+     no-JS/blocked-CDN fallback. */
 
   .module-head {
     display: flex;
@@ -469,22 +475,10 @@
     text-align: center;
   }
 
-  /* ---------- Reveal ---------- */
-
-  .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .reveal.is-visible { opacity: 1; transform: none; }
-  .reveal.flicker.is-visible { animation: flicker-in 0.5s steps(1, end); }
-  @keyframes flicker-in {
-    0% { opacity: 0; }
-    30% { opacity: 1; }
-    45% { opacity: 0.4; }
-    60% { opacity: 1; }
-    100% { opacity: 1; }
-  }
+  /* ---------- Reveal ----------
+     Content is visible by default (no JS dependency). GSAP + ScrollTrigger
+     only hide-then-animate elements after confirming it loaded, so a blocked
+     CDN degrades to "everything just visible" rather than permanently hidden. */
 
   @media (max-width: 640px) {
     section { padding: 44px 0 16px; }
@@ -678,108 +672,171 @@
   UNIT · GUNPREET SINGH · REV 2026.07 · PLAIN HTML / CSS / JS
 </footer>
 
-<script>
-  // Scroll reveal
+<script type="module">
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window && revealEls.length) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          io.unobserve(entry.target);
-        }
+  const flickerEls = document.querySelectorAll('.reveal.flicker');
+  const plainEls = document.querySelectorAll('.reveal:not(.flicker)');
+
+  // Scroll reveal: GSAP + ScrollTrigger. Elements start visible in plain
+  // HTML/CSS; only hidden-then-animated once GSAP is confirmed loaded, so a
+  // blocked CDN degrades to "everything already visible", never stuck hidden.
+  (async function reveal() {
+    if (reduceMotion || !revealEls.length) return;
+    try {
+      const gsap = (await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm')).default;
+      const { ScrollTrigger } = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger/+esm');
+      gsap.registerPlugin(ScrollTrigger);
+
+      gsap.set(plainEls, { opacity: 0, y: 16 });
+      plainEls.forEach((el) => {
+        gsap.to(el, {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: 'power2.out',
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+        });
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
-    revealEls.forEach((el) => io.observe(el));
-  } else {
-    revealEls.forEach((el) => el.classList.add('is-visible'));
-  }
 
-  // Oscilloscope calibration readout, native canvas, no external deps
-  (function scope() {
+      // Module panels "power on": a quick flicker rather than a plain fade,
+      // so not every section uses an identical entrance.
+      gsap.set(flickerEls, { opacity: 0 });
+      flickerEls.forEach((el) => {
+        const tl = gsap.timeline({
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
+        });
+        tl.to(el, { opacity: 1, duration: 0.12 })
+          .to(el, { opacity: 0.4, duration: 0.08 })
+          .to(el, { opacity: 1, duration: 0.15 });
+      });
+    } catch (err) {
+      console.warn('Scroll reveal disabled (GSAP unavailable):', err);
+    }
+  })();
+
+  // Module tilt: Vanilla-Tilt. The CSS :hover lift is the fallback if this
+  // doesn't load.
+  (async function tilt() {
+    if (reduceMotion) return;
+    try {
+      const VanillaTilt = (await import('https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/+esm')).default;
+      VanillaTilt.init(document.querySelectorAll('.module'), {
+        max: 6,
+        speed: 400,
+        perspective: 1200,
+        glare: true,
+        'max-glare': 0.1,
+        scale: 1.01,
+      });
+    } catch (err) {
+      console.warn('Card tilt disabled (Vanilla-Tilt unavailable):', err);
+    }
+  })();
+
+  // Oscilloscope calibration readout: Three.js WebGL scene with bloom
+  // post-processing for the phosphor-trace glow, replacing the earlier
+  // Canvas 2D version now that the skill's real technique is available.
+  (async function scope() {
     const canvas = document.getElementById('scope');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const accent = '#e2a33b';
-    const gridColor = 'rgba(226, 163, 59, 0.08)';
+    const container = canvas ? canvas.parentElement : null;
+    if (!canvas || !container) return;
 
-    let w, h, dpr;
-    function resize() {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      w = canvas.clientWidth;
-      h = canvas.clientHeight;
-      canvas.width = w * dpr;
-      canvas.height = h * dpr;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      drawGrid();
-    }
+    try {
+      const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+      const { EffectComposer } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js');
+      const { RenderPass } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js');
+      const { UnrealBloomPass } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js');
 
-    function drawGrid() {
-      ctx.fillStyle = '#131211';
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = gridColor;
-      ctx.lineWidth = 1;
-      const step = 24;
-      for (let x = 0; x <= w; x += step) {
-        ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); ctx.stroke();
+      const amber = 0xe2a33b;
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x131211);
+
+      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
+      camera.position.set(0, 0.7, 2.4);
+      camera.lookAt(0, 0, 0);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+      const composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.1, 0.4, 0.15);
+      composer.addPass(bloom);
+
+      // Graph-paper grid, laid flat like a scope's screen viewed at an angle
+      const grid = new THREE.GridHelper(3.2, 16, 0x8c6a2e, 0x3a352c);
+      grid.position.y = -0.35;
+      scene.add(grid);
+
+      // Waveform line with a touch of depth (not perfectly flat)
+      const POINTS = 140;
+      const positions = new Float32Array(POINTS * 3);
+      const waveGeo = new THREE.BufferGeometry();
+      waveGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const waveMat = new THREE.LineBasicMaterial({ color: amber });
+      const wave = new THREE.Line(waveGeo, waveMat);
+      scene.add(wave);
+
+      function updateWave(t) {
+        const pos = waveGeo.attributes.position.array;
+        for (let i = 0; i < POINTS; i++) {
+          const p = i / (POINTS - 1);
+          const x = (p - 0.5) * 2.8;
+          const y = Math.sin(p * 14 + t) * 0.32
+            + Math.sin(p * 5 - t * 1.4) * 0.16
+            + Math.sin(p * 27 + t * 0.6) * 0.05;
+          const z = Math.sin(p * 6 + t * 0.5) * 0.12;
+          pos[i * 3] = x;
+          pos[i * 3 + 1] = y;
+          pos[i * 3 + 2] = z;
+        }
+        waveGeo.attributes.position.needsUpdate = true;
       }
-      for (let y = 0; y <= h; y += step) {
-        ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); ctx.stroke();
+
+      function resize() {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        if (!w || !h) return;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h, false);
+        composer.setSize(w, h);
       }
-    }
 
-    function drawWave(t) {
-      const midY = h / 2;
-      const amp = h * 0.22;
-      ctx.beginPath();
-      for (let x = 0; x <= w; x += 3) {
-        const p = x / w;
-        const y = midY
-          + Math.sin(p * 14 + t) * amp * 0.55
-          + Math.sin(p * 5 - t * 1.4) * amp * 0.3
-          + Math.sin(p * 27 + t * 0.6) * amp * 0.08;
-        if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      const ro = new ResizeObserver(resize);
+      ro.observe(container);
+      resize();
+
+      if (reduceMotion) {
+        updateWave(0.6);
+        composer.render();
+        return;
       }
-      ctx.strokeStyle = accent;
-      ctx.lineWidth = 2;
-      ctx.shadowColor = accent;
-      ctx.shadowBlur = 6;
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
 
-    window.addEventListener('resize', resize);
-    resize();
+      let targetX = 0;
+      window.addEventListener('mousemove', (e) => {
+        targetX = (e.clientX / window.innerWidth - 0.5) * 0.6;
+      });
 
-    if (reduceMotion) {
-      drawWave(0.6);
-      return;
-    }
+      let visible = true;
+      document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
 
-    let raf;
-    let visible = true;
-    document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
-
-    let t = 0;
-    function frame() {
-      raf = requestAnimationFrame(frame);
-      if (!visible) return;
-      t += 0.02;
-      ctx.fillStyle = 'rgba(19, 18, 17, 0.22)';
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = gridColor;
-      ctx.lineWidth = 1;
-      const step = 24;
-      for (let x = 0; x <= w; x += step) {
-        ctx.beginPath(); ctx.moveTo(x + 0.5, 0); ctx.lineTo(x + 0.5, h); ctx.stroke();
+      const clock = new THREE.Clock();
+      function animate() {
+        requestAnimationFrame(animate);
+        if (!visible) return;
+        const t = clock.getElapsedTime();
+        updateWave(t);
+        camera.position.x += (targetX - camera.position.x) * 0.03;
+        camera.lookAt(0, 0, 0);
+        composer.render();
       }
-      for (let y = 0; y <= h; y += step) {
-        ctx.beginPath(); ctx.moveTo(0, y + 0.5); ctx.lineTo(w, y + 0.5); ctx.stroke();
-      }
-      drawWave(t);
+      animate();
+    } catch (err) {
+      console.warn('Oscilloscope WebGL scene disabled (Three.js unavailable):', err);
     }
-    frame();
   })();
 </script>
 
