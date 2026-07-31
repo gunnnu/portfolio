@@ -65,7 +65,9 @@ components:
 
 The site reads as a precision instrument control panel — the kind of calibrated console you'd find on lab or broadcast equipment — rather than a landing page pitching a product. It's built to be operated, not sold: a nameplate, labeled modules, a calibrated scale, a patch panel. Nothing on the page asks the visitor to convert; it exists to be read and used like a piece of equipment someone assembled with care.
 
-This is a deliberate rejection of the site's own first draft, which used the default AI-generated dev-portfolio look: near-black background, mint/cyan accent, glowing card shadows, monospace-as-costume. That look is documented here only as the confirmed anti-reference. The instrument-panel world replaces it entirely: warm graphite instead of cool near-black, a single brass/amber signal color instead of neon glow, IBM Plex (Sans + Mono) instead of Inter/JetBrains Mono, and a native canvas oscilloscope trace as the one authored motion signature instead of a generic floating 3D shape.
+This is a deliberate rejection of the site's own first draft, which used the default AI-generated dev-portfolio look: near-black background, mint/cyan accent, glowing card shadows, monospace-as-costume. That look is documented here only as the confirmed anti-reference. The instrument-panel world replaces it entirely: warm graphite instead of cool near-black, a single brass/amber signal color instead of neon glow, IBM Plex (Sans + Mono) instead of Inter/JetBrains Mono, and an oscilloscope trace as the one authored motion signature instead of a generic floating 3D shape.
+
+The oscilloscope started as a dependency-free Canvas 2D drawing, then was rebuilt in Three.js (real WebGL depth, a GridHelper screen, an UnrealBloomPass for authentic phosphor glow) once the threejs-webgl skill was available — same signature, real technique instead of a 2D imitation of one. Scroll reveals moved from a hand-rolled IntersectionObserver to GSAP + ScrollTrigger, and module tilt moved from a hand-rolled mousemove handler to Vanilla-Tilt.js (lightweight-3d-effects skill). All three load from CDN as progressive enhancement: content and layout are correct in plain HTML/CSS with no JS, each enhancement hides-then-animates only after confirming it loaded, and each fails independently (try/catch) without breaking the other two or the page.
 
 **Key Characteristics:**
 - Warm graphite base, never near-black or pure black
@@ -120,7 +122,7 @@ Section spacing rule: more space precedes a section head (64px top padding + the
 
 ## Elevation & Depth
 
-Layered, not flat: panels sit above the graphite base on real elevation shadows (negative-offset, blurred, uncolored), never a zero-offset colored halo. The one deliberate exception is the oscilloscope canvas trace itself, which carries a small `shadowBlur` to simulate phosphor bloom — that's an authored property of the depicted instrument, not UI chrome faking depth.
+Layered, not flat: panels sit above the graphite base on real elevation shadows (negative-offset, blurred, uncolored), never a zero-offset colored halo. The one deliberate exception is the oscilloscope trace itself, now a Three.js scene with a real `UnrealBloomPass` (strength 1.1, radius 0.4, threshold 0.15) — that's an authored property of the depicted instrument (a literal light-emitting phosphor trace), not UI chrome faking depth.
 
 ### Shadow Vocabulary
 - **Nameplate elevation** (`box-shadow: 0 20px 40px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.03)`): the hero module; largest, softest shadow plus a 1px inner highlight for a bezel edge.
@@ -148,6 +150,7 @@ Corners are quietly rounded (3–6px), never sharp and never pill-shaped — the
 - **Border:** 1px Line, shifting to Amber Dim on hover.
 - **Internal padding:** 26px/28px.
 - **Status indicator:** a 6px amber LED dot + mono status label, not a colored badge/chip.
+- **Tilt:** Vanilla-Tilt.js (max 6°, perspective 1200, subtle glare) when it loads; the CSS hover lift/border-glow above is both the reduced-motion state and the no-JS/blocked-CDN fallback — never a hidden default.
 
 ### Patch panel (contact)
 - **Style:** rows ("jacks") inside one bordered panel, each with a channel number (CH1/CH2/CH3), a hollow dot that fills amber on hover, a label, and a value.
@@ -162,11 +165,13 @@ Corners are quietly rounded (3–6px), never sharp and never pill-shaped — the
 - **Do** keep amber as the only accent color; express new states (success, error) as amber intensity/position changes before reaching for a second hue.
 - **Do** use IBM Plex Mono only for labels, data, and measurements.
 - **Do** give every shadow a real offset and blur.
-- **Do** keep the oscilloscope canvas as the system's one signature motion moment; new pages should each get at most one authored motion idea, not scattered hover effects.
+- **Do** keep the oscilloscope as the system's one signature motion moment; new pages should each get at most one authored motion idea, not scattered hover effects.
 - **Do** use the graph-paper grid only on canvas/measurement/blueprint-like surfaces (it's already page-wide here because the whole page plays a calibrated-instrument surface; a new, unrelated surface should earn it the same way, not inherit it by default).
+- **Do** treat every CDN-loaded enhancement (Three.js, GSAP, Vanilla-Tilt) as progressive: real content and layout must be correct in plain HTML/CSS first, JS only adds motion on top, and each library's failure must be caught independently so one blocked script never takes down another or the page.
 
 ### Don't:
 - **Don't** reintroduce the near-black + neon-glow dev-portfolio look this redesign replaced.
+- **Don't** hide `.reveal` content by default in CSS; only hide-then-animate via JS after confirming the animation library loaded.
 - **Don't** add a second accent color for decoration.
 - **Don't** use pill-shaped buttons or badge/chip components — status and tags render as mono label + dot/LED instead.
 - **Don't** stack more than one rivet/corner-mark detail per page; it's a hero-module accent, not a repeating card motif.
