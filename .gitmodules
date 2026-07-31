@@ -1,3 +1,6 @@
 [submodule ".impeccable"]
 	path = .impeccable
 	url = https://github.com/pbakaus/impeccable.git
+[submodule ".claudedesignskills"]
+	path = .claudedesignskills
+	url = https://github.com/freshtechbro/claudedesignskills.git
