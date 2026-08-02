@@ -5,116 +5,220 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Gunpreet Singh · Full-Stack Engineer</title>
 <meta name="description" content="Gunpreet Singh, full-stack engineer. Projects, experience, and contact." />
-<meta name="theme-color" content="#191815" />
+<meta name="theme-color" content="#efece4" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#131519" media="(prefers-color-scheme: dark)" />
 
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Gunpreet Singh · Full-Stack Engineer" />
 <meta property="og:description" content="Projects, experience, and contact." />
 <meta property="og:url" content="https://gunpreet-singh.com" />
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='6' fill='%23191815'/%3E%3Crect x='4' y='4' width='56' height='56' rx='3' fill='none' stroke='%23E2A33B' stroke-width='2'/%3E%3Ctext x='32' y='41' font-family='monospace' font-size='24' font-weight='700' fill='%23E2A33B' text-anchor='middle'%3EGS%3C/text%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236f74b8'/%3E%3Ctext x='32' y='42' font-family='system-ui,sans-serif' font-size='27' font-weight='700' fill='%23f4f2ee' text-anchor='middle'%3EGS%3C/text%3E%3C/svg%3E" />
 
 <!--
-  THESIS: A personal site usually wears dev-portfolio-as-landing-page clothes;
-  this one refuses the pitch and reads as a precision instrument console —
-  calibrated, labeled, operated rather than sold.
-  OWN-WORLD: warm graphite panel base, brass/amber signal accent (not
-  mint/cyan glow on near-black), IBM Plex Sans + Plex Mono throughout,
-  tick-rule dividers, riveted module corners, tabular numerals, stamped
-  plate labels.
-  STORY: visitor reads it like powering on a bench instrument — nameplate
-  first, labeled modules for work, a calibrated scale for experience, a
-  patch panel for contact.
-  FIRST VIEWPORT: nameplate module with engraved name/role, a live canvas
-  oscilloscope trace as the calibration readout, tick-rule beneath.
-  FORM: scientific instrument control panel — new-work direction, candidate
-  4/7, seed 93d71abf, assigned (degraded roll, no challengers dealt).
+  THESIS: A portfolio that feels like an observatory instrument panel is cold,
+  and a stark editorial masthead is severe; this one is warm and quietly
+  cosmic — grounded earth tones with one slow-drifting celestial object
+  behind everything, so it reads playful and senior at once.
+  OWN-WORLD: oat/bone in light and deep slate-indigo in dark, both warm and
+  desaturated; two muted accents (periwinkle + moss) and nothing else;
+  Bricolage Grotesque display over Manrope body; generous soft-radius
+  surfaces; one WebGL object — a noise-displaced torus knot, heavily
+  CSS-blurred so it reads as a drifting nebula-blob rather than a 3D prop.
+  STORY: visitor lands on a calm horizon, meets the person, scans the work
+  as cards, reads the record, and leaves through a single clear invitation.
+  FIRST VIEWPORT: status pill, large name, one-line thesis, two actions,
+  with the blurred looping structure drifting behind the right shoulder.
+  FORM: warm-cosmic editorial — user-directed brief (fun + spacey +
+  professional, muted grounded tones, dual theme, 3D background element).
 -->
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400..700&display=swap" rel="stylesheet" />
+
+<script>
+  // Runs before paint: no theme flash, and .js gates every hide-then-reveal
+  // rule so content is never stuck hidden when scripting is unavailable.
+  (function () {
+    document.documentElement.classList.add('js');
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) {}
+  })();
+</script>
 
 <style>
   :root {
-    --bg: #191815;
-    --panel: #211f1b;
-    --panel-raised: #262420;
-    --line: #3a352c;
-    --line-soft: #2a2721;
-    --text: #ede7dc;
-    --text-dim: #a89d8b;
-    --text-faint: #6f6656;
-    --accent: #e2a33b;
-    --accent-dim: #8c6a2e;
-    --accent-wash: rgba(226, 163, 59, 0.1);
-    --max-width: 900px;
+    color-scheme: light;
+    --bg: #efece4;
+    --surface: #e7e3d9;
+    --surface-2: #ddd8cb;
+    --text: #1c1e24;
+    --text-dim: #55575f;
+    --text-faint: #6f7078;
+    --border: #d5cfc1;
+    --border-strong: #c3bcab;
+    --accent: #5a5e96;
+    --accent-soft: #8a8fc7;
+    --moss: #4f6a55;
+    --moss-soft: #7d9a80;
+    /* Foreground for anything sitting on a filled accent surface. Flips with
+       the theme because --accent itself flips from deep to light. */
+    --on-accent: #f7f6f2;
+    --blob-a: #a5a9e2;
+    --blob-b: #abc7af;
+    --blob-opacity: 0.34;
+    --blob-blur: 58px;
+    --glow-a: rgba(111, 116, 184, 0.20);
+    --glow-b: rgba(125, 154, 128, 0.16);
+    --shadow: 0 18px 40px -28px rgba(28, 30, 36, 0.45);
+    --shadow-lift: 0 26px 54px -28px rgba(28, 30, 36, 0.55);
+    --max-width: 1080px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #131519;
+      --surface: #1a1d23;
+      --surface-2: #22262e;
+      --text: #e9e6df;
+      --text-dim: #a2a4ad;
+      --text-faint: #797b85;
+      --border: #2a2e37;
+      --border-strong: #3a3f4a;
+      --accent: #989dd8;
+      --accent-soft: #7a7eb4;
+      --moss: #8aa88d;
+      --moss-soft: #6d8a71;
+      --on-accent: #16181d;
+      --blob-a: #7f84ce;
+      --blob-b: #6f9376;
+      --blob-opacity: 0.50;
+      --blob-blur: 48px;
+      --glow-a: rgba(127, 132, 206, 0.20);
+      --glow-b: rgba(111, 147, 118, 0.15);
+      --shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.75);
+      --shadow-lift: 0 26px 54px -28px rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #131519;
+    --surface: #1a1d23;
+    --surface-2: #22262e;
+    --text: #e9e6df;
+    --text-dim: #a2a4ad;
+    --text-faint: #797b85;
+    --border: #2a2e37;
+    --border-strong: #3a3f4a;
+    --accent: #989dd8;
+    --accent-soft: #7a7eb4;
+    --moss: #8aa88d;
+    --moss-soft: #6d8a71;
+    --on-accent: #16181d;
+    --blob-a: #7f84ce;
+    --blob-b: #6f9376;
+    --blob-opacity: 0.50;
+    --blob-blur: 48px;
+    --glow-a: rgba(127, 132, 206, 0.20);
+    --glow-b: rgba(111, 147, 118, 0.15);
+    --shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.75);
+    --shadow-lift: 0 26px 54px -28px rgba(0, 0, 0, 0.85);
   }
 
   * { box-sizing: border-box; }
-
   html { scroll-behavior: smooth; }
 
   body {
     margin: 0;
     background: var(--bg);
-    background-image:
-      linear-gradient(var(--line-soft) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-    background-size: 48px 48px;
-    background-position: -1px -1px;
     color: var(--text);
-    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    transition: background 0.4s ease, color 0.4s ease;
   }
+
+  /* Soft glow: the standing background when WebGL is unavailable, and the
+     bed the canvas sits on when it is. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(58% 46% at 74% 12%, var(--glow-a), transparent 70%),
+      radial-gradient(50% 44% at 12% 78%, var(--glow-b), transparent 72%);
+  }
+
+  /* Fine grain keeps the gradients from looking plasticky */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  #bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    filter: blur(var(--blob-blur));
+    transition: opacity 1.2s ease;
+  }
+  #bg-canvas.is-ready { opacity: var(--blob-opacity); }
+
+  header, main, footer { position: relative; z-index: 3; }
 
   a { color: inherit; text-decoration: none; }
 
-  a:focus-visible, button:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-    border-radius: 2px;
-  }
-
-  .mono {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.78rem;
-    letter-spacing: 0.04em;
-  }
-
-  .wrap {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 0 24px;
-  }
-
   h1, h2, h3 {
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Bricolage Grotesque', 'Manrope', ui-sans-serif, system-ui, sans-serif;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
     margin: 0;
     text-wrap: balance;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    .reveal { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
+  .wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 26px; }
+
+  .kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 18px;
+  }
+  .kicker::before {
+    content: "";
+    width: 26px;
+    height: 1px;
+    background: var(--border-strong);
   }
 
-  /* ---------- Tick rule ---------- */
-
-  .tick-rule {
-    height: 8px;
-    background-image: repeating-linear-gradient(
-      90deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 12px
-    );
-    background-position: bottom;
-    background-repeat: repeat-x;
-    background-size: 100% 8px;
-    border-bottom: 1px solid var(--line);
-    opacity: 0.8;
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
   }
 
   /* ---------- Header ---------- */
@@ -122,484 +226,428 @@
   header {
     position: sticky;
     top: 0;
-    z-index: 10;
-    background: rgba(25, 24, 21, 0.92);
-    backdrop-filter: blur(6px);
+    z-index: 20;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border-bottom: 1px solid var(--border);
   }
 
   nav.wrap {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    height: 60px;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .brand .stamp {
-    width: 26px;
-    height: 26px;
-    border: 1.5px solid var(--accent);
-    border-radius: 3px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--accent);
-  }
-  .brand .name {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.85rem;
-    letter-spacing: 0.02em;
-    color: var(--text);
-  }
-
-  .nav-links {
-    display: flex;
-    gap: 4px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  .nav-links a {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    color: var(--text-dim);
-    padding: 6px 12px;
-    border: 1px solid transparent;
-    border-radius: 3px;
-    display: inline-block;
-    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-  }
-  .nav-links a:hover {
-    color: var(--accent);
-    border-color: var(--line);
-    background: var(--panel);
-  }
-
-  /* ---------- Section label (plate, not a floating eyebrow) ---------- */
-
-  .section-head {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    margin-bottom: 44px;
-    padding-top: 28px;
-  }
-  .plate-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    border: 1px solid var(--accent-dim);
-    background: var(--accent-wash);
-    padding: 3px 8px;
-    border-radius: 2px;
-    white-space: nowrap;
-    transform: translateY(-2px);
-  }
-  .section-head h2 {
-    font-size: clamp(1.5rem, 3vw, 1.9rem);
-  }
-
-  section { padding: 64px 0 24px; position: relative; }
-  section + section { border-top: 1px solid var(--line); }
-
-  /* ---------- About / nameplate ---------- */
-
-  #about { padding-top: 56px; }
-
-  .nameplate {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 40px;
-    position: relative;
-    box-shadow: 0 20px 40px -20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    display: grid;
-    grid-template-columns: 1.3fr 1fr;
-    gap: 36px;
-    align-items: center;
-  }
-  .nameplate::before, .nameplate::after {
-    content: "";
-    position: absolute;
-    top: 12px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--line);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.5);
-  }
-  .nameplate::before { left: 12px; }
-  .nameplate::after { right: 12px; }
-
-  .nameplate h1 {
-    font-size: clamp(2rem, 4.4vw, 3rem);
-    line-height: 1.1;
-  }
-  .nameplate .role {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.85rem;
-    color: var(--accent);
-    margin-top: 14px;
-    letter-spacing: 0.02em;
-  }
-  .nameplate p.bio {
-    color: var(--text-dim);
-    margin-top: 20px;
-    max-width: 66ch;
-    font-size: 0.98rem;
-  }
-
-  .controls { display: flex; gap: 10px; margin-top: 28px; flex-wrap: wrap; }
-  .key {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    color: var(--text);
-    background: linear-gradient(180deg, var(--panel-raised), var(--panel));
-    border: 1px solid var(--line);
-    border-bottom-width: 2px;
-    padding: 10px 16px;
-    border-radius: 4px;
-    transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.15s ease, color 0.15s ease;
-  }
-  .key:hover { border-color: var(--accent-dim); color: var(--accent); }
-  .key:active { transform: translateY(1px); border-bottom-width: 1px; }
-  .key.primary {
-    background: linear-gradient(180deg, #f0b658, var(--accent));
-    color: #1a1509;
-    border-color: var(--accent);
-  }
-  .key.primary:hover { color: #1a1509; filter: brightness(1.05); }
-
-  .readout {
-    background: #131211;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    aspect-ratio: 4 / 3;
-    position: relative;
-    overflow: hidden;
-  }
-  .readout canvas { width: 100%; height: 100%; display: block; }
-  .readout .readout-label {
-    position: absolute;
-    bottom: 8px;
-    left: 10px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
-  }
-
-  @media (max-width: 720px) {
-    .nameplate { grid-template-columns: 1fr; }
-    .readout { max-width: 320px; }
-  }
-
-  /* ---------- Work / modules ---------- */
-
-  .modules { display: grid; gap: 18px; }
-
-  .module {
-    position: relative;
-    overflow: hidden;
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 26px 28px;
-    box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.55);
-    transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
-    will-change: transform;
-  }
-  .module:hover {
-    border-color: var(--accent-dim);
-    box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
-    transform: translateY(-2px);
-  }
-  /* Vanilla-Tilt sets its own inline transform when it loads, which always
-     wins over the translateY hover rule above — that rule is just the
-     no-JS/blocked-CDN fallback. */
-
-  .module-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
     gap: 16px;
-    flex-wrap: wrap;
+    height: 66px;
   }
-  .module h3 { font-size: 1.2rem; }
+
+  .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 700; }
+  .brand .mark {
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: linear-gradient(145deg, var(--accent), var(--moss));
+    display: grid;
+    place-items: center;
+    color: var(--on-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .brand .name { font-size: 0.95rem; letter-spacing: -0.01em; }
+
+  .nav-right { display: flex; align-items: center; gap: 6px; }
+
+  .nav-links { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
+  .nav-links a {
+    display: inline-block;
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--text-dim);
+    padding: 8px 13px;
+    border-radius: 999px;
+    transition: color 0.18s ease, background 0.18s ease;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--surface); }
+
+  .theme-toggle {
+    width: 38px; height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0;
+    transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  }
+  .theme-toggle:hover { color: var(--accent); border-color: var(--accent-soft); transform: rotate(-18deg); }
+  .theme-toggle svg { width: 17px; height: 17px; }
+  .theme-toggle .moon { display: none; }
+  :root[data-theme="dark"] .theme-toggle .moon { display: block; }
+  :root[data-theme="dark"] .theme-toggle .sun { display: none; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle .moon { display: block; }
+    :root:not([data-theme="light"]) .theme-toggle .sun { display: none; }
+  }
+
+  /* ---------- Sections ---------- */
+
+  section { padding-block: 104px; }
+  #about { padding-block: 104px 92px; }
+
+  .section-head { margin-bottom: 46px; }
+  .section-head h2 { font-size: clamp(1.7rem, 3.4vw, 2.35rem); }
+  .section-head p { color: var(--text-dim); margin: 12px 0 0; max-width: 56ch; }
+
+  /* ---------- Hero ---------- */
 
   .status {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.66rem;
-    letter-spacing: 0.06em;
-    color: var(--text-faint);
+    gap: 9px;
+    padding: 7px 15px 7px 12px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    border-radius: 999px;
+    font-size: 0.79rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 26px;
   }
-  .status .led {
-    width: 6px;
-    height: 6px;
+  .status .pip {
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 2px var(--accent-wash);
+    background: var(--moss);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--moss) 22%, transparent);
+  }
+  .js .status .pip { animation: pulse 2.6s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 3px color-mix(in srgb, var(--moss) 22%, transparent); }
+    50%      { box-shadow: 0 0 0 7px color-mix(in srgb, var(--moss) 6%, transparent); }
   }
 
-  .module p.desc { color: var(--text-dim); margin: 12px 0 16px; max-width: 68ch; font-size: 0.95rem; }
-
-  .spec {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-faint);
-    border-top: 1px solid var(--line-soft);
-    padding-top: 12px;
-    margin-top: 4px;
+  .hero h1 {
+    font-size: clamp(2.7rem, 8vw, 5.6rem);
+    line-height: 1.02;
+    font-weight: 800;
   }
-  .spec b { color: var(--text-dim); font-weight: 500; }
-
-  .module-links { display: flex; gap: 12px; margin-top: 14px; }
-  .module-links a {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    border: 1px solid var(--accent-dim);
-    padding: 5px 10px;
-    border-radius: 3px;
-    transition: background 0.15s ease, color 0.15s ease;
+  .hero h1 .soft {
+    background: linear-gradient(100deg, var(--accent), var(--moss));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
-  .module-links a:hover { background: var(--accent-wash); }
-
-  /* ---------- Experience / calibrated scale ---------- */
-
-  .scale { position: relative; padding-left: 28px; }
-  .scale::before {
-    content: "";
-    position: absolute;
-    left: 3px;
-    top: 6px;
-    bottom: 6px;
-    width: 1px;
-    background: var(--line);
+  .hero .lede {
+    font-size: clamp(1.05rem, 1.9vw, 1.28rem);
+    color: var(--text-dim);
+    max-width: 54ch;
+    margin: 26px 0 0;
   }
 
-  .scale-item { position: relative; padding: 0 0 40px 24px; }
-  .scale-item:last-child { padding-bottom: 4px; }
-  .scale-item::before {
-    content: "";
-    position: absolute;
-    left: -1px;
-    top: 6px;
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    background: var(--panel);
-    border: 2px solid var(--accent);
-  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
 
-  .scale-item .dates {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.03em;
-  }
-  .scale-item h3 { font-size: 1.08rem; margin-top: 6px; }
-  .scale-item .company { color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; display: block; margin-top: 3px; }
-  .scale-item p.summary { color: var(--text-dim); margin-top: 10px; max-width: 66ch; font-size: 0.93rem; }
-
-  /* ---------- Contact / patch panel ---------- */
-
-  #contact p.lead { color: var(--text-dim); max-width: 65ch; margin-bottom: 32px; font-size: 0.98rem; }
-
-  .patch-panel {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: 8px;
-  }
-  .jack {
-    display: flex;
+  .btn {
+    display: inline-flex;
     align-items: center;
-    gap: 16px;
-    padding: 14px 16px;
-    border-radius: 4px;
-    transition: background 0.15s ease;
+    gap: 9px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
   }
-  .jack:hover { background: var(--panel-raised); }
-  .jack + .jack { border-top: 1px solid var(--line-soft); }
-  .jack .ch {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--text-faint);
-    width: 34px;
-    flex-shrink: 0;
+  .btn-primary {
+    background: var(--accent);
+    color: var(--on-accent);
+    box-shadow: var(--shadow);
   }
-  .jack .dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 1.5px solid var(--accent-dim);
-    flex-shrink: 0;
-  }
-  .jack:hover .dot { background: var(--accent); border-color: var(--accent); }
-  .jack .label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    color: var(--text-faint);
-    min-width: 70px;
-  }
-  .jack .value {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.92rem;
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+  .btn-ghost {
+    border-color: var(--border-strong);
     color: var(--text);
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
   }
-  .jack:hover .value { color: var(--accent); }
+  .btn-ghost:hover { border-color: var(--accent-soft); color: var(--accent); transform: translateY(-2px); }
+  .btn .arw { transition: transform 0.18s ease; }
+  .btn:hover .arw { transform: translate(2px, -2px); }
+
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin-top: 44px;
+    padding-top: 26px;
+    border-top: 1px solid var(--border);
+    font-size: 0.85rem;
+    color: var(--text-faint);
+  }
+  .hero-meta b { color: var(--text-dim); font-weight: 600; margin-right: 5px; }
+
+  /* ---------- Work ---------- */
+
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    border-radius: 18px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 76%, transparent);
+    transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-soft);
+    box-shadow: var(--shadow-lift);
+  }
+
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+  .card h3 { font-size: 1.22rem; font-weight: 700; }
+  .card .glyph {
+    width: 34px; height: 34px;
+    flex: none;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    font-size: 0.86rem;
+    font-weight: 700;
+  }
+  .card p.desc { color: var(--text-dim); font-size: 0.95rem; margin: 13px 0 20px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; }
+  .tags span {
+    font-size: 0.73rem;
+    font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 999px;
+    color: var(--text-dim);
+    background: var(--surface-2);
+  }
+
+  .card-links { display: flex; gap: 16px; margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--border); }
+  .card-links a {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .card-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+  /* ---------- Experience ---------- */
+
+  .timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 5px; top: 10px; bottom: 10px;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 168px 1fr;
+    gap: 24px;
+    padding: 0 0 38px 32px;
+  }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 7px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent-soft);
+  }
+  .tl-when { font-size: 0.85rem; font-weight: 600; color: var(--text-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
+  .tl-what h3 { font-size: 1.08rem; font-weight: 700; }
+  .tl-org { display: block; margin-top: 3px; font-size: 0.88rem; font-weight: 600; color: var(--moss); }
+  .tl-what p { color: var(--text-dim); font-size: 0.94rem; margin: 10px 0 0; max-width: 58ch; }
+
+  /* ---------- Contact ---------- */
+
+  .contact-card {
+    padding: clamp(34px, 5vw, 58px);
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 78%, transparent);
+    box-shadow: var(--shadow);
+  }
+  .contact-card h2 { font-size: clamp(1.9rem, 4.4vw, 3rem); line-height: 1.06; }
+  .contact-card p { color: var(--text-dim); margin: 16px 0 0; max-width: 48ch; }
+  .contact-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
   footer {
-    padding: 28px 0 40px;
+    padding: 34px 0 46px;
+    border-top: 1px solid var(--border);
     color: var(--text-faint);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.68rem;
-    letter-spacing: 0.04em;
-    text-align: center;
+    font-size: 0.82rem;
+  }
+  footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  footer a:hover { color: var(--accent); }
+
+  /* ---------- Reveal (gated on .js so it can never strand content) ---------- */
+
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1), transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .js .reveal.is-visible { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .js .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .js .status .pip { animation: none; }
+    .card, .btn, .theme-toggle { transition: none !important; }
+    .card:hover, .btn:hover { transform: none; }
   }
 
-  /* ---------- Reveal ----------
-     Content is visible by default (no JS dependency). GSAP + ScrollTrigger
-     only hide-then-animate elements after confirming it loaded, so a blocked
-     CDN degrades to "everything just visible" rather than permanently hidden. */
+  /* ---------- Responsive ---------- */
 
-  @media (max-width: 640px) {
-    section { padding: 44px 0 16px; }
-    .nameplate { padding: 26px; }
-
-    nav.wrap {
-      height: auto;
-      flex-wrap: wrap;
-      row-gap: 8px;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-    .nav-links {
-      width: 100%;
-      overflow-x: auto;
-      justify-content: flex-start;
-      gap: 2px;
-    }
-    .nav-links a { padding: 6px 10px; }
+  @media (max-width: 860px) {
+    .cards { grid-template-columns: 1fr; }
   }
 
-  @media (max-width: 380px) {
-    .brand .name { display: none; }
+  @media (max-width: 700px) {
+    section { padding-block: 76px; }
+    #about { padding-block: 64px 68px; }
+    nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+    .nav-right { width: 100%; justify-content: space-between; }
+    .nav-links { overflow-x: auto; gap: 2px; }
+    .nav-links a { padding: 8px 11px; }
+    .tl-item { grid-template-columns: 1fr; gap: 5px; padding-left: 28px; }
   }
 </style>
 </head>
 <body>
 
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
 <header>
   <nav class="wrap">
-    <div class="brand">
-      <span class="stamp">GS</span>
-      <span class="name">gunpreet-singh</span>
+    <a class="brand" href="#about">
+      <span class="mark">GS</span>
+      <span class="name">Gunpreet Singh</span>
+    </a>
+    <div class="nav-right">
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#work">Work</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch colour theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.4v2.2M12 19.4v2.2M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.2M19.4 12h2.2M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 13.5A8.2 8.2 0 1 1 10.5 4a6.5 6.5 0 0 0 9.5 9.5Z"/>
+        </svg>
+      </button>
     </div>
-    <ul class="nav-links">
-      <li><a href="#about">About</a></li>
-      <li><a href="#work">Work</a></li>
-      <li><a href="#experience">Experience</a></li>
-      <li><a href="#contact">Contact</a></li>
-    </ul>
   </nav>
-  <div class="tick-rule"></div>
 </header>
 
 <main>
 
   <!-- ================= ABOUT ================= -->
-  <section id="about" class="wrap">
-    <div class="nameplate reveal">
-      <div>
-        <h1>Gunpreet Singh</h1>
-        <div class="role">FULL-STACK ENGINEER</div>
-        <!-- PLACEHOLDER: replace with your real bio (2-4 sentences) -->
-        <p class="bio">
-          I build fast, reliable products end to end: from data model to pixel.
-          Currently focused on TypeScript, React, and distributed backends, with
-          a habit of shipping the whole thing rather than just the parts that are fun.
-        </p>
-        <div class="controls">
-          <!-- PLACEHOLDER: replace with your real resume link -->
-          <a href="/resume.pdf" class="key primary">RESUME ↗</a>
-          <!-- PLACEHOLDER: replace with your real GitHub -->
-          <a href="https://github.com/your-username" class="key" target="_blank" rel="noopener">GITHUB</a>
-          <!-- PLACEHOLDER: replace with your real LinkedIn -->
-          <a href="https://linkedin.com/in/your-username" class="key" target="_blank" rel="noopener">LINKEDIN</a>
-        </div>
-      </div>
-      <div class="readout">
-        <canvas id="scope" aria-hidden="true"></canvas>
-        <span class="readout-label">CH1 · SIGNAL</span>
-      </div>
+  <section id="about" class="wrap hero">
+    <div class="reveal">
+      <span class="status"><span class="pip"></span>Open to new work</span>
+    </div>
+    <h1 class="reveal">Full-stack engineer<br />building things that <span class="soft">hold up</span>.</h1>
+    <!-- PLACEHOLDER: replace with your real one-liner / bio -->
+    <p class="lede reveal">
+      I&nbsp;take products from data model to pixel: designing the API, shipping the
+      interface, and staying for the unglamorous parts that keep it fast and
+      maintainable a year later.
+    </p>
+    <div class="hero-actions reveal">
+      <!-- PLACEHOLDER: replace with your real resume link -->
+      <a class="btn btn-primary" href="/resume.pdf">Résumé <span class="arw">↗</span></a>
+      <!-- PLACEHOLDER: replace with your real email -->
+      <a class="btn btn-ghost" href="mailto:hello@gunpreet-singh.com">Get in touch</a>
+    </div>
+    <div class="hero-meta reveal">
+      <!-- PLACEHOLDER: replace with your real location / focus / availability -->
+      <span><b>Based in</b> Remote</span>
+      <span><b>Focus</b> TypeScript · React · Distributed backends</span>
+      <span><b>Currently</b> Building &amp; shipping</span>
     </div>
   </section>
 
   <!-- ================= WORK ================= -->
   <section id="work" class="wrap">
     <div class="section-head reveal">
-      <span class="plate-tag">§ WORK</span>
-      <h2>Modules</h2>
+      <span class="kicker">Work</span>
+      <h2>Selected projects</h2>
+      <p>A few things I&nbsp;built end to end, from schema design through to the last bit of polish.</p>
     </div>
 
-    <div class="modules">
+    <div class="cards">
       <!-- PLACEHOLDER PROJECT 1 -->
-      <article class="module reveal flicker">
-        <div class="module-head">
+      <article class="card reveal">
+        <div class="card-top">
           <h3>Project Alpha</h3>
-          <span class="status"><span class="led"></span>ACTIVE</span>
+          <span class="glyph">01</span>
         </div>
         <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="spec"><b>STACK</b> · TypeScript · React · Node.js · PostgreSQL</div>
-        <div class="module-links">
-          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
-          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
+        <div class="tags"><span>TypeScript</span><span>React</span><span>Node.js</span><span>PostgreSQL</span></div>
+        <div class="card-links">
+          <a href="#" target="_blank" rel="noopener">Live <span class="arw">↗</span></a>
+          <a href="#" target="_blank" rel="noopener">Code <span class="arw">↗</span></a>
         </div>
       </article>
 
       <!-- PLACEHOLDER PROJECT 2 -->
-      <article class="module reveal flicker">
-        <div class="module-head">
+      <article class="card reveal">
+        <div class="card-top">
           <h3>Project Beta</h3>
-          <span class="status"><span class="led"></span>ACTIVE</span>
+          <span class="glyph">02</span>
         </div>
         <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="spec"><b>STACK</b> · Python · FastAPI · Redis · Docker</div>
-        <div class="module-links">
-          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
-          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
+        <div class="tags"><span>Python</span><span>FastAPI</span><span>Redis</span><span>Docker</span></div>
+        <div class="card-links">
+          <a href="#" target="_blank" rel="noopener">Live <span class="arw">↗</span></a>
+          <a href="#" target="_blank" rel="noopener">Code <span class="arw">↗</span></a>
         </div>
       </article>
 
       <!-- PLACEHOLDER PROJECT 3 -->
-      <article class="module reveal flicker">
-        <div class="module-head">
+      <article class="card reveal">
+        <div class="card-top">
           <h3>Project Gamma</h3>
-          <span class="status"><span class="led"></span>ACTIVE</span>
+          <span class="glyph">03</span>
         </div>
         <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
-        <div class="spec"><b>STACK</b> · Go · gRPC · AWS · Terraform</div>
-        <div class="module-links">
-          <a href="#" target="_blank" rel="noopener">LIVE ↗</a>
-          <a href="#" target="_blank" rel="noopener">CODE ↗</a>
+        <div class="tags"><span>Go</span><span>gRPC</span><span>AWS</span><span>Terraform</span></div>
+        <div class="card-links">
+          <a href="#" target="_blank" rel="noopener">Live <span class="arw">↗</span></a>
+          <a href="#" target="_blank" rel="noopener">Code <span class="arw">↗</span></a>
+        </div>
+      </article>
+
+      <!-- PLACEHOLDER PROJECT 4 -->
+      <article class="card reveal">
+        <div class="card-top">
+          <h3>Project Delta</h3>
+          <span class="glyph">04</span>
+        </div>
+        <p class="desc">A short description of what this project does and the problem it solves. One or two sentences is plenty.</p>
+        <div class="tags"><span>Rust</span><span>WebAssembly</span><span>SQLite</span></div>
+        <div class="card-links">
+          <a href="#" target="_blank" rel="noopener">Live <span class="arw">↗</span></a>
+          <a href="#" target="_blank" rel="noopener">Code <span class="arw">↗</span></a>
         </div>
       </article>
     </div>
@@ -608,236 +656,378 @@
   <!-- ================= EXPERIENCE ================= -->
   <section id="experience" class="wrap">
     <div class="section-head reveal">
-      <span class="plate-tag">§ EXPERIENCE</span>
-      <h2>Service record</h2>
+      <span class="kicker">Experience</span>
+      <h2>Where I&#39;ve worked</h2>
     </div>
 
-    <div class="scale">
+    <ol class="timeline">
       <!-- PLACEHOLDER ROLE 1 -->
-      <div class="scale-item reveal">
-        <div class="dates">2023–PRESENT</div>
-        <h3>Senior Software Engineer</h3>
-        <span class="company">Company Name</span>
-        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
-      </div>
+      <li class="tl-item reveal">
+        <div class="tl-when">2023–Present</div>
+        <div class="tl-what">
+          <h3>Senior Software Engineer</h3>
+          <span class="tl-org">Company Name</span>
+          <p>One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+        </div>
+      </li>
 
       <!-- PLACEHOLDER ROLE 2 -->
-      <div class="scale-item reveal">
-        <div class="dates">2021–2023</div>
-        <h3>Software Engineer</h3>
-        <span class="company">Previous Company</span>
-        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
-      </div>
+      <li class="tl-item reveal">
+        <div class="tl-when">2021–2023</div>
+        <div class="tl-what">
+          <h3>Software Engineer</h3>
+          <span class="tl-org">Previous Company</span>
+          <p>One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+        </div>
+      </li>
 
       <!-- PLACEHOLDER ROLE 3 -->
-      <div class="scale-item reveal">
-        <div class="dates">2019–2021</div>
-        <h3>Junior Developer</h3>
-        <span class="company">First Company</span>
-        <p class="summary">One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
-      </div>
-    </div>
+      <li class="tl-item reveal">
+        <div class="tl-when">2019–2021</div>
+        <div class="tl-what">
+          <h3>Junior Developer</h3>
+          <span class="tl-org">First Company</span>
+          <p>One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+        </div>
+      </li>
+    </ol>
   </section>
 
   <!-- ================= CONTACT ================= -->
   <section id="contact" class="wrap">
-    <div class="section-head reveal">
-      <span class="plate-tag">§ CONTACT</span>
-      <h2>Patch panel</h2>
-    </div>
-    <p class="lead reveal">Open to new opportunities and interesting problems. The fastest way to reach me is email.</p>
-
-    <div class="patch-panel reveal">
-      <!-- PLACEHOLDER: replace with your real email -->
-      <a class="jack" href="mailto:hello@gunpreet-singh.com">
-        <span class="ch">CH1</span><span class="dot"></span>
-        <span class="label">EMAIL</span><span class="value">hello@gunpreet-singh.com</span>
-      </a>
-      <!-- PLACEHOLDER: replace with your real GitHub -->
-      <a class="jack" href="https://github.com/your-username" target="_blank" rel="noopener">
-        <span class="ch">CH2</span><span class="dot"></span>
-        <span class="label">GITHUB</span><span class="value">github.com/your-username</span>
-      </a>
-      <!-- PLACEHOLDER: replace with your real LinkedIn -->
-      <a class="jack" href="https://linkedin.com/in/your-username" target="_blank" rel="noopener">
-        <span class="ch">CH3</span><span class="dot"></span>
-        <span class="label">LINKEDIN</span><span class="value">linkedin.com/in/your-username</span>
-      </a>
+    <div class="contact-card reveal">
+      <span class="kicker">Contact</span>
+      <h2>Got something worth building?</h2>
+      <p>Always up for interesting problems and good teams. Email is the fastest way to reach me.</p>
+      <div class="contact-actions">
+        <!-- PLACEHOLDER: replace with your real email -->
+        <a class="btn btn-primary" href="mailto:hello@gunpreet-singh.com">hello@gunpreet-singh.com</a>
+        <!-- PLACEHOLDER: replace with your real GitHub -->
+        <a class="btn btn-ghost" href="https://github.com/your-username" target="_blank" rel="noopener">GitHub <span class="arw">↗</span></a>
+        <!-- PLACEHOLDER: replace with your real LinkedIn -->
+        <a class="btn btn-ghost" href="https://linkedin.com/in/your-username" target="_blank" rel="noopener">LinkedIn <span class="arw">↗</span></a>
+      </div>
     </div>
   </section>
 
 </main>
 
 <footer>
-  UNIT · GUNPREET SINGH · REV 2026.07 · PLAIN HTML / CSS / JS
+  <div class="wrap">
+    <span>© 2026 Gunpreet Singh</span>
+    <span>Built with plain HTML, CSS &amp; JS</span>
+  </div>
 </footer>
 
+<script>
+  // Theme toggle — persists the explicit choice, otherwise the OS preference
+  // continues to win.
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+
+    function current() {
+      var set = root.getAttribute('data-theme');
+      if (set) return set;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function label() {
+      btn.setAttribute('aria-label',
+        current() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+    label();
+
+    btn.addEventListener('click', function () {
+      var next = current() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch (e) {}
+      label();
+      window.dispatchEvent(new CustomEvent('themechange'));
+    });
+  })();
+
+  // Scroll reveal — native IntersectionObserver, no third-party dependency.
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!els.length) return;
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('is-visible'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
 <script type="module">
+  // Background object: a torus knot (a genuine looping structure) pushed
+  // around by 3D simplex noise, then heavily CSS-blurred so it reads as a
+  // drifting nebula rather than a 3D prop sitting on the page.
+  //
+  // Mobile/perf: the blur means resolution is nearly free to give up, so the
+  // scene renders below device pixel ratio with antialiasing off and a
+  // lighter mesh on small screens. It pauses in a background tab, renders a
+  // single static frame under prefers-reduced-motion, and if the CDN or
+  // WebGL is unavailable the CSS radial-gradient underneath stands in.
+  const canvas = document.getElementById('bg-canvas');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const revealEls = document.querySelectorAll('.reveal');
-  const flickerEls = document.querySelectorAll('.reveal.flicker');
-  const plainEls = document.querySelectorAll('.reveal:not(.flicker)');
 
-  // Scroll reveal: GSAP + ScrollTrigger. Elements start visible in plain
-  // HTML/CSS; only hidden-then-animated once GSAP is confirmed loaded, so a
-  // blocked CDN degrades to "everything already visible", never stuck hidden.
-  (async function reveal() {
-    if (reduceMotion || !revealEls.length) return;
-    try {
-      const gsap = (await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/+esm')).default;
-      const { ScrollTrigger } = await import('https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger/+esm');
-      gsap.registerPlugin(ScrollTrigger);
-
-      gsap.set(plainEls, { opacity: 0, y: 16 });
-      plainEls.forEach((el) => {
-        gsap.to(el, {
-          opacity: 1,
-          y: 0,
-          duration: 0.6,
-          ease: 'power2.out',
-          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-        });
-      });
-
-      // Module panels "power on": a quick flicker rather than a plain fade,
-      // so not every section uses an identical entrance.
-      gsap.set(flickerEls, { opacity: 0 });
-      flickerEls.forEach((el) => {
-        const tl = gsap.timeline({
-          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none none' },
-        });
-        tl.to(el, { opacity: 1, duration: 0.12 })
-          .to(el, { opacity: 0.4, duration: 0.08 })
-          .to(el, { opacity: 1, duration: 0.15 });
-      });
-    } catch (err) {
-      console.warn('Scroll reveal disabled (GSAP unavailable):', err);
-    }
-  })();
-
-  // Module tilt: Vanilla-Tilt. The CSS :hover lift is the fallback if this
-  // doesn't load.
-  (async function tilt() {
-    if (reduceMotion) return;
-    try {
-      const VanillaTilt = (await import('https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/+esm')).default;
-      VanillaTilt.init(document.querySelectorAll('.module'), {
-        max: 6,
-        speed: 400,
-        perspective: 1200,
-        glare: true,
-        'max-glare': 0.1,
-        scale: 1.01,
-      });
-    } catch (err) {
-      console.warn('Card tilt disabled (Vanilla-Tilt unavailable):', err);
-    }
-  })();
-
-  // Oscilloscope calibration readout: Three.js WebGL scene with bloom
-  // post-processing for the phosphor-trace glow, replacing the earlier
-  // Canvas 2D version now that the skill's real technique is available.
-  (async function scope() {
-    const canvas = document.getElementById('scope');
-    const container = canvas ? canvas.parentElement : null;
-    if (!canvas || !container) return;
-
+  if (canvas) {
     try {
       const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
-      const { EffectComposer } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js');
-      const { RenderPass } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js');
-      const { UnrealBloomPass } = await import('https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js');
 
-      const amber = 0xe2a33b;
+      const css = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      const isSmall = () => window.innerWidth < 760;
 
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x131211);
+      const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+      camera.position.z = 4.6;
 
-      const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 20);
-      camera.position.set(0, 0.7, 2.4);
-      camera.lookAt(0, 0, 0);
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: false,
+        powerPreference: 'low-power',
+      });
+      renderer.setClearColor(0x000000, 0);
 
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      const uniforms = {
+        uTime: { value: 0 },
+        uAmp: { value: 0.26 },
+        uMix: { value: 0 },
+        uColorA: { value: new THREE.Color(css('--blob-a') || '#6f74b8') },
+        uColorB: { value: new THREE.Color(css('--blob-b') || '#7d9a80') },
+      };
 
-      const composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 1.1, 0.4, 0.15);
-      composer.addPass(bloom);
+      const material = new THREE.ShaderMaterial({
+        uniforms,
+        transparent: true,
+        vertexShader: `
+          uniform float uTime;
+          uniform float uAmp;
+          varying vec3 vNormal;
+          varying float vNoise;
 
-      // Graph-paper grid, laid flat like a scope's screen viewed at an angle
-      const grid = new THREE.GridHelper(3.2, 16, 0x8c6a2e, 0x3a352c);
-      grid.position.y = -0.35;
-      scene.add(grid);
+          vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+          vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+          vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+          vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
 
-      // Waveform line with a touch of depth (not perfectly flat)
-      const POINTS = 140;
-      const positions = new Float32Array(POINTS * 3);
-      const waveGeo = new THREE.BufferGeometry();
-      waveGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const waveMat = new THREE.LineBasicMaterial({ color: amber });
-      const wave = new THREE.Line(waveGeo, waveMat);
-      scene.add(wave);
+          float snoise(vec3 v){
+            const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+            const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+            vec3 i  = floor(v + dot(v, C.yyy));
+            vec3 x0 = v - i + dot(i, C.xxx);
+            vec3 g = step(x0.yzx, x0.xyz);
+            vec3 l = 1.0 - g;
+            vec3 i1 = min(g.xyz, l.zxy);
+            vec3 i2 = max(g.xyz, l.zxy);
+            vec3 x1 = x0 - i1 + C.xxx;
+            vec3 x2 = x0 - i2 + C.yyy;
+            vec3 x3 = x0 - D.yyy;
+            i = mod289(i);
+            vec4 p = permute(permute(permute(
+                       i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                     + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                     + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+            float n_ = 0.142857142857;
+            vec3 ns = n_ * D.wyz - D.xzx;
+            vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+            vec4 x_ = floor(j * ns.z);
+            vec4 y_ = floor(j - 7.0 * x_);
+            vec4 x = x_ * ns.x + ns.yyyy;
+            vec4 y = y_ * ns.x + ns.yyyy;
+            vec4 h = 1.0 - abs(x) - abs(y);
+            vec4 b0 = vec4(x.xy, y.xy);
+            vec4 b1 = vec4(x.zw, y.zw);
+            vec4 s0 = floor(b0) * 2.0 + 1.0;
+            vec4 s1 = floor(b1) * 2.0 + 1.0;
+            vec4 sh = -step(h, vec4(0.0));
+            vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+            vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+            vec3 p0 = vec3(a0.xy, h.x);
+            vec3 p1 = vec3(a0.zw, h.y);
+            vec3 p2 = vec3(a1.xy, h.z);
+            vec3 p3 = vec3(a1.zw, h.w);
+            vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+            p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+            vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+            m = m * m;
+            return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+          }
 
-      function updateWave(t) {
-        const pos = waveGeo.attributes.position.array;
-        for (let i = 0; i < POINTS; i++) {
-          const p = i / (POINTS - 1);
-          const x = (p - 0.5) * 2.8;
-          const y = Math.sin(p * 14 + t) * 0.32
-            + Math.sin(p * 5 - t * 1.4) * 0.16
-            + Math.sin(p * 27 + t * 0.6) * 0.05;
-          const z = Math.sin(p * 6 + t * 0.5) * 0.12;
-          pos[i * 3] = x;
-          pos[i * 3 + 1] = y;
-          pos[i * 3 + 2] = z;
-        }
-        waveGeo.attributes.position.needsUpdate = true;
-      }
+          void main() {
+            float n1 = snoise(position * 1.15 + vec3(0.0, 0.0, uTime * 0.16));
+            float n2 = snoise(position * 2.30 + vec3(uTime * 0.11, 0.0, 0.0)) * 0.42;
+            float d = (n1 + n2) * uAmp;
+            vNoise = n1;
+            vNormal = normalize(normalMatrix * normal);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position + normal * d, 1.0);
+          }
+        `,
+        fragmentShader: `
+          precision mediump float;
+          uniform vec3 uColorA;
+          uniform vec3 uColorB;
+          uniform float uMix;
+          varying vec3 vNormal;
+          varying float vNoise;
 
-      function resize() {
-        const w = container.clientWidth;
-        const h = container.clientHeight;
-        if (!w || !h) return;
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-        renderer.setSize(w, h, false);
-        composer.setSize(w, h);
-      }
-
-      const ro = new ResizeObserver(resize);
-      ro.observe(container);
-      resize();
-
-      if (reduceMotion) {
-        updateWave(0.6);
-        composer.render();
-        return;
-      }
-
-      let targetX = 0;
-      window.addEventListener('mousemove', (e) => {
-        targetX = (e.clientX / window.innerWidth - 0.5) * 0.6;
+          void main() {
+            // uMix is driven by cursor X: the surface leans periwinkle on one
+            // side of the viewport and moss on the other. Heavy blur eats fine
+            // shading detail, so a colour shift is the response that actually
+            // survives to the eye.
+            float f = clamp(smoothstep(-1.0, 1.0, vNoise) + uMix, 0.0, 1.0);
+            vec3 col = mix(uColorA, uColorB, f);
+            float rim = 1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
+            col += rim * 0.22;
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `,
       });
 
-      let visible = true;
-      document.addEventListener('visibilitychange', () => { visible = !document.hidden; });
+      let geometry = null;
+      const base = { x: 0, y: 0 };
+      const knot = new THREE.Mesh(new THREE.BufferGeometry(), material);
+      scene.add(knot);
 
-      const clock = new THREE.Clock();
-      function animate() {
-        requestAnimationFrame(animate);
-        if (!visible) return;
-        const t = clock.getElapsedTime();
-        updateWave(t);
-        camera.position.x += (targetX - camera.position.x) * 0.03;
-        camera.lookAt(0, 0, 0);
-        composer.render();
+      function buildGeometry() {
+        const small = isSmall();
+        const next = new THREE.TorusKnotGeometry(1, 0.36, small ? 128 : 220, small ? 16 : 32, 2, 3);
+        if (geometry) geometry.dispose();
+        geometry = next;
+        knot.geometry = next;
       }
-      animate();
+
+      function layout() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const small = isSmall();
+
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 0.6 : 0.8));
+        renderer.setSize(w, h, false);
+
+        // Kept to the upper-right on desktop so the diffuse mass never sits
+        // behind the headline and erode its contrast; centred high on mobile,
+        // where the copy starts lower down. The cursor offsets *from* this
+        // rest position, so it is stored rather than applied once.
+        base.x = small ? 0 : 1.85;
+        base.y = small ? 0.9 : 0.55;
+        knot.position.set(base.x, base.y, 0);
+        knot.scale.setScalar(small ? 0.72 : 1);
+      }
+
+      let lastSmall = isSmall();
+      buildGeometry();
+      layout();
+
+      window.addEventListener('resize', () => {
+        layout();
+        if (isSmall() !== lastSmall) {
+          lastSmall = isSmall();
+          buildGeometry();
+        }
+      });
+
+      function applyThemeColors() {
+        uniforms.uColorA.value.set(css('--blob-a') || '#6f74b8');
+        uniforms.uColorB.value.set(css('--blob-b') || '#7d9a80');
+        canvas.style.opacity = css('--blob-opacity') || '0.42';
+      }
+      window.addEventListener('themechange', applyThemeColors);
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyThemeColors);
+
+      // ---- Cursor interaction -------------------------------------------
+      // Four responses, layered so the object reads as aware of the pointer
+      // rather than merely sliding with it:
+      //   position  — camera parallax + the knot leaning toward the cursor
+      //   attitude  — extra yaw/pitch, so you see around its curves
+      //   turbulence— pointer *speed* churns the noise faster and deeper
+      //   colour    — cursor X shifts the periwinkle/moss balance
+      // Only bound on a fine pointer, and never under reduced motion.
+      const ptr = { x: 0, y: 0, tx: 0, ty: 0, energy: 0 };
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      if (!reduceMotion && finePointer) {
+        let lx = 0, ly = 0, lt = performance.now();
+        window.addEventListener('mousemove', (e) => {
+          const nx = e.clientX / window.innerWidth - 0.5;
+          const ny = e.clientY / window.innerHeight - 0.5;
+          ptr.tx = nx;
+          ptr.ty = ny;
+
+          const now = performance.now();
+          const dt = Math.max(now - lt, 16);
+          const speed = Math.hypot(nx - lx, ny - ly) / dt;
+          ptr.energy = Math.min(ptr.energy + speed * 26, 1);
+          lx = nx; ly = ny; lt = now;
+        }, { passive: true });
+
+        // Ease back to rest when the cursor leaves the window entirely.
+        document.addEventListener('mouseleave', () => { ptr.tx = 0; ptr.ty = 0; });
+      }
+
+      requestAnimationFrame(() => canvas.classList.add('is-ready'));
+
+      if (reduceMotion) {
+        knot.rotation.set(0.5, 0.3, 0);
+        renderer.render(scene, camera);
+      } else {
+        let running = true;
+        document.addEventListener('visibilitychange', () => {
+          running = !document.hidden;
+          if (running) requestAnimationFrame(frame);
+        });
+
+        const clock = new THREE.Clock();
+        let noiseTime = 0;
+
+        function frame() {
+          if (!running) return;
+          requestAnimationFrame(frame);
+
+          // Clamped so a backgrounded tab can't resume with one huge step.
+          const dt = Math.min(clock.getDelta(), 0.05);
+          const t = clock.elapsedTime;
+
+          // Ease toward the cursor; energy decays frame-rate independently.
+          ptr.x += (ptr.tx - ptr.x) * 0.055;
+          ptr.y += (ptr.ty - ptr.y) * 0.055;
+          ptr.energy *= Math.pow(0.06, dt);
+
+          // Fast cursor movement makes the surface churn harder and faster.
+          noiseTime += dt * (1 + ptr.energy * 2.4);
+          uniforms.uTime.value = noiseTime;
+          uniforms.uAmp.value = 0.26 + ptr.energy * 0.12;
+          uniforms.uMix.value = ptr.x * 0.42;
+
+          knot.rotation.y = t * 0.11 + ptr.x * 0.55;
+          knot.rotation.x = Math.sin(t * 0.16) * 0.28 - ptr.y * 0.42;
+          knot.position.x = base.x + ptr.x * 0.75;
+          knot.position.y = base.y - ptr.y * 0.6;
+
+          camera.position.x += ((ptr.x * -1.15) - camera.position.x) * 0.05;
+          camera.position.y += ((ptr.y * 0.85) - camera.position.y) * 0.05;
+          camera.lookAt(0, 0, 0);
+
+          renderer.render(scene, camera);
+        }
+        frame();
+      }
     } catch (err) {
-      console.warn('Oscilloscope WebGL scene disabled (Three.js unavailable):', err);
+      console.warn('Background scene unavailable, using CSS gradient fallback:', err);
     }
-  })();
+  }
 </script>
 
 </body>
