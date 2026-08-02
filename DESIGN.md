@@ -1,149 +1,195 @@
 ---
 name: Gunpreet Singh — Portfolio
-description: A personal engineering portfolio styled as a printed editorial masthead.
+description: A dual-theme personal portfolio with a drifting WebGL nebula, in muted periwinkle and moss.
 colors:
-  paper: "#f2ede4"
-  paper-deep: "#e6dfd0"
-  ink: "#191512"
-  ink-dim: "#6b6255"
-  ink-faint: "#9c9284"
-  rust-accent: "#c23b1f"
+  paper: "#efece4"
+  paper-surface: "#e7e3d9"
+  paper-surface-2: "#ddd8cb"
+  paper-border: "#d5cfc1"
+  slate: "#131519"
+  slate-surface: "#1a1d23"
+  slate-surface-2: "#22262e"
+  slate-border: "#2a2e37"
+  ink: "#1c1e24"
+  bone: "#e9e6df"
+  periwinkle-deep: "#5a5e96"
+  periwinkle-light: "#989dd8"
+  moss-deep: "#4f6a55"
+  moss-light: "#8aa88d"
 typography:
   display:
-    fontFamily: "Archivo, system-ui, sans-serif"
-    fontSize: "clamp(3rem, 11vw, 8.5rem)"
-    fontWeight: 900
-    lineHeight: 0.92
-    letterSpacing: "-0.02em"
-  body:
-    fontFamily: "Archivo, system-ui, sans-serif"
-    fontSize: "0.95rem–1.05rem"
-    fontWeight: 400
-    lineHeight: 1.5
-  label:
-    fontFamily: "Archivo, system-ui, sans-serif"
-    fontSize: "0.68rem–0.85rem"
+    fontFamily: "Bricolage Grotesque, Manrope, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "clamp(2.7rem, 8vw, 5.6rem)"
+    fontWeight: 800
+    lineHeight: 1.02
+    letterSpacing: "-0.025em"
+  heading:
+    fontFamily: "Bricolage Grotesque, Manrope, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "clamp(1.7rem, 3.4vw, 2.35rem)"
     fontWeight: 700
-    letterSpacing: "0.05em–0.08em"
+    letterSpacing: "-0.025em"
+  body:
+    fontFamily: "Manrope, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.94rem–1.28rem"
+    fontWeight: 400
+    lineHeight: 1.6
+  label:
+    fontFamily: "Manrope, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.73rem–0.9rem"
+    fontWeight: 600
+    letterSpacing: "0.14em"
 rounded:
-  none: "0px"
+  xs: "4px"
+  sm: "9px"
+  md: "11px"
+  lg: "18px"
+  xl: "24px"
+  pill: "999px"
 spacing:
-  sm: "8px"
-  md: "16px"
-  lg: "28px"
-  xl: "40px"
+  xs: "7px"
+  sm: "13px"
+  md: "20px"
+  lg: "38px"
+  xl: "104px"
 components:
-  btn-solid:
-    backgroundColor: "{colors.ink}"
+  btn-primary:
+    backgroundColor: "{colors.periwinkle-deep}"
     textColor: "{colors.paper}"
-    rounded: "{rounded.none}"
-    padding: "14px 22px"
-  btn-solid-hover:
-    backgroundColor: "{colors.rust-accent}"
-    textColor: "{colors.paper}"
+    rounded: "{rounded.pill}"
+    padding: "13px 22px"
+  btn-ghost:
+    textColor: "{colors.ink}"
+    rounded: "{rounded.pill}"
+    padding: "13px 22px"
+  card:
+    backgroundColor: "{colors.paper-surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.lg}"
+    padding: "28px"
 ---
 
 # Design System: Gunpreet Singh — Portfolio
 
 ## Overview
 
-**Creative North Star: "The Printed Masthead"**
+**Creative North Star: "The Warm Observatory"**
 
-The site reads as a printed editorial masthead, not a soft dark-mode product page. Huge typography is the interface itself — the name fills most of the first viewport with no card, no glow, no container framing it. Everything below continues the masthead metaphor: work as a numbered index, experience as a tabular record, contact as a bold closing statement and colophon.
+Quietly cosmic, not sci-fi. The page is a calm, warm surface — oat paper by day, deep slate by night — with a single slow-drifting celestial object behind everything. The object is real WebGL, but it is blurred far past the point of being legible as geometry, so it registers as atmosphere rather than as a 3D prop bolted onto a website. The result is meant to read as playful and senior at the same time: nothing bounces, nothing glows neon, but the page is never inert.
 
-This is the site's third visual world, and it fully replaces the second (a graphite/amber "scientific instrument control panel" identity, itself a replacement of an even earlier near-black/mint-glow default look). Both prior worlds are anti-reference only — this one shares no tokens, components, or effects with either. It was sourced from current (2026) design-trend research into what's actually showing up across Dribbble and design-inspiration coverage right now, specifically the "tactile brutalism / editorial" direction: huge viewport-scaled type, sharp corners, visible structural rules, CSS grain texture, and warm chalky paper tones instead of another dark theme. That source is a deliberate, user-directed departure from this system's own dice-rolled concept process — a user-pinned direction beats the roll.
+This is the site's fourth visual world and it fully replaces the third (a stark bone-and-rust "tactile brutalism" masthead), which in turn replaced a graphite/amber instrument panel and, before that, a default near-black/mint look. All three prior worlds are anti-reference only; this system shares no tokens with any of them. The brief that produced it was explicit: fun, spacey, and professional at once; muted grounded tones rather than mainstream palette choices; both light and dark themes as first-class citizens; and a 3D background element that integrates seamlessly and stays mobile-friendly.
+
+Two accents carry everything: a muted **periwinkle** (the "spacey" half — dusty blue-violet, never electric indigo or the default SaaS purple gradient) and a muted **moss** (the "grounded" half — desaturated sage, never a success-state green). Both are deliberately low-saturation so they tint rather than shout.
 
 **Key Characteristics:**
-- Warm chalky paper background, never white or dark mode
-- Near-black ink for text, one rust-red signal color, nothing else
-- A single type family (Archivo) carrying every size from huge display to small caps labels — hierarchy comes from weight and scale contrast, not from mixing families
-- Sharp 0-radius corners and solid 1px structural rules everywhere; no soft shadows, no rounded cards, no card-tilt or glow effects ("anti-soft-UI" is the point)
-- A fixed, subtle CSS/SVG grain overlay across the whole page for tactile, paper-like physicality
-- Motion is kinetic and hard-edged (wipes, hard slides), never a gentle fade — GSAP + ScrollTrigger, progressive enhancement only
+- Two full themes, neither an afterthought: warm oat paper and warm deep slate, both desaturated
+- Exactly two accents (periwinkle + moss), used together as a pair in gradients and separately for state
+- Soft, generous radii (9–24px, pills for actions) — the opposite of the previous world's 0-radius rule
+- Depth is real but gentle: wide, low-opacity shadows and a hairline border, never a hard drop shadow
+- One WebGL object, blurred into atmosphere; the page must be complete and handsome without it
+- Fine grain over everything, so gradients and large flat fields never look plasticky
 
 ## Colors
 
-Two neutrals plus a single signal color — no secondary or tertiary hue, and no dark-mode variant.
+Two neutral ramps (one per theme) plus a two-accent system. Every semantic token flips between themes; components reference the token, never a raw hex.
 
 ### Primary
-- **Rust** (`#c23b1f`): the one accent. Used for the role label, hover states on nav/links/index rows, the "Company" line in experience, and the email underline. Nothing else uses color.
+- **Periwinkle** — `#5a5e96` deep (light theme) / `#989dd8` light (dark theme): the primary accent. Primary buttons, links, the `.glyph` project numerals, timeline dots, focus rings, and half of every accent gradient.
+- **Moss** — `#4f6a55` deep (light theme) / `#8aa88d` light (dark theme): the secondary accent. The "open to work" status pip, the employer line in the timeline, and the other half of every accent gradient.
 
-### Neutral
-- **Paper** (`#f2ede4`): page background. Warm chalky off-white — never stark `#fff`, never dark.
-- **Paper Deep** (`#e6dfd0`): reserved for a deeper paper tone if a section ever needs to sit visually behind the base (unused in the current build; don't invent a use for it without a reason).
-- **Ink** (`#191512`): primary text, borders, the solid button fill. Near-black, warm, not pure `#000`.
-- **Ink Dim** (`#6b6255`): secondary body copy (descriptions, summaries, bio).
-- **Ink Faint** (`#9c9284`): tertiary labels — index numbers, stack lines, dates, the small index-count caption.
+### Neutral — light theme
+- **Paper** (`#efece4`): page background. Warm oat, never white.
+- **Paper Surface** (`#e7e3d9`) / **Surface 2** (`#ddd8cb`): cards, contact panel, tag pills.
+- **Ink** (`#1c1e24`) with dim `#55575f` and faint `#6f7078`: text ramp.
+- **Border** (`#d5cfc1`) / **Border Strong** (`#c3bcab`): hairlines and ghost-button outlines.
+
+### Neutral — dark theme
+- **Slate** (`#131519`): page background. Warm-leaning near-black, never pure `#000` and never blue-cold.
+- **Slate Surface** (`#1a1d23`) / **Surface 2** (`#22262e`): cards, contact panel, tag pills.
+- **Bone** (`#e9e6df`) with dim `#a2a4ad` and faint `#797b85`: text ramp.
+- **Border** (`#2a2e37`) / **Border Strong** (`#3a3f4a`).
 
 ### Named Rules
-**The One Signal Rule.** Rust is the only color in the system besides paper/ink neutrals. A future state (error, success) earns its place the same way rust did — never added as decoration. Carried forward unchanged from the prior world because it's a good rule, not because the palette was reused; the actual hex values are entirely new.
+**The Two-Accent Rule.** Periwinkle and moss are the entire chromatic vocabulary. They may be paired in a gradient, but a third hue is never introduced for decoration; a genuine new state (destructive, warning) is the only thing that could earn one.
+
+**The On-Accent Rule.** Never hardcode a foreground colour on a filled accent surface. `--accent` flips from *deep* in light to *light* in dark, so anything filled with it reads its foreground from `--on-accent` (`#f7f6f2` light / `#16181d` dark). This exists because the first build hardcoded near-white on the button and produced ~2.4:1 text in dark mode; the token is the fix.
 
 ## Typography
 
-**Family:** Archivo (with system-ui, sans-serif fallback) — the only typeface on the page.
+**Display / Headings:** Bricolage Grotesque — a grotesk with real personality (irregular widths, optical sizing) that supplies the "fun" without resorting to a novelty face.
+**Body / UI:** Manrope — geometric, quiet, and highly legible at small sizes.
 
-**Character:** One grotesk family, four weight/size tiers (900 huge display, 800 sub-headings, 700 small caps labels, 400 body), doing the work three separate typefaces did in the prior system. This is a deliberate economy move core to the editorial-brutalist world, not an oversight — the mechanical single-font-family check should treat this file's declaration as the intentional answer.
+**Character:** The pairing does the brief's two jobs separately: Bricolage carries the playful, slightly quirky voice in the few places type is large, and Manrope keeps every paragraph, label, and control sober and professional. Both are chosen partly to avoid the training-default set (Fraunces, Playfair, Space Grotesk, Inter-as-display, DM Sans, Plus Jakarta, IBM Plex, and the rest), which the previous three worlds had already worked through.
 
 ### Hierarchy
-- **Display** (900, `clamp(3rem, 11vw, 8.5rem)`, line-height 0.92, letter-spacing -0.02em): the masthead name only. Deliberately larger than a typical display cap because viewport-scaled type standing in for a hero image is the world's own device, confirmed with the user before building.
-- **Headline** (900, `clamp(1.8rem, 4vw, 2.6rem)`): section headings (Work, Experience, Contact) and the contact lead's first line.
-- **Sub-headline** (800, `clamp(1.4rem, 3vw, 2.1rem)`): index-row project names.
-- **Title** (800, 1.15rem): experience entry roles.
-- **Body** (400, 0.95–1.05rem, line-height 1.5, max ~62ch measure): bio, descriptions, summaries.
-- **Label** (700, 0.68–0.85rem, letter-spacing 0.05–0.08em, uppercase): nav links, role label, index numbers, stack lines, dates, buttons, footer colophon.
+- **Display** (800, `clamp(2.7rem, 8vw, 5.6rem)`, line-height 1.02): the hero statement only.
+- **Heading** (700, `clamp(1.7rem, 3.4vw, 2.35rem)`): section headings; the contact panel goes slightly larger at `clamp(1.9rem, 4.4vw, 3rem)`.
+- **Title** (700, 1.08–1.22rem): card and timeline-entry titles.
+- **Body** (400, 0.94–1.28rem, line-height 1.6, ~48–58ch measure): lede, descriptions, summaries.
+- **Label** (600, 0.73–0.9rem, `0.14em` tracking on the uppercase kicker): kickers, tags, dates, meta, buttons.
 
 ### Named Rules
-**The One-Family Rule.** Every size on the page is Archivo at some weight. Reaching for a second family (a serif for warmth, a mono for "technical" labels) is the old system's habit; this one proves hierarchy with weight and scale alone.
+**The One-Gradient-Word Rule.** The periwinkle→moss text gradient appears exactly once per page, on a two-word fragment of the hero statement. It is the page's single flourish; applying it to section headings would turn a signature into a tic.
 
 ## Layout
 
-Single-column content capped at `--max-width: 1080px`, centered with 28px side padding. The masthead name and its two-column bio/controls row live directly in the page flow — no card, no border, no background change; the huge type itself is the entire composition of the first viewport. Work renders as a stacked editorial index: each project is a full-width row (auto/1fr/auto grid — number, content, links) separated by 1px hairline rules, not boxed cards. Experience uses the same row-list pattern with a fixed 160px date column. Contact closes with a large two-line statement (headline + a separately-sized email link, deliberately not one run-on heading — an earlier draft crammed the whole email into the huge display size and it line-wrapped mid-word) followed by plain text links and a small-caps colophon footer. The header nav wraps to a second row under 640px rather than overflowing.
+Single column, capped at `--max-width: 1080px`, 26px side padding via `.wrap`. Sections use **`padding-block` only** — never the `padding` shorthand — because `#about` / `#contact` are ID selectors that outrank `.wrap`'s class, and the shorthand silently zeroes the horizontal padding, pinning content to the viewport edge on narrow screens. This was a real bug caught in review; the `padding-block` form is the fix and the rule.
 
-Section spacing: 72px vertical padding per section, sections separated by a solid 1px `Ink` rule (not a soft divider) — a stronger, more literal break than the prior system's hairline, matching the world's confident register.
+Work is a two-column card grid collapsing to one below 860px. Experience is a rail-and-dot timeline with a fixed 168px date column, collapsing to a stacked single column below 700px. Contact is a single large rounded panel — the only full-width surface on the page, which is what makes it read as the closing invitation. The header is sticky with a translucent, backdrop-blurred background, and its nav wraps to a second row below 700px rather than overflowing or clipping.
 
 ## Elevation & Depth
 
-Flat by design — the defining departure from both prior worlds. No box-shadows anywhere in this system; depth is never simulated with blur or offset. Structure comes entirely from solid 1px rules (`Ink` for major section breaks, `Line Soft` / `#cfc6b4` for internal list rows) and from the sharp 0-radius edges of every element meeting flush against its neighbor. Interactive state is color, not lift: index rows and links shift to rust on hover; nothing translates, scales, or tilts.
+Soft and atmospheric. Shadows are wide, heavily negative-spread, and low opacity, so surfaces feel lifted off the page rather than stamped onto it; every raised surface also carries a 1px border, which is what actually defines its edge. This replaces the previous world's flat, shadowless doctrine and the one before that's hard bezel language.
+
+### Shadow Vocabulary
+- **Rest** (`0 18px 40px -28px`, 45% light / 75% dark): primary buttons, contact panel.
+- **Lift** (`0 26px 54px -28px`, 55% light / 85% dark): the hover state of cards and primary buttons, paired with a 2–4px `translateY`.
 
 ### Named Rules
-**The Flat-By-Default Rule.** No `box-shadow` in this system. If a future component genuinely needs to separate from the page (a modal, a dropdown), that's the one place elevation may be introduced, and it should still use a hard, uncolored shadow — never a colored glow, which belongs to the prior world.
+**The Border-Defines-Edge Rule.** Shadow suggests height; the 1px border draws the actual boundary. A raised surface never relies on shadow alone, which is what keeps the soft shadows from turning into mush on the low-contrast light theme.
 
 ## Shapes
 
-Zero radius everywhere — buttons, the brand mark, every container. Right angles only. The only exception is the circular nav-hover states, which don't exist in this system at all (nav links use a bottom border, not a pill). Corner language is the clearest single tell distinguishing this world from the previous one (which used consistent 3–6px rounding as part of an "instrument panel" bezel language); a rounded corner appearing anywhere in new work here is a regression to the old system, not a stylistic choice.
+Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark, nav links, glyphs), 18px cards, 24px contact panel, and full pills for every button, tag, and status chip. Roundness is the deliberate reversal of the previous world's 0-radius rule and is a load-bearing part of reading "friendly" rather than "severe" — sharpening the corners would put the page back in the brutalist world.
 
 ## Components
 
 ### Buttons
-- **Primary ("Resume"):** solid `Ink` fill, `Paper` text, 0 radius, uppercase label, 14px/22px padding. Hover fills `Rust` instead of lifting or glowing.
-- **Secondary (GitHub/LinkedIn, nav, contact links):** no fill — plain text with a 2px solid `Ink` underline, uppercase, tracked. Hover: underline and text color both shift to `Rust`.
+- **Primary:** filled `--accent`, foreground `--on-accent`, pill, rest shadow. Hover lifts 2px into the lift shadow. Never hardcode its text colour (see The On-Accent Rule).
+- **Ghost:** translucent surface fill, `--border-strong` outline, pill. Hover shifts border and text to accent and lifts 2px.
+- Both may carry a trailing `.arw` glyph that translates up-right on hover.
 
-### Index rows (work items)
-- **Layout:** `auto 1fr auto` grid — index number, content (title/description/stack), right-aligned links.
-- **Divider:** 1px `Line Soft` rule between rows, top and bottom of the list.
-- **Hover:** the entire row's text (number, title, description, stack, links) shifts to `Rust` in one motion — no card boundary, no background change, no shadow, no tilt.
-- **Stack line:** plain uppercase caps text, dot-separated — never a pill/chip/badge.
+### Cards (work)
+- 18px radius, translucent surface, 1px border, 28px padding, flex column so the tag row can sit on `margin-top: auto` and keep card bottoms aligned at uneven description lengths.
+- Header pairs the title with a `.glyph` numeral chip in a 12% accent tint.
+- Hover: 4px lift, accent border, lift shadow.
+- Tags are neutral `--surface-2` pills, not accent-coloured — the accent is reserved for interactive things.
 
-### Record rows (experience)
-- Same list pattern as index rows, fixed 160px date column, `Rust`-colored company line as the only color break in an otherwise ink/paper row.
+### Timeline (experience)
+- A single hairline rail with hollow accent-ringed dots, a tabular-numeral date column, and a moss employer line.
 
-### Navigation
-- Plain uppercase caps labels, 2px bottom border appearing only on hover (transparent at rest). No background pill, no border box. Wraps to a second row under 640px instead of scrolling or truncating.
+### Status pill
+- Pill with a moss pip and a slow `box-shadow` pulse. The pulse is gated behind `.js` and disabled under reduced motion.
 
-### Grain overlay
-- A fixed, full-viewport `body::after` layer using an inline SVG `feTurbulence` filter as a `background-image`, 5% opacity, `mix-blend-mode: multiply`, `pointer-events: none`. Pure CSS, no image asset, no CDN dependency. This is the system's one texture device — don't add a second (e.g. a paper background photo) without removing this one first.
+### Theme toggle
+- Icon button in the header; shows sun in light, moon in dark. Writes an explicit choice to `localStorage` and sets `data-theme` on `<html>`; with no stored choice the OS preference governs. An inline pre-paint script applies the stored value before first paint so the theme never flashes.
+
+### Background object (signature)
+- A `TorusKnotGeometry` — a genuine looping structure — displaced in the vertex shader by 3D simplex noise, coloured by a two-stop periwinkle→moss mix with a light rim term, then **CSS-blurred 48–58px** so it reads as a drifting nebula. Colours, opacity, and blur radius all come from CSS custom properties, so the theme toggle re-tints the 3D object through the same tokens as the rest of the page.
+- **Mobile and performance:** because the output is blurred, resolution is nearly free to give away — the renderer runs at a *sub-native* pixel ratio (0.8 desktop, 0.6 mobile) with antialiasing off and `powerPreference: 'low-power'`, and the mesh drops to 128×16 segments below 760px. It pauses in a background tab, renders a single static frame under `prefers-reduced-motion`, and skips pointer parallax entirely on touch devices.
+- **Placement:** kept to the upper right on desktop and high-centre on mobile so the diffuse mass never sits behind the headline and erodes its contrast.
 
 ## Do's and Don'ts
 
 ### Do:
-- **Do** keep the whole page to one typeface (Archivo); prove hierarchy with weight and size, not a second family.
-- **Do** keep every corner at 0 radius; a rounded element is a regression to the prior "instrument panel" world.
-- **Do** use color only for interactive state (hover) and the role/company labels — never as decoration.
-- **Do** treat every CDN-loaded enhancement (currently just GSAP) as progressive: content and layout must be correct in plain HTML/CSS first, and a failed import must be caught without breaking the page.
-- **Do** keep motion hard-edged (wipes, hard slides, `power3`/`power4` eases) — a soft fade-and-float entrance belongs to the prior system, not this one.
+- **Do** read every theme-dependent colour from a semantic custom property; both themes must be checked whenever one is touched.
+- **Do** use `--on-accent` for any foreground on a filled accent surface.
+- **Do** use `padding-block` (not the `padding` shorthand) on any section that also carries `.wrap`.
+- **Do** keep the 3D object subordinate: blurred, low-opacity, and positioned clear of running text. The page must look finished with the canvas removed entirely.
+- **Do** treat WebGL and the webfonts as progressive enhancement — the CSS radial-gradient background and the fallback font stack are the real baseline, and a failed dynamic import must be caught and swallowed.
 
 ### Don't:
-- **Don't** reintroduce box-shadow, card framing, glow, tilt, or bloom effects — this world is flat and stark by definition ("anti-soft-UI"), not by omission.
-- **Don't** reintroduce the graphite/amber instrument-panel palette or IBM Plex Mono/Sans — both are the confirmed anti-reference for this build.
-- **Don't** hide reveal-targeted content by default in CSS; only hide-then-animate via JS after confirming the animation library loaded.
-- **Don't** cram a long dynamic string (like an email address) into the huge display type size — size it down as its own element, confirmed after the first draft line-wrapped mid-word.
+- **Don't** add a third accent hue, or reach for a mainstream indigo/violet gradient — the muted periwinkle/moss pair is the whole point of the brief.
+- **Don't** sharpen the radii or remove the shadows; that is the previous (rejected) brutalist world, not this one.
+- **Don't** let the background object become legible geometry. If someone can tell it is a torus knot, the blur is too low and it stops being atmosphere.
+- **Don't** raise the blob's opacity to where it competes with body-copy contrast in the light theme — light is the fragile case, since the object is darker than the paper.
+- **Don't** hide content by default in CSS for reveal animations; the `.js`-gated `.reveal` pattern exists so content can never be stranded invisible.
