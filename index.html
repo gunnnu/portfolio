@@ -204,7 +204,11 @@
     text-wrap: balance;
   }
 
-  .wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 26px; }
+  /* padding-inline, not the `padding` shorthand: .wrap is a class and outranks
+     the `section` element selector, so the shorthand's implicit 0 was wiping
+     every section's vertical padding. Horizontal here, vertical on `section`,
+     so the two compose instead of competing. */
+  .wrap { max-width: var(--max-width); margin: 0 auto; padding-inline: 26px; }
 
   .kicker {
     display: inline-flex;
@@ -589,6 +593,22 @@
     .nav-links { overflow-x: auto; gap: 2px; }
     .nav-links a { padding: 8px 11px; }
     .tl-item { grid-template-columns: 1fr; gap: 5px; padding-left: 28px; }
+
+    /* Contact card: more room to breathe, and separated from the section
+       above it rather than butting straight up against the timeline. */
+    #contact { padding-block: 40px 84px; }
+    .contact-card { padding: 32px 26px 34px; border-radius: 20px; }
+    .contact-card p { margin-top: 14px; }
+    .contact-actions { margin-top: 28px; gap: 10px; }
+    /* Stacked pills sat ragged at three different widths; full width lines
+       them up and gives the email pill room it was close to outgrowing. */
+    .contact-actions .btn { width: 100%; justify-content: center; }
+  }
+
+  /* The email pill is the longest string on the page; below ~360px it needs
+     to give up a little size to stay inside its own padding. */
+  @media (max-width: 380px) {
+    .contact-actions .btn { font-size: 0.84rem; padding-inline: 14px; text-align: center; }
   }
 </style>
 </head>
