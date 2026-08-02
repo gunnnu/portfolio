@@ -175,8 +175,14 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 
 ### Background object (signature)
 - A `TorusKnotGeometry` — a genuine looping structure — displaced in the vertex shader by 3D simplex noise, coloured by a two-stop periwinkle→moss mix with a light rim term, then **CSS-blurred 48–58px** so it reads as a drifting nebula. Colours, opacity, and blur radius all come from CSS custom properties, so the theme toggle re-tints the 3D object through the same tokens as the rest of the page.
-- **Mobile and performance:** because the output is blurred, resolution is nearly free to give away — the renderer runs at a *sub-native* pixel ratio (0.8 desktop, 0.6 mobile) with antialiasing off and `powerPreference: 'low-power'`, and the mesh drops to 128×16 segments below 760px. It pauses in a background tab, renders a single static frame under `prefers-reduced-motion`, and skips pointer parallax entirely on touch devices.
-- **Placement:** kept to the upper right on desktop and high-centre on mobile so the diffuse mass never sits behind the headline and erodes its contrast.
+- **Cursor interaction** is layered in four responses so the object reads as *aware* of the pointer rather than merely sliding with it:
+  1. **Position** — camera parallax plus the knot itself leaning toward the cursor (~0.6 world units of travel across the viewport).
+  2. **Attitude** — additional yaw and pitch, so moving the cursor shows you around its curves rather than translating a flat mass.
+  3. **Turbulence** — pointer *speed* (not position) accumulates an `energy` value that both deepens `uAmp` and advances the noise clock up to 2.4× faster, so a quick flick makes the surface visibly churn, then settles. Energy decays frame-rate independently (`pow(0.06, dt)`).
+  4. **Colour** — cursor X drives `uMix`, tipping the periwinkle/moss balance about ±0.17. This is the response that matters most: at 48–58px of blur, fine shading detail is destroyed, and a hue shift is the one change that reliably survives to the eye.
+- All four ease toward their targets rather than tracking the cursor rigidly, and the object returns to rest on `mouseleave`. The interaction is bound only behind `(hover: hover) and (pointer: fine)` and never under reduced motion.
+- **Mobile and performance:** because the output is blurred, resolution is nearly free to give away — the renderer runs at a *sub-native* pixel ratio (0.8 desktop, 0.6 mobile) with antialiasing off and `powerPreference: 'low-power'`, and the mesh drops to 128×16 segments below 760px. It pauses in a background tab, clamps delta so a resumed tab cannot jump, renders a single static frame under `prefers-reduced-motion`, and binds no pointer listener at all on touch devices.
+- **Placement:** kept to the upper right on desktop and high-centre on mobile so the diffuse mass never sits behind the headline and erodes its contrast. Cursor offsets are applied *relative to* that rest position, which is stored on resize rather than baked into the mesh.
 
 ## Do's and Don'ts
 

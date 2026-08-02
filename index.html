@@ -801,6 +801,7 @@
       const uniforms = {
         uTime: { value: 0 },
         uAmp: { value: 0.26 },
+        uMix: { value: 0 },
         uColorA: { value: new THREE.Color(css('--blob-a') || '#6f74b8') },
         uColorB: { value: new THREE.Color(css('--blob-b') || '#7d9a80') },
       };
@@ -875,11 +876,16 @@
           precision mediump float;
           uniform vec3 uColorA;
           uniform vec3 uColorB;
+          uniform float uMix;
           varying vec3 vNormal;
           varying float vNoise;
 
           void main() {
-            float f = smoothstep(-1.0, 1.0, vNoise);
+            // uMix is driven by cursor X: the surface leans periwinkle on one
+            // side of the viewport and moss on the other. Heavy blur eats fine
+            // shading detail, so a colour shift is the response that actually
+            // survives to the eye.
+            float f = clamp(smoothstep(-1.0, 1.0, vNoise) + uMix, 0.0, 1.0);
             vec3 col = mix(uColorA, uColorB, f);
             float rim = 1.0 - abs(dot(vNormal, vec3(0.0, 0.0, 1.0)));
             col += rim * 0.22;
@@ -889,6 +895,7 @@
       });
 
       let geometry = null;
+      const base = { x: 0, y: 0 };
       const knot = new THREE.Mesh(new THREE.BufferGeometry(), material);
       scene.add(knot);
 
@@ -912,8 +919,11 @@
 
         // Kept to the upper-right on desktop so the diffuse mass never sits
         // behind the headline and erode its contrast; centred high on mobile,
-        // where the copy starts lower down.
-        knot.position.set(small ? 0 : 1.85, small ? 0.9 : 0.55, 0);
+        // where the copy starts lower down. The cursor offsets *from* this
+        // rest position, so it is stored rather than applied once.
+        base.x = small ? 0 : 1.85;
+        base.y = small ? 0.9 : 0.55;
+        knot.position.set(base.x, base.y, 0);
         knot.scale.setScalar(small ? 0.72 : 1);
       }
 
@@ -937,13 +947,34 @@
       window.addEventListener('themechange', applyThemeColors);
       window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyThemeColors);
 
-      // Pointer parallax, desktop only — touch devices skip it entirely.
-      let targetX = 0, targetY = 0;
-      if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      // ---- Cursor interaction -------------------------------------------
+      // Four responses, layered so the object reads as aware of the pointer
+      // rather than merely sliding with it:
+      //   position  — camera parallax + the knot leaning toward the cursor
+      //   attitude  — extra yaw/pitch, so you see around its curves
+      //   turbulence— pointer *speed* churns the noise faster and deeper
+      //   colour    — cursor X shifts the periwinkle/moss balance
+      // Only bound on a fine pointer, and never under reduced motion.
+      const ptr = { x: 0, y: 0, tx: 0, ty: 0, energy: 0 };
+      const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+      if (!reduceMotion && finePointer) {
+        let lx = 0, ly = 0, lt = performance.now();
         window.addEventListener('mousemove', (e) => {
-          targetX = (e.clientX / window.innerWidth - 0.5) * 0.5;
-          targetY = (e.clientY / window.innerHeight - 0.5) * 0.5;
+          const nx = e.clientX / window.innerWidth - 0.5;
+          const ny = e.clientY / window.innerHeight - 0.5;
+          ptr.tx = nx;
+          ptr.ty = ny;
+
+          const now = performance.now();
+          const dt = Math.max(now - lt, 16);
+          const speed = Math.hypot(nx - lx, ny - ly) / dt;
+          ptr.energy = Math.min(ptr.energy + speed * 26, 1);
+          lx = nx; ly = ny; lt = now;
         }, { passive: true });
+
+        // Ease back to rest when the cursor leaves the window entirely.
+        document.addEventListener('mouseleave', () => { ptr.tx = 0; ptr.ty = 0; });
       }
 
       requestAnimationFrame(() => canvas.classList.add('is-ready'));
@@ -959,16 +990,36 @@
         });
 
         const clock = new THREE.Clock();
+        let noiseTime = 0;
+
         function frame() {
           if (!running) return;
           requestAnimationFrame(frame);
-          const t = clock.getElapsedTime();
-          uniforms.uTime.value = t;
-          knot.rotation.y = t * 0.11;
-          knot.rotation.x = Math.sin(t * 0.16) * 0.28;
-          camera.position.x += (targetX - camera.position.x) * 0.025;
-          camera.position.y += (-targetY - camera.position.y) * 0.025;
+
+          // Clamped so a backgrounded tab can't resume with one huge step.
+          const dt = Math.min(clock.getDelta(), 0.05);
+          const t = clock.elapsedTime;
+
+          // Ease toward the cursor; energy decays frame-rate independently.
+          ptr.x += (ptr.tx - ptr.x) * 0.055;
+          ptr.y += (ptr.ty - ptr.y) * 0.055;
+          ptr.energy *= Math.pow(0.06, dt);
+
+          // Fast cursor movement makes the surface churn harder and faster.
+          noiseTime += dt * (1 + ptr.energy * 2.4);
+          uniforms.uTime.value = noiseTime;
+          uniforms.uAmp.value = 0.26 + ptr.energy * 0.12;
+          uniforms.uMix.value = ptr.x * 0.42;
+
+          knot.rotation.y = t * 0.11 + ptr.x * 0.55;
+          knot.rotation.x = Math.sin(t * 0.16) * 0.28 - ptr.y * 0.42;
+          knot.position.x = base.x + ptr.x * 0.75;
+          knot.position.y = base.y - ptr.y * 0.6;
+
+          camera.position.x += ((ptr.x * -1.15) - camera.position.x) * 0.05;
+          camera.position.y += ((ptr.y * 0.85) - camera.position.y) * 0.05;
           camera.lookAt(0, 0, 0);
+
           renderer.render(scene, camera);
         }
         frame();
