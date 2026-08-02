@@ -76,6 +76,8 @@
     --shadow: 0 18px 40px -28px rgba(28, 30, 36, 0.45);
     --shadow-lift: 0 26px 54px -28px rgba(28, 30, 36, 0.55);
     --max-width: 1080px;
+    /* Height of the sticky header, so anchor targets can clear it. */
+    --header-h: 66px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -132,6 +134,13 @@
 
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
+
+  /* Touch hygiene: kill the grey/blue tap flash so our own :active states are
+     the only feedback, and drop the legacy 300ms tap delay. */
+  a, button {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
 
   body {
     margin: 0;
@@ -266,7 +275,6 @@
     border-radius: 999px;
     transition: color 0.18s ease, background 0.18s ease;
   }
-  .nav-links a:hover { color: var(--text); background: var(--surface); }
 
   .theme-toggle {
     width: 38px; height: 38px;
@@ -280,7 +288,6 @@
     padding: 0;
     transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   }
-  .theme-toggle:hover { color: var(--accent); border-color: var(--accent-soft); transform: rotate(-18deg); }
   .theme-toggle svg { width: 17px; height: 17px; }
   .theme-toggle .moon { display: none; }
   :root[data-theme="dark"] .theme-toggle .moon { display: block; }
@@ -292,7 +299,9 @@
 
   /* ---------- Sections ---------- */
 
-  section { padding-block: 104px; }
+  /* scroll-margin keeps a tapped nav target from landing under the sticky
+     header — without it the section heading is hidden on arrival. */
+  section { padding-block: 104px; scroll-margin-top: calc(var(--header-h) + 14px); }
   #about { padding-block: 104px 92px; }
 
   .section-head { margin-bottom: 46px; }
@@ -362,15 +371,12 @@
     color: var(--on-accent);
     box-shadow: var(--shadow);
   }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
   .btn-ghost {
     border-color: var(--border-strong);
     color: var(--text);
     background: color-mix(in srgb, var(--surface) 60%, transparent);
   }
-  .btn-ghost:hover { border-color: var(--accent-soft); color: var(--accent); transform: translateY(-2px); }
   .btn .arw { transition: transform 0.18s ease; }
-  .btn:hover .arw { transform: translate(2px, -2px); }
 
   .hero-meta {
     display: flex;
@@ -397,11 +403,6 @@
     border: 1px solid var(--border);
     background: color-mix(in srgb, var(--surface) 76%, transparent);
     transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-  }
-  .card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent-soft);
-    box-shadow: var(--shadow-lift);
   }
 
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -438,7 +439,6 @@
     align-items: center;
     gap: 5px;
   }
-  .card-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
   /* ---------- Experience ---------- */
 
@@ -492,23 +492,86 @@
     font-size: 0.82rem;
   }
   footer .wrap { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-  footer a:hover { color: var(--accent); }
+
+  /* ---------- Interaction ----------
+     Hover effects are gated behind a hover-capable pointer. On touch, :hover
+     latches after a tap and stays stuck until you tap elsewhere, so the card
+     lift and nav highlight would otherwise remain lit on the last thing
+     tapped. :active runs everywhere and is the real touch feedback. */
+
+  @media (hover: hover) and (pointer: fine) {
+    .nav-links a:hover { color: var(--text); background: var(--surface); }
+    .theme-toggle:hover { color: var(--accent); border-color: var(--accent-soft); transform: rotate(-18deg); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); }
+    .btn-ghost:hover { border-color: var(--accent-soft); color: var(--accent); transform: translateY(-2px); }
+    .btn:hover .arw { transform: translate(2px, -2px); }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-soft);
+      box-shadow: var(--shadow-lift);
+    }
+    .card-links a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    footer a:hover { color: var(--accent); }
+  }
+
+  /* Press feedback: a quick, shallow depress that reads as tactile on a
+     finger. Deliberately faster in than out so it feels responsive. */
+  .btn, .card, .nav-links a, .theme-toggle, .card-links a, .brand {
+    transition-property: transform, background, color, border-color, box-shadow;
+    transition-duration: 0.18s;
+    transition-timing-function: ease;
+  }
+  .btn:active { transform: scale(0.96); transition-duration: 0.06s; }
+  .nav-links a:active { transform: scale(0.93); background: var(--surface); color: var(--text); transition-duration: 0.06s; }
+  .theme-toggle:active { transform: scale(0.9); transition-duration: 0.06s; }
+  .card:active { transform: scale(0.985); border-color: var(--accent-soft); transition-duration: 0.08s; }
+  .card-links a:active { opacity: 0.6; transition-duration: 0.06s; }
+  .brand:active { transform: scale(0.96); transition-duration: 0.06s; }
+
+  /* Nav scroll-spy: the pill marks the section you are actually in, which
+     matters most on mobile where the whole nav is visible at once. */
+  .nav-links a.is-current {
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  /* Scroll progress rail along the bottom edge of the header. */
+  .scroll-rail {
+    position: absolute;
+    left: 0; right: 0; bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--moss));
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    will-change: transform;
+  }
 
   /* ---------- Reveal (gated on .js so it can never strand content) ---------- */
 
+  /* Reveal uses the independent `translate` property, not `transform`, so it
+     composes with hover/active transforms instead of overriding them: as a
+     `transform` the .is-visible rule outranked .card:hover and silently ate
+     the card's lift. */
   .js .reveal {
     opacity: 0;
-    transform: translateY(15px);
-    transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1), transform 0.62s cubic-bezier(0.22, 1, 0.36, 1);
+    translate: 0 15px;
+    transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1), translate 0.62s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .js .reveal.is-visible { opacity: 1; transform: none; }
+  .js .reveal.is-visible { opacity: 1; translate: 0 0; }
+  .js .cards .reveal:nth-child(2) { transition-delay: 0.07s; }
+  .js .cards .reveal:nth-child(3) { transition-delay: 0.14s; }
+  .js .cards .reveal:nth-child(4) { transition-delay: 0.21s; }
+  .js .timeline .reveal:nth-child(2) { transition-delay: 0.07s; }
+  .js .timeline .reveal:nth-child(3) { transition-delay: 0.14s; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .js .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .js .reveal { opacity: 1 !important; translate: none !important; transition: none !important; transition-delay: 0s !important; }
     .js .status .pip { animation: none; }
-    .card, .btn, .theme-toggle { transition: none !important; }
+    .card, .btn, .theme-toggle, .nav-links a, .card-links a, .brand { transition: none !important; }
     .card:hover, .btn:hover { transform: none; }
+    .btn:active, .card:active, .nav-links a:active, .theme-toggle:active, .brand:active { transform: none; }
+    .scroll-rail { display: none; }
   }
 
   /* ---------- Responsive ---------- */
@@ -521,6 +584,7 @@
     section { padding-block: 76px; }
     #about { padding-block: 64px 68px; }
     nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+    :root { --header-h: 112px; }
     .nav-right { width: 100%; justify-content: space-between; }
     .nav-links { overflow-x: auto; gap: 2px; }
     .nav-links a { padding: 8px 11px; }
@@ -556,6 +620,7 @@
       </button>
     </div>
   </nav>
+  <div class="scroll-rail" id="scroll-rail" aria-hidden="true"></div>
 </header>
 
 <main>
@@ -763,6 +828,84 @@
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
     els.forEach(function (el) { io.observe(el); });
+  })();
+
+  // Keep --header-h honest. The mobile nav wraps to two rows, and the exact
+  // height shifts with font loading, so measuring beats hardcoding: it feeds
+  // scroll-margin-top, which is what stops a tapped nav target from landing
+  // underneath the sticky header.
+  (function () {
+    var header = document.querySelector('header');
+    if (!header) return;
+    function sync() {
+      document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    }
+    sync();
+    if ('ResizeObserver' in window) new ResizeObserver(sync).observe(header);
+    else window.addEventListener('resize', sync, { passive: true });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
+  })();
+
+  // Scroll-spy + progress rail. Both are driven from one rAF-throttled passive
+  // scroll listener so touch scrolling stays smooth.
+  (function () {
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var rail = document.getElementById('scroll-rail');
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a[href^="#"]'));
+    var sections = links
+      .map(function (a) { return document.querySelector(a.getAttribute('href')); })
+      .filter(Boolean);
+
+    if (!rail && !links.length) return;
+
+    var ticking = false;
+    var currentId = null;
+
+    function update() {
+      ticking = false;
+
+      if (rail && !reduceMotion) {
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - window.innerHeight;
+        var p = max > 0 ? Math.min(Math.max(window.scrollY / max, 0), 1) : 0;
+        rail.style.transform = 'scaleX(' + p.toFixed(4) + ')';
+      }
+
+      if (sections.length) {
+        // The section whose top has most recently passed just below the
+        // header is the one being read.
+        var line = (parseFloat(getComputedStyle(document.documentElement)
+          .getPropertyValue('--header-h')) || 66) + 24;
+        var active = sections[0];
+        for (var i = 0; i < sections.length; i++) {
+          if (sections[i].getBoundingClientRect().top <= line) active = sections[i];
+        }
+        // Bottom of page always resolves to the last section, otherwise a
+        // short final section can never become current.
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2) {
+          active = sections[sections.length - 1];
+        }
+        if (active && active.id !== currentId) {
+          currentId = active.id;
+          links.forEach(function (a) {
+            var on = a.getAttribute('href') === '#' + currentId;
+            a.classList.toggle('is-current', on);
+            if (on) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
+        }
+      }
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
   })();
 </script>
 
