@@ -43,6 +43,7 @@ rounded:
   sm: "9px"
   md: "11px"
   lg: "18px"
+  lg-tight: "20px"
   xl: "24px"
   pill: "999px"
 spacing:
@@ -132,7 +133,9 @@ Two neutral ramps (one per theme) plus a two-accent system. Every semantic token
 
 ## Layout
 
-Single column, capped at `--max-width: 1080px`, 26px side padding via `.wrap`. Sections use **`padding-block` only** — never the `padding` shorthand — because `#about` / `#contact` are ID selectors that outrank `.wrap`'s class, and the shorthand silently zeroes the horizontal padding, pinning content to the viewport edge on narrow screens. This was a real bug caught in review; the `padding-block` form is the fix and the rule.
+Single column, capped at `--max-width: 1080px`, 26px side padding via `.wrap`.
+
+**`.wrap` owns horizontal spacing, `section` owns vertical, and neither may use the `padding` shorthand.** Both halves of this rule were learned from real bugs. First, `#about` / `#contact` are ID selectors that outrank `.wrap`'s class, so a `padding` shorthand on them zeroed the horizontal padding and pinned content to the viewport edge on narrow screens. Then the mirror image: `.wrap`'s own `padding: 0 26px` is a *class* and outranks the `section` element selector, so its implicit vertical `0` silently wiped the vertical padding from every section except `#about` — Work, Experience and Contact were running at **0px top and bottom** on all viewports, which is what made the contact panel butt straight up against the timeline. `.wrap` now uses `padding-inline` and `section` uses `padding-block`, so they address different properties and cannot collide at all.
 
 Work is a two-column card grid collapsing to one below 860px. Experience is a rail-and-dot timeline with a fixed 168px date column, collapsing to a stacked single column below 700px. Contact is a single large rounded panel — the only full-width surface on the page, which is what makes it read as the closing invitation. The header is sticky with a translucent, backdrop-blurred background, and its nav wraps to a second row below 700px rather than overflowing or clipping.
 
@@ -149,7 +152,7 @@ Soft and atmospheric. Shadows are wide, heavily negative-spread, and low opacity
 
 ## Shapes
 
-Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark, nav links, glyphs), 18px cards, 24px contact panel, and full pills for every button, tag, and status chip. Roundness is the deliberate reversal of the previous world's 0-radius rule and is a load-bearing part of reading "friendly" rather than "severe" — sharpening the corners would put the page back in the brutalist world.
+Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark, nav links, glyphs), 18px cards, 24px contact panel (tightening to 20px below 700px, where the panel is narrower and the full 24px reads disproportionately round), and full pills for every button, tag, and status chip. Roundness is the deliberate reversal of the previous world's 0-radius rule and is a load-bearing part of reading "friendly" rather than "severe" — sharpening the corners would put the page back in the brutalist world.
 
 ## Components
 
@@ -172,6 +175,11 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 
 ### Theme toggle
 - Icon button in the header; shows sun in light, moon in dark. Writes an explicit choice to `localStorage` and sets `data-theme` on `<html>`; with no stored choice the OS preference governs. An inline pre-paint script applies the stored value before first paint so the theme never flashes.
+
+### Navigation and anchor scrolling
+- Nav links are pills that mark the current section (`.is-current` + `aria-current`), set both by scroll position and immediately on click so the control responds on contact rather than after the scroll lands.
+- **Anchor scrolling is owned by JS, not `scroll-behavior: smooth`.** That CSS property is honoured inconsistently — in particular when the body is a scroll container — and where it is ignored the page hard-jumps instead of scrolling. A rAF tween with an ease-in-out cubic behaves identically in every engine, lands on an offset that clears the sticky header, and is abandoned the moment the visitor scrolls manually so it never fights them. Under reduced motion it resolves instantly instead.
+- Relatedly, `body` uses `overflow-x: clip` rather than `hidden`: `hidden` forces `overflow-y` to `auto`, which makes body a scroll container and is what breaks smooth scrolling and sticky positioning in some engines. `hidden` is kept as the preceding declaration so browsers without `clip` still contain the page.
 
 ### Background object (signature)
 - A `TorusKnotGeometry` — a genuine looping structure — displaced in the vertex shader by 3D simplex noise, coloured by a two-stop periwinkle→moss mix with a light rim term, then **CSS-blurred 48–58px** so it reads as a drifting nebula. Colours, opacity, and blur radius all come from CSS custom properties, so the theme toggle re-tints the 3D object through the same tokens as the rest of the page.
