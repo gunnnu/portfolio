@@ -150,7 +150,13 @@
     font-size: 16px;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    /* `clip` contains overflow without turning body into a scroll container.
+       `hidden` forces overflow-y to `auto`, which makes body scrollable and is
+       a known cause of scroll-behavior/sticky being ignored in some engines.
+       The `hidden` line stays first as the fallback for browsers without
+       `clip`. */
     overflow-x: hidden;
+    overflow-x: clip;
     transition: background 0.4s ease, color 0.4s ease;
   }
 
@@ -864,6 +870,85 @@
     if ('ResizeObserver' in window) new ResizeObserver(sync).observe(header);
     else window.addEventListener('resize', sync, { passive: true });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(sync);
+  })();
+
+  // Anchor scrolling, driven here rather than by CSS scroll-behavior.
+  // `scroll-behavior: smooth` is honoured inconsistently — notably when the
+  // body is a scroll container — and when it is ignored the page hard-jumps.
+  // A rAF tween behaves identically everywhere and lets us land on an offset
+  // that accounts for the sticky header.
+  (function () {
+    var root = document.documentElement;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var anchors = document.querySelectorAll('a[href^="#"]:not([href="#"])');
+    if (!anchors.length) return;
+
+    // JS owns scrolling now, so stop the CSS rule from animating each
+    // individual step of the tween (which would crawl).
+    root.style.scrollBehavior = 'auto';
+
+    var raf = null;
+
+    function cancel() {
+      if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
+    }
+    // Never fight the user: any manual scroll input abandons the tween.
+    ['wheel', 'touchstart', 'keydown'].forEach(function (evt) {
+      window.addEventListener(evt, cancel, { passive: true });
+    });
+
+    function headerOffset() {
+      return (parseFloat(getComputedStyle(root).getPropertyValue('--header-h')) || 66) + 14;
+    }
+
+    function easeInOutCubic(t) {
+      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    }
+
+    function scrollToY(top) {
+      cancel();
+      var start = window.scrollY;
+      var delta = top - start;
+      if (Math.abs(delta) < 2) return;
+      // Longer trips take longer, but within a bounded range.
+      var dur = Math.min(Math.max(Math.abs(delta) * 0.42, 380), 900);
+      var t0 = null;
+      function step(ts) {
+        if (t0 === null) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        window.scrollTo(0, start + delta * easeInOutCubic(p));
+        if (p < 1) raf = requestAnimationFrame(step);
+        else raf = null;
+      }
+      raf = requestAnimationFrame(step);
+    }
+
+    anchors.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        var id = a.getAttribute('href');
+        var target = document.querySelector(id);
+        if (!target) return;
+        e.preventDefault();
+
+        var top = Math.max(
+          target.getBoundingClientRect().top + window.scrollY - headerOffset(), 0
+        );
+
+        if (reduceMotion) window.scrollTo(0, top);
+        else scrollToY(top);
+
+        // Mark the tapped link straight away so the pill responds on contact
+        // rather than waiting for the scroll to arrive.
+        document.querySelectorAll('.nav-links a').forEach(function (n) {
+          var on = n === a;
+          n.classList.toggle('is-current', on);
+          if (on) n.setAttribute('aria-current', 'true');
+          else n.removeAttribute('aria-current');
+        });
+
+        if (history.replaceState) history.replaceState(null, '', id);
+      });
+    });
   })();
 
   // Scroll-spy + progress rail. Both are driven from one rAF-throttled passive

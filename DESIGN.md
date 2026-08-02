@@ -176,6 +176,11 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 ### Theme toggle
 - Icon button in the header; shows sun in light, moon in dark. Writes an explicit choice to `localStorage` and sets `data-theme` on `<html>`; with no stored choice the OS preference governs. An inline pre-paint script applies the stored value before first paint so the theme never flashes.
 
+### Navigation and anchor scrolling
+- Nav links are pills that mark the current section (`.is-current` + `aria-current`), set both by scroll position and immediately on click so the control responds on contact rather than after the scroll lands.
+- **Anchor scrolling is owned by JS, not `scroll-behavior: smooth`.** That CSS property is honoured inconsistently — in particular when the body is a scroll container — and where it is ignored the page hard-jumps instead of scrolling. A rAF tween with an ease-in-out cubic behaves identically in every engine, lands on an offset that clears the sticky header, and is abandoned the moment the visitor scrolls manually so it never fights them. Under reduced motion it resolves instantly instead.
+- Relatedly, `body` uses `overflow-x: clip` rather than `hidden`: `hidden` forces `overflow-y` to `auto`, which makes body a scroll container and is what breaks smooth scrolling and sticky positioning in some engines. `hidden` is kept as the preceding declaration so browsers without `clip` still contain the page.
+
 ### Background object (signature)
 - A `TorusKnotGeometry` — a genuine looping structure — displaced in the vertex shader by 3D simplex noise, coloured by a two-stop periwinkle→moss mix with a light rim term, then **CSS-blurred 48–58px** so it reads as a drifting nebula. Colours, opacity, and blur radius all come from CSS custom properties, so the theme toggle re-tints the 3D object through the same tokens as the rest of the page.
 - **Cursor interaction** is layered in four responses so the object reads as *aware* of the pointer rather than merely sliding with it:
