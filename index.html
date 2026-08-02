@@ -897,8 +897,23 @@
       window.addEventListener(evt, cancel, { passive: true });
     });
 
+    var firstSection = document.querySelector('main section');
+
     function headerOffset() {
-      return (parseFloat(getComputedStyle(root).getPropertyValue('--header-h')) || 66) + 14;
+      return (parseFloat(getComputedStyle(root).getPropertyValue('--header-h')) || 66) + 24;
+    }
+
+    // Land the section's *content* a fixed distance below the header, not its
+    // border-box top. Sections carry large padding-top for rhythm while
+    // scrolling normally (104px desktop, and Contact differs again on mobile);
+    // scrolling to the box top dumps all of that between the header and the
+    // heading, so each nav target landed with a different sized gap.
+    function targetTop(target) {
+      if (target === firstSection) return 0; // the hero should show from the very top
+      var padTop = parseFloat(getComputedStyle(target).paddingTop) || 0;
+      return Math.max(
+        target.getBoundingClientRect().top + window.scrollY + padTop - headerOffset(), 0
+      );
     }
 
     function easeInOutCubic(t) {
@@ -930,9 +945,7 @@
         if (!target) return;
         e.preventDefault();
 
-        var top = Math.max(
-          target.getBoundingClientRect().top + window.scrollY - headerOffset(), 0
-        );
+        var top = targetTop(target);
 
         if (reduceMotion) window.scrollTo(0, top);
         else scrollToY(top);
