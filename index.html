@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Gunpreet Singh · Full-Stack Engineer</title>
 <meta name="description" content="Gunpreet Singh, full-stack engineer. Projects, experience, and contact." />
 <meta name="theme-color" content="#efece4" media="(prefers-color-scheme: light)" />
@@ -496,7 +496,7 @@
   .contact-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
   footer {
-    padding: 34px 0 46px;
+    padding: 34px 0 calc(46px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--border);
     color: var(--text-faint);
     font-size: 0.82rem;
@@ -592,7 +592,9 @@
 
   @media (max-width: 700px) {
     section { padding-block: 76px; }
-    #about { padding-block: 64px 68px; }
+    #about {
+      padding-block: 64px calc(68px + env(safe-area-inset-bottom, 0px) + var(--browser-ui, 56px));
+    }
     nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
     :root { --header-h: 112px; }
     .nav-right { width: 100%; justify-content: space-between; }
