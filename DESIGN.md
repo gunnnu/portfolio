@@ -181,6 +181,17 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Anchor scrolling is owned by JS, not `scroll-behavior: smooth`.** That CSS property is honoured inconsistently — in particular when the body is a scroll container — and where it is ignored the page hard-jumps instead of scrolling. A rAF tween with an ease-in-out cubic behaves identically in every engine, lands on an offset that clears the sticky header, and is abandoned the moment the visitor scrolls manually so it never fights them. Under reduced motion it resolves instantly instead.
 - Relatedly, `body` uses `overflow-x: clip` rather than `hidden`: `hidden` forces `overflow-y` to `auto`, which makes body a scroll container and is what breaks smooth scrolling and sticky positioning in some engines. `hidden` is kept as the preceding declaration so browsers without `clip` still contain the page.
 
+### Projects revolver (mobile)
+- Below 700px the projects grid becomes a full-bleed horizontal track with `scroll-snap-type: x mandatory`. Native scrolling drives it, so momentum and snap remain the platform's own; JS only paints per-frame transforms from each card's distance to centre.
+- The drum read comes from `perspective-origin: 92% 50%` plus per-card `rotateY`, `translateZ`, `scale`, a small `skewY`, and a blur that grows with distance — cards recede and rotate away as they leave the middle, and the neighbours stay visible so the rotation is legible.
+- **The "warp" is deliberately faux.** A true pixel warp means rasterising the DOM to a WebGL texture, which breaks text selection and link taps and costs far more than the effect is worth. Skew plus motion blur reads as warp while the cards remain real, selectable, tappable HTML.
+- Transforms are written as `--rv-*` custom properties rather than inline `transform`, so they compose with the reveal (which animates `translate`) instead of overwriting it.
+- On first sight the track nudges out and back once, advertising that it rotates. Desktop keeps the plain two-column grid; the effect is bound behind a `matchMedia` listener and torn down on resize.
+
+### Experience climb
+- On first reaching the section the rail draws upward (`scaleY` from a bottom origin) and the dots light **bottom-to-top**, so the sequence reads as ascending even though the list is newest-first. The most recent role then reveals a "Looking ahead →" marker whose arrow nudges right on a slow loop.
+- This replaces a requested rigged 3D figure climbing a ladder. A convincing humanoid climb needs an authored, skeletally animated model; a procedural stand-in would have read as cheap, and a downloaded rig contradicts the no-build-step, no-asset constraint. The rail carries the same narrative — ascent, arrival, looking onward — for essentially no weight.
+
 ### Background object (signature)
 - A `TorusKnotGeometry` — a genuine looping structure — displaced in the vertex shader by 3D simplex noise, coloured by a two-stop periwinkle→moss mix with a light rim term, then **CSS-blurred 48–58px** so it reads as a drifting nebula. Colours, opacity, and blur radius all come from CSS custom properties, so the theme toggle re-tints the 3D object through the same tokens as the rest of the page.
 - **Cursor interaction** is layered in four responses so the object reads as *aware* of the pointer rather than merely sliding with it:
@@ -199,6 +210,7 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Do** use `--on-accent` for any foreground on a filled accent surface.
 - **Do** use `padding-block` (not the `padding` shorthand) on any section that also carries `.wrap`.
 - **Do** keep the 3D object subordinate: blurred, low-opacity, and positioned clear of running text. The page must look finished with the canvas removed entirely.
+- **Do** keep vertical scroll snap at `proximity`, never `mandatory`. Sections are taller than the viewport, so mandatory snap makes their middles unreachable. JS also drops snap entirely (`html.is-tweening`) while a nav tween runs, or the two fight over the final resting position.
 - **Do** treat WebGL and the webfonts as progressive enhancement — the CSS radial-gradient background and the fallback font stack are the real baseline, and a failed dynamic import must be caught and swallowed.
 
 ### Don't:

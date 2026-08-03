@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Gunpreet Singh · Full-Stack Engineer</title>
 <meta name="description" content="Gunpreet Singh, full-stack engineer. Projects, experience, and contact." />
 <meta name="theme-color" content="#efece4" media="(prefers-color-scheme: light)" />
@@ -133,7 +133,16 @@
   }
 
   * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    /* proximity, not mandatory: sections are taller than the viewport, and
+       mandatory snap would make their middles unreachable. This only nudges
+       when you already come to rest near a boundary. JS disables it outright
+       for the duration of a nav tween so the two never fight. */
+    scroll-snap-type: y proximity;
+  }
+  main section { scroll-snap-align: start; }
+  html.is-tweening { scroll-snap-type: none; }
 
   /* Touch hygiene: kill the grey/blue tap flash so our own :active states are
      the only feedback, and drop the legacy 300ms tap delay. */
@@ -413,6 +422,11 @@
     border: 1px solid var(--border);
     background: color-mix(in srgb, var(--surface) 76%, transparent);
     transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    /* --rv-* are written per frame by the mobile revolver. They default to
+       neutral so desktop is untouched. transform is used here and the reveal
+       uses `translate`, so the two compose rather than fight. */
+    transform: var(--rv-t, none);
+    filter: blur(var(--rv-blur, 0px));
   }
 
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -458,7 +472,54 @@
     position: absolute;
     left: 5px; top: 10px; bottom: 10px;
     width: 1px;
-    background: var(--border);
+    background: linear-gradient(to top, var(--accent-soft), var(--border));
+    transform: scaleY(var(--rail, 1));
+    transform-origin: 50% 100%;   /* draws upward, like a climb */
+    transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Undrawn until the section is reached; the .js gate means no-JS keeps a
+     complete rail rather than an invisible one. */
+  .js .timeline { --rail: 0; }
+  .js .timeline.is-climbed { --rail: 1; }
+
+  /* Dots light bottom-to-top, so the sequence reads as ascending even though
+     the list is newest-first. */
+  .js .tl-item::before {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .js .timeline.is-climbed .tl-item::before { opacity: 1; transform: scale(1); }
+  .js .timeline.is-climbed .tl-item:nth-child(3)::before { transition-delay: 0.18s; }
+  .js .timeline.is-climbed .tl-item:nth-child(2)::before { transition-delay: 0.52s; }
+  .js .timeline.is-climbed .tl-item:nth-child(1)::before { transition-delay: 0.86s; }
+
+  /* Reached the top, now looking right for what is next. */
+  .tl-peek {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    padding: 5px 12px 5px 11px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--moss) 14%, transparent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--moss);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.5s ease 1.15s, transform 0.5s ease 1.15s;
+    pointer-events: none;
+  }
+  .timeline.is-climbed .tl-peek { opacity: 1; transform: translateX(0); }
+  .tl-peek svg { width: 13px; height: 13px; }
+  .timeline.is-climbed .tl-peek svg { animation: peek-look 2.6s ease-in-out 1.7s infinite; }
+  @keyframes peek-look {
+    0%, 62%, 100% { transform: translateX(0); opacity: 0.75; }
+    76%           { transform: translateX(4px); opacity: 1; }
   }
   .tl-item {
     position: relative;
@@ -496,7 +557,7 @@
   .contact-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
   footer {
-    padding: 34px 0 46px;
+    padding: 34px 0 calc(46px + env(safe-area-inset-bottom, 0px));
     border-top: 1px solid var(--border);
     color: var(--text-faint);
     font-size: 0.82rem;
@@ -567,7 +628,7 @@
     translate: 0 15px;
     transition: opacity 0.62s cubic-bezier(0.22, 1, 0.36, 1), translate 0.62s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .js .reveal.is-visible { opacity: 1; translate: 0 0; }
+  .js .reveal.is-visible { opacity: var(--rv-op, 1); translate: 0 0; }
   .js .cards .reveal:nth-child(2) { transition-delay: 0.07s; }
   .js .cards .reveal:nth-child(3) { transition-delay: 0.14s; }
   .js .cards .reveal:nth-child(4) { transition-delay: 0.21s; }
@@ -582,6 +643,13 @@
     .card:hover, .btn:hover { transform: none; }
     .btn:active, .card:active, .nav-links a:active, .theme-toggle:active, .brand:active { transform: none; }
     .scroll-rail { display: none; }
+    html { scroll-snap-type: none; }
+    .js .timeline { --rail: 1; }
+    .js .tl-item::before { opacity: 1; transform: none; transition: none; }
+    .tl-peek { opacity: 1; transform: none; transition: none; }
+    .timeline.is-climbed .tl-peek svg { animation: none; }
+    .timeline::before { transition: none; }
+    .cards .card { transform: none !important; filter: none !important; opacity: 1 !important; }
   }
 
   /* ---------- Responsive ---------- */
@@ -592,13 +660,44 @@
 
   @media (max-width: 700px) {
     section { padding-block: 76px; }
-    #about { padding-block: 64px 68px; }
+    #about {
+      padding-block: 64px calc(68px + env(safe-area-inset-bottom, 0px) + var(--browser-ui, 56px));
+    }
     nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
     :root { --header-h: 112px; }
     .nav-right { width: 100%; justify-content: space-between; }
     .nav-links { overflow-x: auto; gap: 2px; }
     .nav-links a { padding: 8px 11px; }
     .tl-item { grid-template-columns: 1fr; gap: 5px; padding-left: 28px; }
+
+    /* ---- Projects revolver ----
+       The grid becomes a full-bleed horizontal track. Cards hinge on their
+       right edge against a right-biased perspective origin, so swiping reads
+       as a drum revolving about an axis off the right of the screen. The
+       transform itself is written per frame in JS; this sets the stage. */
+    .cards {
+      display: flex;
+      grid-template-columns: none;
+      gap: 14px;
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      perspective: 1100px;
+      perspective-origin: 92% 50%;
+      margin-inline: -26px;
+      padding-inline: 17vw;
+      padding-block: 26px 30px;
+    }
+    .cards::-webkit-scrollbar { display: none; }
+    .cards .card {
+      flex: 0 0 66vw;
+      scroll-snap-align: center;
+      transform-origin: 50% 50%;
+      will-change: transform, filter, opacity;
+      backface-visibility: hidden;
+    }
 
     /* Contact card: more room to breathe, and separated from the section
        above it rather than butting straight up against the timeline. */
@@ -759,6 +858,10 @@
           <h3>Senior Software Engineer</h3>
           <span class="tl-org">Company Name</span>
           <p>One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+          <span class="tl-peek">
+            Looking ahead
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </span>
         </div>
       </li>
 
@@ -856,6 +959,125 @@
     els.forEach(function (el) { io.observe(el); });
   })();
 
+  // Projects revolver (mobile only). Native scrolling drives it, so momentum
+  // and snap stay the platform's own; we only paint transforms per frame.
+  // The "warp" is perspective + hinge rotation + a skew and motion blur that
+  // grow with distance from centre -- a real pixel warp would mean rasterising
+  // the DOM to a WebGL texture, which would cost far more than it is worth and
+  // would break text selection and link taps.
+  (function () {
+    var track = document.querySelector('.cards');
+    if (!track) return;
+    var cards = Array.prototype.slice.call(track.querySelectorAll('.card'));
+    if (!cards.length) return;
+
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var mq = window.matchMedia('(max-width: 700px)');
+    var active = false;
+    var ticking = false;
+
+    function clear() {
+      cards.forEach(function (c) {
+        c.style.removeProperty('--rv-t');
+        c.style.removeProperty('--rv-blur');
+        c.style.removeProperty('--rv-op');
+      });
+    }
+
+    function paint() {
+      ticking = false;
+      if (!active) return;
+      var box = track.getBoundingClientRect();
+      var centre = box.left + box.width / 2;
+      var span = box.width * 0.92;
+
+      cards.forEach(function (card) {
+        var r = card.getBoundingClientRect();
+        var rel = ((r.left + r.width / 2) - centre) / span;
+        rel = Math.max(-1.5, Math.min(1.5, rel));
+        var mag = Math.abs(rel);
+
+        var angle = -rel * 33;        // hinge away from the right-side axis
+        var depth = -mag * 130;       // recede as it leaves centre
+        var scale = 1 - mag * 0.1;
+        var skew = rel * 2.2;         // the warp
+        var blur = Math.min(mag * 2.4, 2.2);
+
+        card.style.setProperty('--rv-t',
+          'translateZ(' + depth.toFixed(1) + 'px) rotateY(' + angle.toFixed(2) + 'deg)' +
+          ' skewY(' + skew.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')');
+        card.style.setProperty('--rv-blur', blur.toFixed(2) + 'px');
+        card.style.setProperty('--rv-op', (1 - mag * 0.3).toFixed(3));
+      });
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(paint);
+    }
+
+    function sync() {
+      var want = mq.matches && !reduceMotion;
+      if (want === active) return;
+      active = want;
+      if (active) {
+        track.addEventListener('scroll', onScroll, { passive: true });
+        paint();
+      } else {
+        track.removeEventListener('scroll', onScroll);
+        clear();
+      }
+    }
+
+    sync();
+    mq.addEventListener('change', function () { sync(); });
+    window.addEventListener('resize', onScroll, { passive: true });
+
+    // Sneak peek: on first sight, nudge the track so the next card swings into
+    // view and settles back, advertising that this thing rotates.
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      var peeked = false;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting || peeked || !active) return;
+          peeked = true;
+          io.disconnect();
+          var from = track.scrollLeft;
+          var to = from + Math.min(track.clientWidth * 0.3, 150);
+          var t0 = null;
+          function nudge(ts) {
+            if (t0 === null) t0 = ts;
+            var p = Math.min((ts - t0) / 1250, 1);
+            // out and back, eased at both ends
+            var e2 = Math.sin(p * Math.PI);
+            var eased = e2 * e2 * (3 - 2 * e2);
+            track.scrollLeft = from + (to - from) * eased;
+            if (p < 1) requestAnimationFrame(nudge);
+          }
+          setTimeout(function () { requestAnimationFrame(nudge); }, 420);
+        });
+      }, { threshold: 0.35 });
+      io.observe(track);
+    }
+  })();
+
+  // Experience climb: rail draws upward and the dots light bottom-to-top when
+  // the section is first reached, then the top entry looks right for more.
+  (function () {
+    var timeline = document.querySelector('.timeline');
+    if (!timeline) return;
+    if (!('IntersectionObserver' in window)) { timeline.classList.add('is-climbed'); return; }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        timeline.classList.add('is-climbed');
+        io.disconnect();
+      });
+    }, { threshold: 0.2 });
+    io.observe(timeline);
+  })();
+
   // Keep --header-h honest. The mobile nav wraps to two rows, and the exact
   // height shifts with font loading, so measuring beats hardcoding: it feeds
   // scroll-margin-top, which is what stops a tapped nav target from landing
@@ -891,6 +1113,7 @@
 
     function cancel() {
       if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
+      root.classList.remove('is-tweening');
     }
     // Never fight the user: any manual scroll input abandons the tween.
     ['wheel', 'touchstart', 'keydown'].forEach(function (evt) {
@@ -925,6 +1148,7 @@
       var start = window.scrollY;
       var delta = top - start;
       if (Math.abs(delta) < 2) return;
+      root.classList.add('is-tweening');
       // Longer trips take longer, but within a bounded range.
       var dur = Math.min(Math.max(Math.abs(delta) * 0.42, 380), 900);
       var t0 = null;
@@ -932,8 +1156,12 @@
         if (t0 === null) t0 = ts;
         var p = Math.min((ts - t0) / dur, 1);
         window.scrollTo(0, start + delta * easeInOutCubic(p));
-        if (p < 1) raf = requestAnimationFrame(step);
-        else raf = null;
+        if (p < 1) {
+          raf = requestAnimationFrame(step);
+        } else {
+          raf = null;
+          root.classList.remove('is-tweening');
+        }
       }
       raf = requestAnimationFrame(step);
     }
