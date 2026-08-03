@@ -133,16 +133,11 @@
   }
 
   * { box-sizing: border-box; }
-  html {
-    scroll-behavior: smooth;
-    /* proximity, not mandatory: sections are taller than the viewport, and
-       mandatory snap would make their middles unreachable. This only nudges
-       when you already come to rest near a boundary. JS disables it outright
-       for the duration of a nav tween so the two never fight. */
-    scroll-snap-type: y proximity;
-  }
-  main section { scroll-snap-align: start; }
-  html.is-tweening { scroll-snap-type: none; }
+  html { scroll-behavior: smooth; }
+  /* No vertical page snap. Sections are taller than the viewport, so even
+     `proximity` fought the reader on the way through a section and tugged at
+     the end of nav tweens. Horizontal snap inside the projects carousel is a
+     separate thing and stays. */
 
   /* Touch hygiene: kill the grey/blue tap flash so our own :active states are
      the only feedback, and drop the legacy 300ms tap delay. */
@@ -422,11 +417,12 @@
     border: 1px solid var(--border);
     background: color-mix(in srgb, var(--surface) 76%, transparent);
     transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-    /* --rv-* are written per frame by the mobile revolver. They default to
+    /* --rv-t is written per frame by the mobile revolver. It defaults to
        neutral so desktop is untouched. transform is used here and the reveal
-       uses `translate`, so the two compose rather than fight. */
+       uses `translate`, so the two compose rather than fight. Only transform
+       and opacity are animated -- both are compositor-only. An animated
+       `filter: blur()` was repainting every card every frame and is gone. */
     transform: var(--rv-t, none);
-    filter: blur(var(--rv-blur, 0px));
   }
 
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -643,7 +639,6 @@
     .card:hover, .btn:hover { transform: none; }
     .btn:active, .card:active, .nav-links a:active, .theme-toggle:active, .brand:active { transform: none; }
     .scroll-rail { display: none; }
-    html { scroll-snap-type: none; }
     .js .timeline { --rail: 1; }
     .js .tl-item::before { opacity: 1; transform: none; transition: none; }
     .tl-peek { opacity: 1; transform: none; transition: none; }
@@ -664,6 +659,25 @@
       padding-block: 64px calc(68px + env(safe-area-inset-bottom, 0px) + var(--browser-ui, 56px));
     }
     nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+
+    /* backdrop-filter re-blurs whatever is behind the sticky header on every
+       scroll frame, which measured as the second-largest source of dropped
+       frames on mobile. A near-opaque bar reads almost identically. */
+    header {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: color-mix(in srgb, var(--bg) 97%, transparent);
+    }
+
+    /* A large CSS blur over a full-viewport fixed canvas was the single
+       biggest scroll cost: the compositor re-blurs the whole layer every
+       frame. The radius drops here and the scene renders at a lower
+       resolution to compensate, which is free softness.
+       Set on the element, not via --blob-blur: the theme rules
+       (:root[data-theme="dark"], :root:not([data-theme="light"])) are more
+       specific than a bare :root, so a custom-property override here would
+       silently lose in dark mode -- which it did. */
+    #bg-canvas { filter: blur(26px); }
     :root { --header-h: 112px; }
     .nav-right { width: 100%; justify-content: space-between; }
     .nav-links { overflow-x: auto; gap: 2px; }
@@ -695,8 +709,10 @@
       flex: 0 0 66vw;
       scroll-snap-align: center;
       transform-origin: 50% 50%;
-      will-change: transform, filter, opacity;
-      backface-visibility: hidden;
+      will-change: transform, opacity;
+      /* Opaque. Rotated cards overlap heavily, and the translucent surface
+         used elsewhere let each card show through to the one behind it. */
+      background: var(--surface);
     }
 
     /* Contact card: more room to breathe, and separated from the section
@@ -961,10 +977,10 @@
 
   // Projects revolver (mobile only). Native scrolling drives it, so momentum
   // and snap stay the platform's own; we only paint transforms per frame.
-  // The "warp" is perspective + hinge rotation + a skew and motion blur that
-  // grow with distance from centre -- a real pixel warp would mean rasterising
-  // the DOM to a WebGL texture, which would cost far more than it is worth and
-  // would break text selection and link taps.
+  // The "warp" is perspective + hinge rotation + a skew that grow with
+  // distance from centre. It deliberately animates transform and opacity only:
+  // both are compositor-only, whereas the filter: blur() this used to carry
+  // repainted every card every frame and made them fail to paint mid-swipe.
   (function () {
     var track = document.querySelector('.cards');
     if (!track) return;
@@ -979,7 +995,6 @@
     function clear() {
       cards.forEach(function (c) {
         c.style.removeProperty('--rv-t');
-        c.style.removeProperty('--rv-blur');
         c.style.removeProperty('--rv-op');
       });
     }
@@ -1001,13 +1016,11 @@
         var depth = -mag * 130;       // recede as it leaves centre
         var scale = 1 - mag * 0.1;
         var skew = rel * 2.2;         // the warp
-        var blur = Math.min(mag * 2.4, 2.2);
 
         card.style.setProperty('--rv-t',
           'translateZ(' + depth.toFixed(1) + 'px) rotateY(' + angle.toFixed(2) + 'deg)' +
           ' skewY(' + skew.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')');
-        card.style.setProperty('--rv-blur', blur.toFixed(2) + 'px');
-        card.style.setProperty('--rv-op', (1 - mag * 0.3).toFixed(3));
+        card.style.setProperty('--rv-op', (1 - mag * 0.16).toFixed(3));
       });
     }
 
@@ -1113,7 +1126,6 @@
 
     function cancel() {
       if (raf !== null) { cancelAnimationFrame(raf); raf = null; }
-      root.classList.remove('is-tweening');
     }
     // Never fight the user: any manual scroll input abandons the tween.
     ['wheel', 'touchstart', 'keydown'].forEach(function (evt) {
@@ -1148,7 +1160,6 @@
       var start = window.scrollY;
       var delta = top - start;
       if (Math.abs(delta) < 2) return;
-      root.classList.add('is-tweening');
       // Longer trips take longer, but within a bounded range.
       var dur = Math.min(Math.max(Math.abs(delta) * 0.42, 380), 900);
       var t0 = null;
@@ -1160,7 +1171,6 @@
           raf = requestAnimationFrame(step);
         } else {
           raf = null;
-          root.classList.remove('is-tweening');
         }
       }
       raf = requestAnimationFrame(step);
@@ -1403,7 +1413,7 @@
 
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 0.6 : 0.8));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 0.35 : 0.8));
         renderer.setSize(w, h, false);
 
         // Kept to the upper-right on desktop so the diffuse mass never sits
@@ -1480,10 +1490,20 @@
 
         const clock = new THREE.Clock();
         let noiseTime = 0;
+        // On small screens the scene paints at ~30fps rather than 60. It is a
+        // slow, heavily blurred drift so the difference is invisible, but it
+        // halves how often the compositor re-blurs a full-viewport layer --
+        // profiling showed that blur to be the largest scroll cost on mobile.
+        let lastPaint = 0;
 
         function frame() {
           if (!running) return;
           requestAnimationFrame(frame);
+
+          const minGap = isSmall() ? 33 : 0;
+          const nowMs = performance.now();
+          if (minGap && nowMs - lastPaint < minGap) return;
+          lastPaint = nowMs;
 
           // Clamped so a backgrounded tab can't resume with one huge step.
           const dt = Math.min(clock.getDelta(), 0.05);
