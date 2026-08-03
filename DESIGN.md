@@ -213,6 +213,8 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Don't** put vertical scroll snap on the page at all. It was tried at `proximity`, the gentlest setting, and still fought the reader partway through a section (sections are taller than the viewport) and tugged at the end of nav tweens. Horizontal snap *inside* the projects carousel is a different case and is correct there.
 - **Do** animate only `transform` and `opacity` in the carousel — both are compositor-only. An animated `filter: blur()` repaints every card every frame.
 - **Do** keep carousel cards opaque, since rotated cards overlap heavily and a translucent surface shows through to the card behind.
+- **Do** keep large CSS blurs off anything fixed and full-viewport on mobile. Profiling a throttled scroll isolated the blurred background canvas as the single largest source of dropped frames (removing it alone took janky frames from 9/128 to 0/139), with the header's `backdrop-filter` second. Below 700px the canvas blur drops to 26px, the scene renders at 0.35x resolution to buy the softness back, it paints at ~30fps instead of 60, and the header goes near-opaque instead of blurring its backdrop.
+- **Do** set that mobile blur on `#bg-canvas` directly, not by overriding `--blob-blur`. The theme selectors (`:root[data-theme="dark"]`, `:root:not([data-theme="light"])`) are more specific than a bare `:root`, so a custom-property override in a media query silently loses in dark mode.
 - **Do** treat WebGL and the webfonts as progressive enhancement — the CSS radial-gradient background and the fallback font stack are the real baseline, and a failed dynamic import must be caught and swallowed.
 
 ### Don't:

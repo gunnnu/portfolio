@@ -659,6 +659,25 @@
       padding-block: 64px calc(68px + env(safe-area-inset-bottom, 0px) + var(--browser-ui, 56px));
     }
     nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+
+    /* backdrop-filter re-blurs whatever is behind the sticky header on every
+       scroll frame, which measured as the second-largest source of dropped
+       frames on mobile. A near-opaque bar reads almost identically. */
+    header {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: color-mix(in srgb, var(--bg) 97%, transparent);
+    }
+
+    /* A large CSS blur over a full-viewport fixed canvas was the single
+       biggest scroll cost: the compositor re-blurs the whole layer every
+       frame. The radius drops here and the scene renders at a lower
+       resolution to compensate, which is free softness.
+       Set on the element, not via --blob-blur: the theme rules
+       (:root[data-theme="dark"], :root:not([data-theme="light"])) are more
+       specific than a bare :root, so a custom-property override here would
+       silently lose in dark mode -- which it did. */
+    #bg-canvas { filter: blur(26px); }
     :root { --header-h: 112px; }
     .nav-right { width: 100%; justify-content: space-between; }
     .nav-links { overflow-x: auto; gap: 2px; }
@@ -1394,7 +1413,7 @@
 
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 0.6 : 0.8));
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, small ? 0.35 : 0.8));
         renderer.setSize(w, h, false);
 
         // Kept to the upper-right on desktop so the diffuse mass never sits
@@ -1471,10 +1490,20 @@
 
         const clock = new THREE.Clock();
         let noiseTime = 0;
+        // On small screens the scene paints at ~30fps rather than 60. It is a
+        // slow, heavily blurred drift so the difference is invisible, but it
+        // halves how often the compositor re-blurs a full-viewport layer --
+        // profiling showed that blur to be the largest scroll cost on mobile.
+        let lastPaint = 0;
 
         function frame() {
           if (!running) return;
           requestAnimationFrame(frame);
+
+          const minGap = isSmall() ? 33 : 0;
+          const nowMs = performance.now();
+          if (minGap && nowMs - lastPaint < minGap) return;
+          lastPaint = nowMs;
 
           // Clamped so a backgrounded tab can't resume with one huge step.
           const dt = Math.min(clock.getDelta(), 0.05);
