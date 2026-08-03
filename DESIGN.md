@@ -183,7 +183,7 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 
 ### Projects revolver (mobile)
 - Below 700px the projects grid becomes a full-bleed horizontal track with `scroll-snap-type: x mandatory`. Native scrolling drives it, so momentum and snap remain the platform's own; JS only paints per-frame transforms from each card's distance to centre.
-- The drum read comes from `perspective-origin: 92% 50%` plus per-card `rotateY`, `translateZ`, `scale`, a small `skewY`, and a blur that grows with distance — cards recede and rotate away as they leave the middle, and the neighbours stay visible so the rotation is legible.
+- The drum read comes from `perspective-origin: 92% 50%` plus per-card `rotateY`, `translateZ`, `scale` and a small `skewY` — cards recede and rotate away as they leave the middle, and the neighbours stay visible so the rotation is legible. Cards in the track are **opaque** and carry **no blur**: the system's translucent card surface let stacked cards show through each other once rotated, and an animated `filter: blur()` repainted every card every frame and made them fail to paint mid-swipe.
 - **The "warp" is deliberately faux.** A true pixel warp means rasterising the DOM to a WebGL texture, which breaks text selection and link taps and costs far more than the effect is worth. Skew plus motion blur reads as warp while the cards remain real, selectable, tappable HTML.
 - Transforms are written as `--rv-*` custom properties rather than inline `transform`, so they compose with the reveal (which animates `translate`) instead of overwriting it.
 - On first sight the track nudges out and back once, advertising that it rotates. Desktop keeps the plain two-column grid; the effect is bound behind a `matchMedia` listener and torn down on resize.
@@ -210,7 +210,9 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Do** use `--on-accent` for any foreground on a filled accent surface.
 - **Do** use `padding-block` (not the `padding` shorthand) on any section that also carries `.wrap`.
 - **Do** keep the 3D object subordinate: blurred, low-opacity, and positioned clear of running text. The page must look finished with the canvas removed entirely.
-- **Do** keep vertical scroll snap at `proximity`, never `mandatory`. Sections are taller than the viewport, so mandatory snap makes their middles unreachable. JS also drops snap entirely (`html.is-tweening`) while a nav tween runs, or the two fight over the final resting position.
+- **Don't** put vertical scroll snap on the page at all. It was tried at `proximity`, the gentlest setting, and still fought the reader partway through a section (sections are taller than the viewport) and tugged at the end of nav tweens. Horizontal snap *inside* the projects carousel is a different case and is correct there.
+- **Do** animate only `transform` and `opacity` in the carousel — both are compositor-only. An animated `filter: blur()` repaints every card every frame.
+- **Do** keep carousel cards opaque, since rotated cards overlap heavily and a translucent surface shows through to the card behind.
 - **Do** treat WebGL and the webfonts as progressive enhancement — the CSS radial-gradient background and the fallback font stack are the real baseline, and a failed dynamic import must be caught and swallowed.
 
 ### Don't:
