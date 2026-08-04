@@ -404,6 +404,79 @@
   }
   .hero-meta b { color: var(--text-dim); font-weight: 600; margin-right: 5px; }
 
+  /* ---------- How I build ----------
+     The request path, drawn vertically so scroll direction and data-flow
+     direction share an axis: you scroll down, the request travels down.
+     One continuous rail with the chips sitting on it, rather than a
+     connector element per gap -- a caption is taller than its chip, so
+     per-gap connectors start below the caption instead of below the chip and
+     the line visibly comes apart. */
+
+  .stack { list-style: none; margin: 38px 0 0; padding: 0; position: relative; }
+
+  .stack::before, .stack::after {
+    content: "";
+    position: absolute;
+    left: 27px; width: 2px;              /* centre x = 28, matching the chip */
+    top: var(--rail-top, 28px);
+    height: var(--rail-len, calc(100% - 56px));
+  }
+  .stack::before { background: var(--border); }
+  .stack::after {
+    background: linear-gradient(var(--accent), var(--moss));
+    clip-path: inset(0 0 calc(100% - var(--climb, 1) * 100%) 0);
+  }
+
+  .node-row { position: relative; padding-bottom: 34px; }
+  .node-row:last-child { padding-bottom: 0; }
+
+  .node {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) minmax(0, 190px);
+    gap: 18px; align-items: start;
+  }
+  .chip {
+    position: relative; z-index: 1;      /* sits over the rail */
+    width: 56px; height: 56px; border-radius: 18px;   /* the card radius: a chip is a small surface of the same material */
+    display: grid; place-items: center;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text-faint);
+    transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+  }
+  .chip svg { width: 22px; height: 22px; }
+  .node-row.on .chip {
+    border-color: var(--accent); color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--bg));
+  }
+
+  .node-body { padding-top: 4px; transition: opacity 0.45s ease; }
+  .node-name { font-family: 'Bricolage Grotesque', 'Manrope', ui-sans-serif, system-ui, sans-serif; font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em; }
+  .node-kind { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--moss); margin-top: 2px; }
+  .node-body p { color: var(--text-dim); font-size: 0.95rem; margin-top: 8px; }
+  /* Unreached nodes dim only slightly: at 0.5 the whole diagram read as dead
+     on first paint, before any scrolling had happened. */
+  .node-row:not(.on) .node-body,
+  .node-row:not(.on) .metric { opacity: 0.72; }
+
+  /* The number each box is judged on. Right-aligned, so the section gains a
+     measured right edge instead of trailing off into empty width. */
+  .metric { padding-top: 8px; text-align: right; font-size: 0.76rem; color: var(--text-faint); font-variant-numeric: tabular-nums; }
+  .metric b { display: block; font-size: 1.24rem; font-weight: 700; color: var(--moss); letter-spacing: -0.02em; }
+
+  /* A branch off the main path. This is what stops the diagram reading as a
+     chronology: the spine stays unbroken and the branch hangs off it. */
+  .branch { margin-top: 20px; margin-left: 76px; position: relative; }
+  .branch::before {
+    content: ""; position: absolute;
+    left: -48px; top: 21px; width: 40px; height: 2px;
+    background: var(--border);
+  }
+  .branch .node { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 190px); gap: 14px; }
+  .branch .chip { width: 44px; height: 44px; border-radius: 18px; }
+  .branch .chip svg { width: 18px; height: 18px; }
+  .branch .node-name { font-size: 0.98rem; }
+  .branch .node-kind { font-size: 0.63rem; }
+
   /* ---------- Work ---------- */
 
   .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
@@ -709,6 +782,9 @@
     .tl-item::before { opacity: 1; transform: none; transition: none; }
     .tl-peek { opacity: 1; transform: none; transition: none; }
     .tl-item.is-reached .tl-peek svg { animation: none; }
+    .stack { --climb: 1; }
+    .node-row:not(.on) .node-body, .node-row:not(.on) .metric { opacity: 1; }
+    .node-body, .chip { transition-duration: 0.18s; }
     .cards .card { transform: none !important; filter: none !important; opacity: 1 !important; }
   }
 
@@ -716,6 +792,18 @@
 
   @media (max-width: 860px) {
     .cards { grid-template-columns: 1fr; }
+
+    /* The metric column would squeeze the caption to nothing, so it drops
+       below the caption and left-aligns with it. */
+    .node { grid-template-columns: 56px minmax(0, 1fr); }
+    .branch .node { grid-template-columns: 44px minmax(0, 1fr); }
+    .metric { grid-column: 2; text-align: left; padding-top: 10px; }
+    .metric b { display: inline; font-size: 0.95rem; margin-left: 6px; }
+  }
+
+  @media (max-width: 700px) {
+    .branch { margin-left: 34px; }
+    .branch::before { left: -22px; width: 16px; }
   }
 
   @media (max-width: 700px) {
@@ -745,8 +833,13 @@
     #bg-canvas { filter: blur(26px); }
     :root { --header-h: 112px; }
     .nav-right { width: 100%; justify-content: space-between; }
-    .nav-links { overflow-x: auto; gap: 2px; }
-    .nav-links a { padding: 8px 11px; }
+    /* Five items need 358px and the widest phone here offers 336px, so they
+       wrap rather than scroll. The previous overflow-x: auto silently parked
+       the last item off-screen with no affordance that it was there --
+       survivable at four items, a hidden nav entry at five. --header-h is
+       measured in JS, so the extra row feeds scroll-margin-top by itself. */
+    .nav-links { flex-wrap: wrap; gap: 2px 1px; }
+    .nav-links a { padding: 7px 10px; }
     .tl-item { grid-template-columns: 1fr; gap: 5px; padding-left: 28px; }
 
     /* ---- Projects revolver ----
@@ -811,6 +904,7 @@
     <div class="nav-right">
       <ul class="nav-links">
         <li><a href="#about">About</a></li>
+        <li><a href="#build">Build</a></li>
         <li><a href="#work">Work</a></li>
         <li><a href="#experience">Experience</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -855,6 +949,89 @@
       <span><b>Focus</b> TypeScript · React · Distributed backends</span>
       <span><b>Currently</b> Building &amp; shipping</span>
     </div>
+  </section>
+
+  <!-- ================= HOW I BUILD ================= -->
+  <section id="build" class="wrap">
+    <div class="section-head reveal">
+      <span class="kicker">How I build</span>
+      <h2>One request, end to end</h2>
+      <p>Scroll and the path fills in. Every box is somewhere I have actually owned code, not a stack I have read about.</p>
+    </div>
+
+    <ol class="stack" id="stack">
+      <li class="node-row reveal">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Client</div>
+            <div class="node-kind">React · TypeScript</div>
+            <p>Types generated from the schema, so the interface cannot quietly drift away from the API it talks to.</p>
+          </div>
+          <div class="metric">bundle<b>— kb</b></div>
+        </div>
+      </li>
+
+      <li class="node-row reveal">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Edge</div>
+            <div class="node-kind">CDN · cache rules</div>
+            <p>Most requests should never reach the origin. Deciding which ones may is a design decision, not an ops afterthought.</p>
+          </div>
+          <div class="metric">cache hit<b>— %</b></div>
+        </div>
+      </li>
+
+      <li class="node-row reveal">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.6" fill="currentColor"/><circle cx="15" cy="12" r="1.6" fill="currentColor"/><circle cx="10" cy="18" r="1.6" fill="currentColor"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">API</div>
+            <div class="node-kind">Contracts · authn/z</div>
+            <p>One place that decides who may do what. Versioned deliberately, so old clients keep working while the shape moves on.</p>
+          </div>
+          <div class="metric">p99<b>— ms</b></div>
+        </div>
+      </li>
+
+      <li class="node-row reveal">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M12 8v8"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Service</div>
+            <div class="node-kind">Business logic</div>
+            <p>Synchronous work the caller is waiting on. Everything else gets handed sideways.</p>
+          </div>
+          <div class="metric">error rate<b>— %</b></div>
+        </div>
+
+        <div class="branch">
+          <div class="node">
+            <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/><path d="M7 4v6M17 14v6"/></svg></span>
+            <div class="node-body">
+              <div class="node-name">Queue</div>
+              <div class="node-kind">Async · retries</div>
+              <p>Anything slow, flaky, or safe to do later. Idempotent by default, because it will be retried.</p>
+            </div>
+            <div class="metric">backlog<b>—</b></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="node-row reveal">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Postgres</div>
+            <div class="node-kind">The data model</div>
+            <p>Where the thinking actually happens. Constraints in the database, not only in the application — the schema outlives every framework above it.</p>
+          </div>
+          <div class="metric">p95 query<b>— ms</b></div>
+        </div>
+      </li>
+    </ol>
   </section>
 
   <!-- ================= WORK ================= -->
@@ -1145,6 +1322,50 @@
       }, { threshold: 0.35 });
       io.observe(track);
     }
+  })();
+
+  // "How I build" — the request path fills in as you scroll it. Same contract
+  // as the experience climb below: positions read with offsetTop (the reveal
+  // animates `translate`, and rects include transforms, so rect-based reads
+  // would report boxes still sliding into place), work rAF-throttled behind a
+  // passive listener, and the rail scrubbed chip-centre to chip-centre so the
+  // fill comes to rest on the last box rather than overshooting past it.
+  (function () {
+    var stack = document.getElementById('stack');
+    if (!stack) return;
+    var rows = Array.prototype.slice.call(stack.querySelectorAll('.node-row'));
+    if (!rows.length) return;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion) {
+      stack.style.setProperty('--climb', '1');
+      rows.forEach(function (r) { r.classList.add('on'); });
+      return;
+    }
+    stack.style.setProperty('--climb', '0');
+
+    // Chips are 56px tall and flush with the top of their row.
+    function chipY(row) { return row.offsetTop + 28; }
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var top = stack.getBoundingClientRect().top;
+      var line = window.innerHeight * 0.62;   // a node lights just before you read it
+      var first = chipY(rows[0]);
+      var span = Math.max(chipY(rows[rows.length - 1]) - first, 0);
+      var travelled = Math.max(0, Math.min(span, line - (top + first)));
+
+      stack.style.setProperty('--rail-top', first + 'px');
+      stack.style.setProperty('--rail-len', span + 'px');
+      stack.style.setProperty('--climb', span ? (travelled / span).toFixed(4) : '1');
+
+      rows.forEach(function (r) { r.classList.toggle('on', (top + chipY(r)) <= line); });
+    }
+    function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(update); }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
   })();
 
   // Experience climb, scrubbed by scroll rather than played once. A one-shot

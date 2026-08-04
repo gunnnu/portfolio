@@ -207,6 +207,15 @@ Transitions, not keyframes, for anything the visitor can retrigger quickly — t
 - Hover: 4px lift, accent border, lift shadow.
 - Tags are neutral `--surface-2` pills, not accent-coloured — the accent is reserved for interactive things.
 
+### Build path ("How I build")
+- The request path — Client → Edge → API → Service → Postgres, with Queue branching off — drawn **vertically, so scroll direction and data-flow direction share an axis**: you scroll down, the request travels down.
+- Structurally the same device as the experience climb, and deliberately so: one continuous rail with 56px chips sitting on it, scrubbed chip-centre to chip-centre from a single `--climb`, `--rail-top` and `--rail-len`. Chips carry `background: var(--bg)` and `z-index: 1` so the rail passes behind rather than through them.
+- **Not one connector element per gap.** That was the first build and it comes apart: a caption is taller than its chip, so each connector starts below the *caption* instead of below the chip and the line visibly detaches. A single rail cannot.
+- **Queue hangs off the spine as a branch**, joined by a horizontal tick, rather than sitting inline. This is what stops the diagram reading as a second chronology — a timeline has no branches.
+- The third column holds the metric each box is judged on, right-aligned, which gives the section a measured right edge instead of trailing off into empty width. Below 860px it drops under the caption and left-aligns.
+- Unreached nodes dim to **0.72, not 0.5**. At 0.5 the whole diagram read as dead on first paint, before any scrolling had happened.
+- Chips use the 18px card radius. They are small surfaces of the same material as a card, and inventing a chip-specific radius put the page outside the documented scale — the detector catches this.
+
 ### Timeline (experience)
 - A single hairline rail with accent-ringed dots, a tabular-numeral date column, and a moss employer line.
 - **Rail and dot geometry is written in whole pixels off a shared centre line.** The dot is 14px at `left: 0`, the rail is 2px at `left: 6px`; both centre on x = 7. Half-pixel values or "roughly centred" arithmetic show up as a visible kink on a 2px rail at 3× density.
