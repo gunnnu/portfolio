@@ -417,12 +417,15 @@
     border: 1px solid var(--border);
     background: color-mix(in srgb, var(--surface) 76%, transparent);
     transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
-    /* --rv-t is written per frame by the mobile revolver. It defaults to
-       neutral so desktop is untouched. transform is used here and the reveal
-       uses `translate`, so the two compose rather than fight. Only transform
-       and opacity are animated -- both are compositor-only. An animated
-       `filter: blur()` was repainting every card every frame and is gone. */
-    transform: var(--rv-t, none);
+    /* The mobile revolver writes `transform` inline per frame, directly on the
+       card rather than through a custom property: changing a custom property
+       on an element invalidates inherited style for its whole subtree, so a
+       per-frame variable would recalc every heading, paragraph and tag pill
+       inside all four cards on every frame. `transform` here and `translate`
+       on the reveal are separate properties, so the two still compose rather
+       than fight. Only transform and opacity are animated -- both are
+       compositor-only. An animated `filter: blur()` was repainting every card
+       every frame and is gone. */
   }
 
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
@@ -619,19 +622,23 @@
     footer a:hover { color: var(--accent); }
   }
 
-  /* Press feedback: a quick, shallow depress that reads as tactile on a
-     finger. Deliberately faster in than out so it feels responsive. */
+  /* Press feedback: a shallow depress that reads as tactile on a finger.
+     Depth stays inside 0.95-0.98 and the press resolves in ~0.1s. Deeper
+     scales read as the element shrinking rather than being pushed, and
+     anything under ~0.1s is below the threshold where the eye registers
+     travel at all, so the press stops feeling like a press. Hover, being a
+     colour change rather than movement, keeps plain `ease`. */
   .btn, .card, .nav-links a, .theme-toggle, .card-links a, .brand {
     transition-property: transform, background, color, border-color, box-shadow;
     transition-duration: 0.18s;
     transition-timing-function: ease;
   }
-  .btn:active { transform: scale(0.96); transition-duration: 0.06s; }
-  .nav-links a:active { transform: scale(0.93); background: var(--surface); color: var(--text); transition-duration: 0.06s; }
-  .theme-toggle:active { transform: scale(0.9); transition-duration: 0.06s; }
-  .card:active { transform: scale(0.985); border-color: var(--accent-soft); transition-duration: 0.08s; }
-  .card-links a:active { opacity: 0.6; transition-duration: 0.06s; }
-  .brand:active { transform: scale(0.96); transition-duration: 0.06s; }
+  .btn:active { transform: scale(0.96); transition-duration: 0.1s; }
+  .nav-links a:active { transform: scale(0.95); background: var(--surface); color: var(--text); transition-duration: 0.1s; }
+  .theme-toggle:active { transform: scale(0.95); transition-duration: 0.1s; }
+  .card:active { transform: scale(0.985); border-color: var(--accent-soft); transition-duration: 0.1s; }
+  .card-links a:active { opacity: 0.6; transition-duration: 0.1s; }
+  .brand:active { transform: scale(0.96); transition-duration: 0.1s; }
 
   /* Nav scroll-spy: the pill marks the section you are actually in, which
      matters most on mobile where the whole nav is visible at once. */
@@ -671,12 +678,28 @@
   .js .timeline .tl-item.reveal:nth-of-type(2) { transition-delay: 0.07s; }
   .js .timeline .tl-item.reveal:nth-of-type(3) { transition-delay: 0.14s; }
 
+  /* Reduced motion means fewer and gentler animations, not none. Movement --
+     translate, scale, rotate, the scroll-linked climb -- is what causes
+     motion sickness, so all of that goes. Colour and opacity transitions
+     carry meaning (which control is hovered, which nav item is current) and
+     snapping them to instant makes the interface feel broken rather than
+     calm, so those are kept. */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    .js .reveal { opacity: 1 !important; translate: none !important; transition: none !important; transition-delay: 0s !important; }
+    /* Also restates transition-property: `.js .reveal` (0,2,0) outranks the
+       `.card` rule below (0,1,0), so without this cards would keep the
+       reveal's opacity/translate list and snap their hover colours. */
+    .js .reveal {
+      opacity: 1 !important; translate: none !important; transition-delay: 0s !important;
+      transition-property: background, color, border-color, box-shadow, opacity;
+      transition-duration: 0.18s;   /* not the reveal's 0.62s, which is a slow crawl for a hover colour */
+    }
     .js .status .pip { animation: none; }
-    .card, .btn, .theme-toggle, .nav-links a, .card-links a, .brand { transition: none !important; }
-    .card:hover, .btn:hover { transform: none; }
+    .card, .btn, .theme-toggle, .nav-links a, .card-links a, .brand {
+      transition-property: background, color, border-color, box-shadow, opacity;
+    }
+    .card:hover, .btn:hover, .theme-toggle:hover { transform: none; }
+    .btn:hover .arw { transform: none; }
     .btn:active, .card:active, .nav-links a:active, .theme-toggle:active, .brand:active { transform: none; }
     .scroll-rail { display: none; }
     .js .timeline { --climb: 1; }
@@ -1039,7 +1062,7 @@
 
     function clear() {
       cards.forEach(function (c) {
-        c.style.removeProperty('--rv-t');
+        c.style.removeProperty('transform');
         c.style.removeProperty('--rv-op');
       });
     }
@@ -1062,9 +1085,13 @@
         var scale = 1 - mag * 0.1;
         var skew = rel * 2.2;         // the warp
 
-        card.style.setProperty('--rv-t',
+        // Written straight onto `transform`, not through a custom property:
+        // a per-frame variable would invalidate inherited style for every
+        // element inside the card. --rv-op stays a variable because the
+        // reveal's opacity transition has to compose with it.
+        card.style.transform =
           'translateZ(' + depth.toFixed(1) + 'px) rotateY(' + angle.toFixed(2) + 'deg)' +
-          ' skewY(' + skew.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')');
+          ' skewY(' + skew.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
         card.style.setProperty('--rv-op', (1 - mag * 0.16).toFixed(3));
       });
     }

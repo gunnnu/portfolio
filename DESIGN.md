@@ -154,6 +154,46 @@ Soft and atmospheric. Shadows are wide, heavily negative-spread, and low opacity
 
 Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark, nav links, glyphs), 18px cards, 24px contact panel (tightening to 20px below 700px, where the panel is narrower and the full 24px reads disproportionately round), and full pills for every button, tag, and status chip. Roundness is the deliberate reversal of the previous world's 0-radius rule and is a load-bearing part of reading "friendly" rather than "severe" — sharpening the corners would put the page back in the brutalist world.
 
+## Motion
+
+Motion rules follow the `review-animations` / `emil-design-eng` standards installed in `.claude/skills`. Where those and `high-end-visual-design` disagree, the former wins here — see *Standards conflicts* at the end of this file.
+
+### Easing
+Chosen by what the motion is doing, never by habit:
+
+| Motion | Easing |
+| --- | --- |
+| Entering / exiting (reveals, peek marker) | `ease-out` — `cubic-bezier(0.22, 1, 0.36, 1)` |
+| Moving on screen (anchor scroll tween) | `ease-in-out` |
+| Hover and colour change | `ease` |
+| Scroll-scrubbed (the climb, the revolver) | none — position *is* the clock |
+
+**Never `ease-in` on UI.** It starts slow and delays the exact moment the visitor is watching; `ease-out` at 200ms feels faster than `ease-in` at 200ms. There is currently no `ease-in` on the page and none should be added.
+
+### Duration
+- **Press feedback:** ~100ms. Depth stays inside **scale(0.95)–scale(0.98)** — deeper reads as the element shrinking rather than being pushed.
+- **Hover / state colour:** 180ms.
+- **Scroll reveals:** 620ms. These are marketing motion, not UI motion, so they sit outside the "UI stays under 300ms" rule deliberately. Anything that responds to a tap or click does not get to borrow that exemption.
+- **Stagger:** 70ms between items (the standard's band is 30–80ms). Longer reads as slow.
+
+### Physicality
+- No motion overshoots. Bounce and elastic easing are banned outright — the detector enforces this, and it is also the house style: this world is calm, not springy.
+- Nothing scales from `0`. Reveals start at `translate: 0 18px` + `opacity: 0`, never `scale(0)`.
+- Press feedback applies to every pressable thing: buttons, nav links, cards, the brand mark, the theme toggle.
+
+### Interruptibility
+Transitions, not keyframes, for anything the visitor can retrigger quickly — transitions retarget from their current value, keyframes restart from zero. `@keyframes` is reserved for genuinely ambient loops (the status pip pulse, the peek arrow nudge), which nothing interrupts.
+
+### Reduced motion
+**Reduced motion means fewer and gentler animations, not none.** Movement — translate, scale, rotate, the scroll-linked climb — is what causes motion sickness and all of it goes. Colour and opacity transitions carry meaning (which control is hovered, which nav item is current) and are *kept*, at the normal 180ms; snapping them to instant makes the interface feel broken rather than calm.
+
+### Performance
+- Animate `transform` and `opacity` only. Both are compositor-only; `padding`/`margin`/`height`/`width`/`top`/`left` trigger layout, paint and composite.
+- **Do not write a per-frame custom property onto an element that has children.** Changing a custom property invalidates inherited style for the whole subtree, so a per-frame variable on a card recalculates every heading, paragraph and tag pill inside it on every frame. Write `transform` directly on the element instead.
+  - **Justified exception:** `--climb` and `--fill-len` on the `<ol class="timeline">`. They drive `::after`, and a pseudo-element cannot be reached from JS any other way. The subtree is three entries, and the alternative is no scrubbed rail at all.
+  - **Justified exception:** `--rv-op` on a card. The reveal's opacity transition has to compose with it; an inline `opacity` would win permanently and strand the card's fade-in.
+- Gate every hover behind `@media (hover: hover) and (pointer: fine)`. Touch fires hover on tap and leaves it latched on the last thing touched.
+
 ## Components
 
 ### Buttons
@@ -230,6 +270,7 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Do** measure element positions with `offsetTop` when the elements also carry a reveal animation. `getBoundingClientRect` includes transforms, so it reports positions that are still moving.
 - **Do** use `:nth-of-type` rather than `:nth-child` for the timeline stagger — the `.tl-climber` span is the list's first child and shifts every `:nth-child` index by one.
 - **Do** animate only `transform` and `opacity` in the carousel — both are compositor-only. An animated `filter: blur()` repaints every card every frame.
+- **Do** write per-frame `transform` directly onto the element, not through a custom property, whenever that element has children. See *Motion → Performance* for the two justified exceptions.
 - **Do** keep carousel cards opaque, since rotated cards overlap heavily and a translucent surface shows through to the card behind.
 - **Do** keep large CSS blurs off anything fixed and full-viewport on mobile. Profiling a throttled scroll isolated the blurred background canvas as the single largest source of dropped frames (removing it alone took janky frames from 9/128 to 0/139), with the header's `backdrop-filter` second. Below 700px the canvas blur drops to 26px, the scene renders at 0.35x resolution to buy the softness back, it paints at ~30fps instead of 60, and the header goes near-opaque instead of blurring its backdrop.
 - **Do** set that mobile blur on `#bg-canvas` directly, not by overriding `--blob-blur`. The theme selectors (`:root[data-theme="dark"]`, `:root:not([data-theme="light"])`) are more specific than a bare `:root`, so a custom-property override in a media query silently loses in dark mode.
@@ -242,3 +283,24 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Don't** raise the blob's opacity to where it competes with body-copy contrast in the light theme — light is the fragile case, since the object is darker than the paper.
 - **Don't** hide content by default in CSS for reveal animations; the `.js`-gated `.reveal` pattern exists so content can never be stranded invisible.
 - **Don't** put vertical scroll snap on the page at all. It was tried at `proximity`, the gentlest setting, and still fought the reader partway through a section (sections are taller than the viewport) and tugged at the end of nav tweens. Horizontal snap *inside* the projects carousel is a different case and is correct there.
+
+## Standards conflicts
+
+The design skills installed in `.claude/skills` do not agree with each other, so "follow the skill" is not by itself an instruction. Recorded here so these decisions are not silently re-litigated as bugs.
+
+**`review-animations` / `emil-design-eng` govern motion.** They are specific, evidence-backed, and internally consistent, and this site's motion is built on them. `high-end-visual-design` is a generative brief for producing new agency-tier layouts from scratch; it is useful for that and is not treated as an audit checklist for a design that already exists.
+
+Where they conflict directly:
+
+| Question | `high-end-visual-design` | Adopted here | Why |
+| --- | --- | --- | --- |
+| `ease-in-out` | Banned outright | Allowed for on-screen movement | `review-animations` prescribes it for exactly that case. Used only for the anchor-scroll tween. |
+| Reveal duration | 800ms+, with `blur-md` | 620ms, no blur | Animated blur was measured as the single largest source of dropped frames on mobile here. `review-animations` also caps blur at 20px and flags Safari specifically. |
+| Scroll listeners | "Never use `window.addEventListener('scroll')`" | Used, rAF-throttled and passive | Correct advice for *reveals*, where `IntersectionObserver` is strictly better and is what this site uses for them. But a scrubbed rail needs continuous scroll *position*, which `IntersectionObserver` cannot report — it only fires on threshold crossings. |
+
+Deliberate departures from `high-end-visual-design` that are load-bearing, not oversights:
+
+- **Inter is used for body text** despite being on that skill's banned-font list. It is paired with Fraunces for headings and JetBrains Mono for labels, so the page is not resting on a default UI face; and the licensing and self-host story for the suggested alternatives does not survive the no-build-step constraint.
+- **The header is a sticky top bar**, not a detached floating pill. It is the only chrome on a single-page site and it doubles as the scroll-spy; floating it would cost the full-bleed hairline that separates it from the content.
+- **Cards are single-layer**, not the nested "double-bezel" shell. This world's depth language is a wide soft shadow plus one hairline border (see *Elevation & Depth*); nested bezels belong to the hard-edged hardware aesthetic this design deliberately moved away from.
+- **Blur is used on a fixed full-viewport canvas**, which that skill permits only for nav and overlays. Measured and tuned rather than assumed: 26px and 0.35x render scale below 700px.
