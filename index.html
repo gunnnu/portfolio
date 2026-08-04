@@ -478,24 +478,32 @@
      scrollbar means the reader is driving it and cannot miss it.
      Revealed with clip-path rather than scaleY: scaling would squeeze the
      whole gradient into the lit portion, so the head of the rail would read
-     moss at every position instead of travelling accent -> moss. */
+     moss at every position instead of travelling accent -> moss.
+
+     It spans first dot to last dot, not the full track: the list runs oldest
+     to newest, so the fill must come to rest exactly on the current role.
+     The dim tail below it then reads as the part not written yet. --fill-len
+     is measured in JS; the no-JS fallback is a full-height lit rail. */
   .timeline::after {
     content: "";
     position: absolute;
-    left: 6px; top: 10px; bottom: 10px;
+    left: 6px;
+    top: 13px;                 /* centre of the first dot */
+    height: var(--fill-len, calc(100% - 26px));
     width: 2px;
     background: linear-gradient(to bottom, var(--accent), var(--moss));
     clip-path: inset(0 0 calc(100% - var(--climb, 1) * 100%) 0);
   }
   .js .timeline { --climb: 0; }
 
-  /* The climber: a pip that rides the rail at the reader's position. */
+  /* The climber: a pip that rides the rail at the reader's position and comes
+     to rest on the current role's dot. */
   .tl-climber {
     position: absolute;
-    left: 3.5px;
-    top: 12px;
-    width: 7px; height: 7px;   /* centre x = 7; smaller than the 14px dots so
-                                  it reads as a travelling marker, not a
+    left: 3px;
+    top: 9px;                  /* centres an 8px pip on the first dot at y=13 */
+    width: 8px; height: 8px;   /* centre x = 7; much smaller than the 14px dots
+                                  so it reads as a travelling marker, not a
                                   fourth entry */
     border-radius: 50%;
     background: var(--accent);
@@ -658,8 +666,10 @@
   .js .cards .reveal:nth-child(2) { transition-delay: 0.07s; }
   .js .cards .reveal:nth-child(3) { transition-delay: 0.14s; }
   .js .cards .reveal:nth-child(4) { transition-delay: 0.21s; }
-  .js .timeline .reveal:nth-child(2) { transition-delay: 0.07s; }
-  .js .timeline .reveal:nth-child(3) { transition-delay: 0.14s; }
+  /* nth-of-type, not nth-child: the .tl-climber span is the list's first child
+     and would otherwise shift every index by one. */
+  .js .timeline .tl-item.reveal:nth-of-type(2) { transition-delay: 0.07s; }
+  .js .timeline .tl-item.reveal:nth-of-type(3) { transition-delay: 0.14s; }
 
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -900,17 +910,15 @@
 
     <ol class="timeline">
       <span class="tl-climber" aria-hidden="true"></span>
+      <!-- Oldest first, newest last: the climber then travels the way a career
+           actually runs, and arrives at the current role rather than leaving it. -->
       <!-- PLACEHOLDER ROLE 1 -->
       <li class="tl-item reveal">
-        <div class="tl-when">2023–Present</div>
+        <div class="tl-when">2019–2021</div>
         <div class="tl-what">
-          <h3>Senior Software Engineer</h3>
-          <span class="tl-org">Company Name</span>
+          <h3>Junior Developer</h3>
+          <span class="tl-org">First Company</span>
           <p>One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
-          <span class="tl-peek">
-            Looking ahead
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
-          </span>
         </div>
       </li>
 
@@ -924,13 +932,17 @@
         </div>
       </li>
 
-      <!-- PLACEHOLDER ROLE 3 -->
+      <!-- PLACEHOLDER ROLE 3 — current -->
       <li class="tl-item reveal">
-        <div class="tl-when">2019–2021</div>
+        <div class="tl-when">2023–Present</div>
         <div class="tl-what">
-          <h3>Junior Developer</h3>
-          <span class="tl-org">First Company</span>
+          <h3>Senior Software Engineer</h3>
+          <span class="tl-org">Company Name</span>
           <p>One or two lines on scope and impact: what you owned, what shipped, what improved.</p>
+          <span class="tl-peek">
+            Looking ahead
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg>
+          </span>
         </div>
       </li>
     </ol>
@@ -1126,26 +1138,36 @@
 
     var ticking = false;
 
+    // Centre of an entry's dot, relative to the list. The dot sits 6px down and
+    // is 14px tall. offsetTop, not getBoundingClientRect: the reveal animates
+    // `translate`, which rect measurements include, so rects report dots still
+    // sliding into place and the geometry jitters for the first ~600ms.
+    function dotOffset(item) { return item.offsetTop + 13; }
+
     function update() {
       ticking = false;
       var box = timeline.getBoundingClientRect();
       // The reading line sits a little above centre, where the eye actually is.
       var line = window.innerHeight * 0.46;
-      var progress = (line - box.top) / (box.height || 1);
-      progress = Math.max(0, Math.min(1, progress));
+
+      // The climb runs dot to dot, not edge to edge. The list is oldest-first,
+      // so the pip has to come to rest on the current role's dot rather than
+      // carry on into the empty space below it.
+      var first = dotOffset(items[0]);
+      var span = Math.max(dotOffset(items[items.length - 1]) - first, 0);
+      var travelled = Math.max(0, Math.min(span, line - (box.top + first)));
+      var progress = span ? travelled / span : 1;
 
       timeline.classList.toggle('is-climbing', box.top < window.innerHeight && box.bottom > 0);
       timeline.style.setProperty('--climb', progress.toFixed(4));
+      timeline.style.setProperty('--fill-len', span.toFixed(1) + 'px');
       if (climber) {
-        // The track is inset 10px top and bottom; the pip rides that span.
-        var span = Math.max(box.height - 20, 0);
-        climber.style.setProperty('--climber-y', (span * progress).toFixed(1) + 'px');
+        climber.style.setProperty('--climber-y', travelled.toFixed(1) + 'px');
       }
 
       items.forEach(function (item) {
-        var r = item.getBoundingClientRect();
         // A dot is "reached" once the reading line passes it.
-        item.classList.toggle('is-reached', (r.top + 13) <= line);
+        item.classList.toggle('is-reached', (box.top + dotOffset(item)) <= line);
       });
     }
 

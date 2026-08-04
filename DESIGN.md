@@ -173,15 +173,18 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - The dot is a pseudo-element with a 2px border, so `box-sizing` must be inherited by `*::before` and `*::after` as well as `*`. The bare `* { box-sizing: border-box }` reset does **not** match pseudo-elements, and under `content-box` the border is added *outside* the declared width — which silently widened the dots and pushed their centres 2px off the rail.
 
 ### Experience climb
+- **The list runs oldest first, newest last** — the reverse of the usual résumé order. The climb is the reason: a pip travelling downward past a newest-first list would walk *backwards* through the career and end on the first job. Oldest-first means it travels the way the career actually ran and arrives at the current role, where the "Looking ahead →" marker is waiting.
 - The rail is **scrubbed by scroll position**, not played once on entry. A one-shot entrance animation is easy to scroll straight past; tying the fill to the scrollbar puts the visitor in control of it and makes it impossible to miss. The reading line is 46% of viewport height.
 - Three layers, all driven from a single `--climb` value (0–1) set on the `<ol>`:
-  1. `.timeline::before` — the dim full-height track in `--border`, always present, so the rail never reads as missing.
+  1. `.timeline::before` — the dim track in `--border`, spanning the full list, always present so the rail never reads as missing.
   2. `.timeline::after` — the lit fill, a periwinkle→moss gradient revealed with `clip-path: inset(...)`.
-  3. `.tl-climber` — a 7px pip with a soft glow ring that rides the rail at the reader's position, moved by `translateY`.
+  3. `.tl-climber` — an 8px pip with a soft glow ring that rides the rail at the reader's position, moved by `translateY`.
+- **The fill and the pip span first dot to last dot, not the full track.** The last entry is tall, so an edge-to-edge climb overshoots the current role's dot by ~370px and dies in blank space — the arrival beat is lost exactly where it matters. Ending on the dot puts the pip *inside* it ("you are here"), and the dim tail below then reads as the part not written yet. `--fill-len` is measured in JS; the no-JS fallback is a full-height lit rail.
 - **The fill is revealed with `clip-path`, not `scaleY`.** Scaling squeezes the whole gradient into whatever portion is lit, so the head of the rail renders moss at every scroll position instead of travelling periwinkle → moss. `clip-path` keeps the gradient anchored to the rail's full height, which is the only way the colour ramp actually means anything.
-- The pip is deliberately **half the diameter of the dots** (7px vs 14px). At equal size it reads as a fourth timeline entry rather than as a travelling marker.
-- Dots fill (`.is-reached`) as the reading line passes them, and entries not yet reached sit at `opacity: 0.55` — the column reads as progress rather than as three static markers. The most recent role then reveals a "Looking ahead →" marker whose arrow nudges right on a slow loop.
-- Scroll work is rAF-throttled behind a passive listener, and writes only custom properties — no layout reads per frame beyond the bounding boxes it needs.
+- The pip is deliberately **far smaller than the dots** (8px vs 14px). At equal size it reads as a fourth timeline entry rather than as a travelling marker.
+- Dots fill (`.is-reached`) as the reading line passes them, and entries not yet reached sit at `opacity: 0.55` — the column reads as progress rather than as three static markers. The current role then reveals a "Looking ahead →" marker whose arrow nudges right on a slow loop.
+- **Dot positions are read with `offsetTop`, never `getBoundingClientRect`.** The reveal animates `translate`, and rects include transforms, so rect-based measurements report dots still sliding into place — `--fill-len` jittered across a 14px range for the first ~600ms and the pip missed its landing by 7–8px on mobile. `offsetTop` is layout-based and transform-immune.
+- Scroll work is rAF-throttled behind a passive listener, and writes only custom properties.
 - Under `prefers-reduced-motion` the whole thing resolves to its finished state immediately: `--climb: 1`, every dot reached, the pip hidden.
 - This replaces a requested rigged 3D figure climbing a ladder. A convincing humanoid climb needs an authored, skeletally animated model; a procedural stand-in would have read as cheap, and a downloaded rig contradicts the no-build-step, no-asset constraint. The rail carries the same narrative — ascent, arrival, looking onward — for essentially no weight.
 
@@ -224,6 +227,8 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Do** extend the `box-sizing` reset to `*::before` and `*::after`. `* { box-sizing: border-box }` does not match pseudo-elements, and a bordered `::before` under `content-box` grows past its declared size — which is what knocked the timeline dots off the rail.
 - **Do** reveal a gradient with `clip-path: inset(...)` rather than `scaleY`. Scaling compresses the gradient into the visible portion, so a progress ramp shows its end colour at every position.
 - **Do** prefer scroll-scrubbed progress over one-shot entrance animations for anything that tells a sequence. A one-shot plays whether or not anyone is looking; a scrubbed one cannot be missed, because the visitor is driving it.
+- **Do** measure element positions with `offsetTop` when the elements also carry a reveal animation. `getBoundingClientRect` includes transforms, so it reports positions that are still moving.
+- **Do** use `:nth-of-type` rather than `:nth-child` for the timeline stagger — the `.tl-climber` span is the list's first child and shifts every `:nth-child` index by one.
 - **Do** animate only `transform` and `opacity` in the carousel — both are compositor-only. An animated `filter: blur()` repaints every card every frame.
 - **Do** keep carousel cards opaque, since rotated cards overlap heavily and a translucent surface shows through to the card behind.
 - **Do** keep large CSS blurs off anything fixed and full-viewport on mobile. Profiling a throttled scroll isolated the blurred background canvas as the single largest source of dropped frames (removing it alone took janky frames from 9/128 to 0/139), with the header's `backdrop-filter` second. Below 700px the canvas blur drops to 26px, the scene renders at 0.35x resolution to buy the softness back, it paints at ~30fps instead of 60, and the header goes near-opaque instead of blurring its backdrop.
