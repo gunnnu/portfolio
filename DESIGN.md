@@ -168,7 +168,22 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - Tags are neutral `--surface-2` pills, not accent-coloured — the accent is reserved for interactive things.
 
 ### Timeline (experience)
-- A single hairline rail with hollow accent-ringed dots, a tabular-numeral date column, and a moss employer line.
+- A single hairline rail with accent-ringed dots, a tabular-numeral date column, and a moss employer line.
+- **Rail and dot geometry is written in whole pixels off a shared centre line.** The dot is 14px at `left: 0`, the rail is 2px at `left: 6px`; both centre on x = 7. Half-pixel values or "roughly centred" arithmetic show up as a visible kink on a 2px rail at 3× density.
+- The dot is a pseudo-element with a 2px border, so `box-sizing` must be inherited by `*::before` and `*::after` as well as `*`. The bare `* { box-sizing: border-box }` reset does **not** match pseudo-elements, and under `content-box` the border is added *outside* the declared width — which silently widened the dots and pushed their centres 2px off the rail.
+
+### Experience climb
+- The rail is **scrubbed by scroll position**, not played once on entry. A one-shot entrance animation is easy to scroll straight past; tying the fill to the scrollbar puts the visitor in control of it and makes it impossible to miss. The reading line is 46% of viewport height.
+- Three layers, all driven from a single `--climb` value (0–1) set on the `<ol>`:
+  1. `.timeline::before` — the dim full-height track in `--border`, always present, so the rail never reads as missing.
+  2. `.timeline::after` — the lit fill, a periwinkle→moss gradient revealed with `clip-path: inset(...)`.
+  3. `.tl-climber` — a 7px pip with a soft glow ring that rides the rail at the reader's position, moved by `translateY`.
+- **The fill is revealed with `clip-path`, not `scaleY`.** Scaling squeezes the whole gradient into whatever portion is lit, so the head of the rail renders moss at every scroll position instead of travelling periwinkle → moss. `clip-path` keeps the gradient anchored to the rail's full height, which is the only way the colour ramp actually means anything.
+- The pip is deliberately **half the diameter of the dots** (7px vs 14px). At equal size it reads as a fourth timeline entry rather than as a travelling marker.
+- Dots fill (`.is-reached`) as the reading line passes them, and entries not yet reached sit at `opacity: 0.55` — the column reads as progress rather than as three static markers. The most recent role then reveals a "Looking ahead →" marker whose arrow nudges right on a slow loop.
+- Scroll work is rAF-throttled behind a passive listener, and writes only custom properties — no layout reads per frame beyond the bounding boxes it needs.
+- Under `prefers-reduced-motion` the whole thing resolves to its finished state immediately: `--climb: 1`, every dot reached, the pip hidden.
+- This replaces a requested rigged 3D figure climbing a ladder. A convincing humanoid climb needs an authored, skeletally animated model; a procedural stand-in would have read as cheap, and a downloaded rig contradicts the no-build-step, no-asset constraint. The rail carries the same narrative — ascent, arrival, looking onward — for essentially no weight.
 
 ### Status pill
 - Pill with a moss pip and a slow `box-shadow` pulse. The pulse is gated behind `.js` and disabled under reduced motion.
@@ -188,10 +203,6 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - Transforms are written as `--rv-*` custom properties rather than inline `transform`, so they compose with the reveal (which animates `translate`) instead of overwriting it.
 - On first sight the track nudges out and back once, advertising that it rotates. Desktop keeps the plain two-column grid; the effect is bound behind a `matchMedia` listener and torn down on resize.
 
-### Experience climb
-- On first reaching the section the rail draws upward (`scaleY` from a bottom origin) and the dots light **bottom-to-top**, so the sequence reads as ascending even though the list is newest-first. The most recent role then reveals a "Looking ahead →" marker whose arrow nudges right on a slow loop.
-- This replaces a requested rigged 3D figure climbing a ladder. A convincing humanoid climb needs an authored, skeletally animated model; a procedural stand-in would have read as cheap, and a downloaded rig contradicts the no-build-step, no-asset constraint. The rail carries the same narrative — ascent, arrival, looking onward — for essentially no weight.
-
 ### Background object (signature)
 - A `TorusKnotGeometry` — a genuine looping structure — displaced in the vertex shader by 3D simplex noise, coloured by a two-stop periwinkle→moss mix with a light rim term, then **CSS-blurred 48–58px** so it reads as a drifting nebula. Colours, opacity, and blur radius all come from CSS custom properties, so the theme toggle re-tints the 3D object through the same tokens as the rest of the page.
 - **Cursor interaction** is layered in four responses so the object reads as *aware* of the pointer rather than merely sliding with it:
@@ -210,7 +221,9 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Do** use `--on-accent` for any foreground on a filled accent surface.
 - **Do** use `padding-block` (not the `padding` shorthand) on any section that also carries `.wrap`.
 - **Do** keep the 3D object subordinate: blurred, low-opacity, and positioned clear of running text. The page must look finished with the canvas removed entirely.
-- **Don't** put vertical scroll snap on the page at all. It was tried at `proximity`, the gentlest setting, and still fought the reader partway through a section (sections are taller than the viewport) and tugged at the end of nav tweens. Horizontal snap *inside* the projects carousel is a different case and is correct there.
+- **Do** extend the `box-sizing` reset to `*::before` and `*::after`. `* { box-sizing: border-box }` does not match pseudo-elements, and a bordered `::before` under `content-box` grows past its declared size — which is what knocked the timeline dots off the rail.
+- **Do** reveal a gradient with `clip-path: inset(...)` rather than `scaleY`. Scaling compresses the gradient into the visible portion, so a progress ramp shows its end colour at every position.
+- **Do** prefer scroll-scrubbed progress over one-shot entrance animations for anything that tells a sequence. A one-shot plays whether or not anyone is looking; a scrubbed one cannot be missed, because the visitor is driving it.
 - **Do** animate only `transform` and `opacity` in the carousel — both are compositor-only. An animated `filter: blur()` repaints every card every frame.
 - **Do** keep carousel cards opaque, since rotated cards overlap heavily and a translucent surface shows through to the card behind.
 - **Do** keep large CSS blurs off anything fixed and full-viewport on mobile. Profiling a throttled scroll isolated the blurred background canvas as the single largest source of dropped frames (removing it alone took janky frames from 9/128 to 0/139), with the header's `backdrop-filter` second. Below 700px the canvas blur drops to 26px, the scene renders at 0.35x resolution to buy the softness back, it paints at ~30fps instead of 60, and the header goes near-opaque instead of blurring its backdrop.
@@ -223,3 +236,4 @@ Rounded and soft throughout: 4px focus rings, 9–11px small chrome (brand mark,
 - **Don't** let the background object become legible geometry. If someone can tell it is a torus knot, the blur is too low and it stops being atmosphere.
 - **Don't** raise the blob's opacity to where it competes with body-copy contrast in the light theme — light is the fragile case, since the object is darker than the paper.
 - **Don't** hide content by default in CSS for reveal animations; the `.js`-gated `.reveal` pattern exists so content can never be stranded invisible.
+- **Don't** put vertical scroll snap on the page at all. It was tried at `proximity`, the gentlest setting, and still fought the reader partway through a section (sections are taller than the viewport) and tugged at the end of nav tweens. Horizontal snap *inside* the projects carousel is a different case and is correct there.
