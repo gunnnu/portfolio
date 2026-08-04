@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Prototype B — Systems Diagram · Gunpreet Singh</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#efece4" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#131519" media="(prefers-color-scheme: dark)" />
+
+<!--
+  PROTOTYPE B — "The Systems Diagram"
+
+  Direction under test: replace the decorative WebGL blob with a real
+  architecture diagram as the page's signature element. The diagram is the
+  request path through a system, drawn vertically so that scroll direction
+  and data-flow direction are the same axis: you scroll down, the request
+  travels down. It assembles and annotates as you read.
+
+  Why this over the blob: the blob is deliberately blurred past legibility,
+  so it costs a WebGL dependency to produce something a CSS gradient could
+  produce. This costs no dependency at all and says something true about the
+  person -- "data model to pixel" stops being a claim and becomes the layout.
+
+  Built with HTML rows and CSS-drawn connectors rather than one large SVG:
+  responsive by construction, no layout maths in JS, and the lit progression
+  reuses the scroll-scrub pattern already proven on the live site's timeline.
+
+  Content is still placeholder. The structure is the thing being judged.
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400..700&display=swap" rel="stylesheet" />
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    color-scheme: light;
+    --bg: #efece4; --surface: #e7e3d9; --surface-2: #ddd8cb;
+    --text: #1c1e24; --text-dim: #55575f; --text-faint: #6f7078;
+    --border: #d5cfc1; --border-strong: #c3bcab;
+    --accent: #5a5e96; --accent-soft: #8a8fc7;
+    --moss: #4f6a55; --moss-soft: #7d9a80;
+    --on-accent: #f7f6f2;
+    --shadow: 0 18px 40px -28px rgba(28, 30, 36, 0.45);
+    --max-width: 1080px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #131519; --surface: #1a1d23; --surface-2: #22262e;
+      --text: #e9e6df; --text-dim: #a2a4ad; --text-faint: #797b85;
+      --border: #2a2e37; --border-strong: #3a3f4a;
+      --accent: #989dd8; --accent-soft: #7a7eb4;
+      --moss: #8aa88d; --moss-soft: #6d8a71;
+      --on-accent: #16181d;
+      --shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.75);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #131519; --surface: #1a1d23; --surface-2: #22262e;
+    --text: #e9e6df; --text-dim: #a2a4ad; --text-faint: #797b85;
+    --border: #2a2e37; --border-strong: #3a3f4a;
+    --accent: #989dd8; --accent-soft: #7a7eb4;
+    --moss: #8aa88d; --moss-soft: #6d8a71;
+    --on-accent: #16181d;
+    --shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.75);
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+  h1, h2, h3 {
+    font-family: 'Bricolage Grotesque', 'Manrope', ui-sans-serif, system-ui, sans-serif;
+    margin: 0; line-height: 1.08; letter-spacing: -0.02em;
+  }
+  p { margin: 0; }
+  a { color: inherit; }
+
+  .wrap { max-width: var(--max-width); margin: 0 auto; padding-inline: 26px; }
+  section { padding-block: 96px; }
+
+  .kicker {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--text-faint);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .kicker::before { content: ""; width: 24px; height: 1px; background: var(--border-strong); }
+
+  /* ---------- Banner ---------- */
+
+  .banner {
+    background: var(--accent); color: var(--on-accent);
+    font-size: 0.78rem; letter-spacing: 0.02em;
+    padding: 9px 26px; text-align: center;
+  }
+  .banner b { font-weight: 700; }
+
+  /* ---------- Hero ---------- */
+
+  .hero { padding-block: 84px 40px; }
+  .hero h1 { font-size: clamp(2.5rem, 7vw, 4.6rem); font-weight: 700; max-width: 15ch; }
+  .hero h1 .lit {
+    background: linear-gradient(100deg, var(--accent), var(--moss));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p {
+    margin-top: 22px; max-width: 54ch;
+    color: var(--text-dim); font-size: 1.05rem;
+  }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 999px;
+    font-size: 0.92rem; font-weight: 700; text-decoration: none;
+    border: 1px solid transparent; cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  }
+  .btn-primary { background: var(--accent); color: var(--on-accent); box-shadow: var(--shadow); }
+  .btn-ghost { border-color: var(--border-strong); color: var(--text); background: transparent; }
+  .btn:active { transform: scale(0.96); transition-duration: 0.1s; }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-ghost:hover { border-color: var(--accent-soft); color: var(--accent); }
+  }
+
+  /* ---------- The diagram ---------- */
+
+  /* One continuous spine with the chips sitting on it, rather than separate
+     connector elements between rows. The first build drew a connector per
+     gap, but a caption is taller than its chip, so each connector began
+     below the caption instead of below the chip and the line floated free.
+     A single rail cannot come apart. */
+  .stack { list-style: none; margin: 40px 0 0; padding: 0; position: relative; }
+
+  .stack::before, .stack::after {
+    content: ""; position: absolute;
+    left: 27px; width: 2px;                 /* centre x = 28, the chip centre */
+    top: var(--rail-top, 28px);
+    height: var(--rail-len, calc(100% - 56px));
+  }
+  .stack::before { background: var(--border); }
+  .stack::after {
+    background: linear-gradient(var(--accent), var(--moss));
+    clip-path: inset(0 0 calc(100% - var(--climb, 1) * 100%) 0);
+  }
+
+  .node-row { position: relative; padding-bottom: 34px; }
+  .node-row:last-child { padding-bottom: 0; }
+
+  .node {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) minmax(0, 190px);
+    gap: 18px; align-items: start;
+  }
+  .chip {
+    position: relative; z-index: 1;         /* sits over the rail */
+    width: 56px; height: 56px; border-radius: 16px;
+    display: grid; place-items: center;
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text-faint);
+    transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+  }
+  .chip svg { width: 22px; height: 22px; }
+  .node-row.on .chip { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg)); }
+
+  .node-body { padding-top: 4px; }
+  .node-name {
+    font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+    font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em;
+  }
+  .node-kind {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--moss); margin-top: 2px;
+  }
+  .node-body p { color: var(--text-dim); font-size: 0.95rem; margin-top: 8px; }
+  /* Unreached nodes dim, but only slightly: at 0.5 the whole diagram read as
+     dead on first paint, before any scrolling has happened. */
+  .node-row:not(.on) .node-body { opacity: 0.72; }
+  .node-body { transition: opacity 0.45s ease; }
+
+  /* The third column: the number this box is judged on. Right-aligned, so
+     the diagram gains a measured right edge instead of trailing off. */
+  .metric {
+    padding-top: 8px; text-align: right;
+    font-size: 0.76rem; color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .metric b { display: block; font-size: 1.24rem; font-weight: 700; color: var(--moss); letter-spacing: -0.02em; }
+  .node-row:not(.on) .metric { opacity: 0.72; }
+
+  /* A branch off the main path: a second chip offset to the right, joined by
+     a horizontal tick. This is what stops the diagram reading as a
+     chronology -- the spine stays unbroken and the branch hangs off it. */
+  .branch { margin-top: 20px; margin-left: 76px; position: relative; }
+  .branch::before {
+    content: ""; position: absolute;
+    left: -48px; top: 21px; width: 40px; height: 2px;
+    background: var(--border);
+  }
+  .branch .node { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 190px); gap: 14px; }
+  .branch .chip { width: 44px; height: 44px; border-radius: 13px; }
+  .branch .chip svg { width: 18px; height: 18px; }
+  .branch .node-name { font-size: 0.98rem; }
+  .branch .node-kind { font-size: 0.63rem; }
+
+  /* ---------- Projects mapped onto the stack ---------- */
+
+  .projects { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 34px; }
+  .proj {
+    border: 1px solid var(--border); border-radius: 18px;
+    background: color-mix(in srgb, var(--surface) 76%, transparent);
+    padding: 22px 24px 20px;
+  }
+  .proj h3 { font-size: 1.1rem; font-weight: 700; }
+  .proj p { color: var(--text-dim); font-size: 0.93rem; margin-top: 8px; }
+  .touches { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .touch {
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--surface-2); color: var(--text-faint);
+  }
+  /* The payoff: a project says which parts of the system it actually moved. */
+  .touch.hit { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+
+  /* ---------- Contact ---------- */
+
+  .contact-card {
+    border: 1px solid var(--border); border-radius: 24px;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    padding: 44px 40px;
+  }
+  .contact-card h2 { font-size: clamp(1.8rem, 4.4vw, 2.7rem); font-weight: 700; margin-top: 14px; }
+  .contact-card p { color: var(--text-dim); margin-top: 14px; max-width: 46ch; }
+
+  footer {
+    border-top: 1px solid var(--border); margin-top: 40px;
+    padding: 26px 0; font-size: 0.82rem; color: var(--text-faint);
+  }
+
+  .toggle {
+    position: fixed; right: 18px; top: 18px; z-index: 20;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--border-strong); background: var(--surface);
+    color: var(--text-dim); display: grid; place-items: center; cursor: pointer;
+  }
+  .toggle svg { width: 17px; height: 17px; }
+  .moon { display: none; }
+  :root[data-theme="dark"] .moon, :root:not([data-theme="light"]) .moon { display: block; }
+  :root[data-theme="dark"] .sun, :root:not([data-theme="light"]) .sun { display: none; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .moon { display: none; } :root:not([data-theme="dark"]) .sun { display: block; } }
+
+  @media (max-width: 760px) {
+    section { padding-block: 68px; }
+    .hero { padding-block: 56px 28px; }
+    .projects { grid-template-columns: 1fr; }
+    /* The metric column would squeeze the caption to nothing on a phone, so
+       it drops under the caption and left-aligns with it. */
+    .node, .branch .node { grid-template-columns: 56px minmax(0, 1fr); }
+    .branch .node { grid-template-columns: 44px minmax(0, 1fr); }
+    .metric { grid-column: 2; text-align: left; padding-top: 10px; }
+    .metric b { display: inline; font-size: 0.95rem; margin-left: 6px; }
+    .branch { margin-left: 34px; }
+    .branch::before { left: -22px; width: 16px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .node-body, .chip { transition-duration: 0.18s; }
+    .node-row .node-body, .node-row .metric { opacity: 1; }
+  }
+</style>
+</head>
+<body class="no-js">
+
+<div class="banner"><b>Prototype B</b> — “The Systems Diagram”. Placeholder content; structure is what is being judged.</div>
+
+<button class="toggle" id="toggle" aria-label="Toggle theme">
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M19.1 4.9l-1.4 1.4M6.3 17.7l-1.4 1.4"/></svg>
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+</button>
+
+<main>
+  <header class="wrap hero">
+    <h1>Full-stack engineer building things that <span class="lit">hold up</span>.</h1>
+    <p>I take products from data model to pixel: designing the API, shipping the interface, and staying for the unglamorous parts that keep it fast and maintainable a year later.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#">Résumé</a>
+      <a class="btn btn-ghost" href="#contact">Get in touch</a>
+    </div>
+  </header>
+
+  <section class="wrap" id="how">
+    <span class="kicker">How I build</span>
+    <h2 style="font-size:clamp(1.7rem,4vw,2.4rem);font-weight:700;margin-top:14px;">One request, end to end</h2>
+    <p style="color:var(--text-dim);margin-top:12px;max-width:52ch;">Scroll and the path fills in. Every box is somewhere I have actually owned code, not a stack I have read about.</p>
+
+    <ol class="stack" id="stack">
+      <li class="node-row">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Client</div>
+            <div class="node-kind">React · TypeScript</div>
+            <p>Types generated from the schema, so the interface cannot quietly drift away from the API it talks to.</p>
+          </div>
+          <div class="metric">bundle<b>— kb</b></div>
+        </div>
+      </li>
+
+      <li class="node-row">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Edge</div>
+            <div class="node-kind">CDN · cache rules</div>
+            <p>Most requests should never reach the origin. Deciding which ones may is a design decision, not an ops afterthought.</p>
+          </div>
+          <div class="metric">cache hit<b>— %</b></div>
+        </div>
+      </li>
+
+      <li class="node-row">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="1.6" fill="currentColor"/><circle cx="15" cy="12" r="1.6" fill="currentColor"/><circle cx="10" cy="18" r="1.6" fill="currentColor"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">API</div>
+            <div class="node-kind">Contracts · authn/z</div>
+            <p>One place that decides who may do what. Versioned deliberately, so old clients keep working while the shape moves on.</p>
+          </div>
+          <div class="metric">p99<b>— ms</b></div>
+        </div>
+      </li>
+
+      <li class="node-row">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M12 8v8"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Service</div>
+            <div class="node-kind">Business logic</div>
+            <p>Synchronous work the caller is waiting on. Everything else gets handed sideways.</p>
+          </div>
+          <div class="metric">error rate<b>— %</b></div>
+        </div>
+
+        <div class="branch">
+          <div class="node">
+            <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/><path d="M7 4v6M17 14v6"/></svg></span>
+            <div class="node-body">
+              <div class="node-name">Queue</div>
+              <div class="node-kind">Async · retries</div>
+              <p>Anything slow, flaky, or safe to do later. Idempotent by default, because it will be retried.</p>
+            </div>
+            <div class="metric">backlog<b>—</b></div>
+          </div>
+        </div>
+      </li>
+
+      <li class="node-row">
+        <div class="node">
+          <span class="chip" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></span>
+          <div class="node-body">
+            <div class="node-name">Postgres</div>
+            <div class="node-kind">The data model</div>
+            <p>Where the thinking actually happens. Constraints in the database, not only in the application — the schema outlives every framework above it.</p>
+          </div>
+          <div class="metric">p95 query<b>— ms</b></div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section class="wrap" id="work">
+    <span class="kicker">Work</span>
+    <h2 style="font-size:clamp(1.7rem,4vw,2.4rem);font-weight:700;margin-top:14px;">Selected projects</h2>
+    <p style="color:var(--text-dim);margin-top:12px;max-width:52ch;">Each one tagged with the parts of that path it actually moved.</p>
+
+    <div class="projects">
+      <article class="proj">
+        <h3>Project Alpha</h3>
+        <p>A short description of what this project does and the problem it solves.</p>
+        <div class="touches">
+          <span class="touch hit">Client</span><span class="touch hit">Edge</span><span class="touch hit">API</span>
+          <span class="touch">Service</span><span class="touch">Queue</span><span class="touch hit">Postgres</span>
+        </div>
+      </article>
+      <article class="proj">
+        <h3>Project Beta</h3>
+        <p>A short description of what this project does and the problem it solves.</p>
+        <div class="touches">
+          <span class="touch">Client</span><span class="touch">Edge</span><span class="touch hit">API</span>
+          <span class="touch hit">Service</span><span class="touch hit">Queue</span><span class="touch hit">Postgres</span>
+        </div>
+      </article>
+      <article class="proj">
+        <h3>Project Gamma</h3>
+        <p>A short description of what this project does and the problem it solves.</p>
+        <div class="touches">
+          <span class="touch">Client</span><span class="touch hit">Edge</span><span class="touch hit">API</span>
+          <span class="touch hit">Service</span><span class="touch">Queue</span><span class="touch">Postgres</span>
+        </div>
+      </article>
+      <article class="proj">
+        <h3>Project Delta</h3>
+        <p>A short description of what this project does and the problem it solves.</p>
+        <div class="touches">
+          <span class="touch hit">Client</span><span class="touch">Edge</span><span class="touch">API</span>
+          <span class="touch hit">Service</span><span class="touch">Queue</span><span class="touch hit">Postgres</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="wrap" id="contact">
+    <div class="contact-card">
+      <span class="kicker">Contact</span>
+      <h2>Got something worth building?</h2>
+      <p>Always up for interesting problems and good teams. Email is the fastest way to reach me.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="mailto:hello@gunpreet-singh.com">hello@gunpreet-singh.com</a>
+        <a class="btn btn-ghost" href="#">GitHub</a>
+        <a class="btn btn-ghost" href="#">LinkedIn</a>
+      </div>
+    </div>
+    <footer class="wrap" style="padding-inline:0;">Prototype B · not the live site</footer>
+  </section>
+</main>
+
+<script>
+  document.body.classList.remove('no-js');
+
+  // Theme toggle -- same contract as the live site.
+  (function () {
+    var root = document.documentElement;
+    try { var s = localStorage.getItem('proto-theme'); if (s) root.setAttribute('data-theme', s); } catch (e) {}
+    document.getElementById('toggle').addEventListener('click', function () {
+      var dark = root.getAttribute('data-theme') === 'dark' ||
+        (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var next = dark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('proto-theme', next); } catch (e) {}
+    });
+  })();
+
+  // Scroll-scrubbed assembly of the path. Same approach as the live
+  // timeline: positions read with offsetTop (transform-immune), work
+  // rAF-throttled behind a passive listener, and every write is a class or a
+  // custom property on the element that owns it.
+  (function () {
+    var stack = document.getElementById('stack');
+    if (!stack) return;
+    var rows = [].slice.call(stack.querySelectorAll('.node-row'));
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!rows.length) return;
+
+    if (reduce) {
+      stack.style.setProperty('--climb', 1);
+      rows.forEach(function (r) { r.classList.add('on'); });
+      return;
+    }
+    stack.style.setProperty('--climb', 0);
+
+    // Chip centre relative to the list: chips are 56px tall and flush with
+    // the top of their row. offsetTop, not getBoundingClientRect -- rects
+    // include transforms and would report positions still in motion.
+    function chipY(row) { return row.offsetTop + 28; }
+
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var top = stack.getBoundingClientRect().top;
+      var line = innerHeight * 0.62;         // a node lights just before you read it
+      var first = chipY(rows[0]);
+      var span = Math.max(chipY(rows[rows.length - 1]) - first, 0);
+      var travelled = Math.max(0, Math.min(span, line - (top + first)));
+
+      // The rail runs chip-centre to chip-centre, so the fill comes to rest
+      // on the last box instead of overshooting into the space below it.
+      stack.style.setProperty('--rail-top', first + 'px');
+      stack.style.setProperty('--rail-len', span + 'px');
+      stack.style.setProperty('--climb', span ? (travelled / span).toFixed(4) : 1);
+
+      rows.forEach(function (r) { r.classList.toggle('on', (top + chipY(r)) <= line); });
+    }
+    function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(update); }
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll, { passive: true });
+    update();
+  })();
+</script>
+</body>
+</html>

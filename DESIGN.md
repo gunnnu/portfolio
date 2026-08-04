@@ -298,9 +298,10 @@ Where they conflict directly:
 | Reveal duration | 800ms+, with `blur-md` | 620ms, no blur | Animated blur was measured as the single largest source of dropped frames on mobile here. `review-animations` also caps blur at 20px and flags Safari specifically. |
 | Scroll listeners | "Never use `window.addEventListener('scroll')`" | Used, rAF-throttled and passive | Correct advice for *reveals*, where `IntersectionObserver` is strictly better and is what this site uses for them. But a scrubbed rail needs continuous scroll *position*, which `IntersectionObserver` cannot report — it only fires on threshold crossings. |
 
+Note the type stack is *not* a conflict: Bricolage Grotesque + Manrope were already chosen to avoid the training-default set, and neither appears on that skill's banned-font list.
+
 Deliberate departures from `high-end-visual-design` that are load-bearing, not oversights:
 
-- **Inter is used for body text** despite being on that skill's banned-font list. It is paired with Fraunces for headings and JetBrains Mono for labels, so the page is not resting on a default UI face; and the licensing and self-host story for the suggested alternatives does not survive the no-build-step constraint.
 - **The header is a sticky top bar**, not a detached floating pill. It is the only chrome on a single-page site and it doubles as the scroll-spy; floating it would cost the full-bleed hairline that separates it from the content.
 - **Cards are single-layer**, not the nested "double-bezel" shell. This world's depth language is a wide soft shadow plus one hairline border (see *Elevation & Depth*); nested bezels belong to the hard-edged hardware aesthetic this design deliberately moved away from.
 - **Blur is used on a fixed full-viewport canvas**, which that skill permits only for nav and overlays. Measured and tuned rather than assumed: 26px and 0.35x render scale below 700px.
