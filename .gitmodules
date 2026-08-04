@@ -4,3 +4,9 @@
 [submodule ".claudedesignskills"]
 	path = .claudedesignskills
 	url = https://github.com/freshtechbro/claudedesignskills.git
+[submodule ".taste-skill"]
+	path = .taste-skill
+	url = https://github.com/Leonxlnx/taste-skill.git
+[submodule ".emil-skills"]
+	path = .emil-skills
+	url = https://github.com/emilkowalski/skills.git
