@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Prototype C — Engineering Register · Gunpreet Singh</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#efece4" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#131519" media="(prefers-color-scheme: dark)" />
+
+<!--
+  PROTOTYPE C — "Engineering Register"
+
+  Direction under test: stop presenting the page as a marketing site and
+  present it as a well-kept engineering document. Dense, quiet, tabular,
+  monospace-led. No cards, no shadows, no motion to speak of -- structure is
+  carried by rules, alignment and a strict measure.
+
+  Two reasons this is worth testing against the current site:
+
+  1. It tolerates a low word count. The live page spreads 310 words over
+     3,352px and reads thin. The same 310 words in a tabular register read
+     as terse rather than empty, because a table is *supposed* to be short.
+  2. Its audience is engineers. Density and precision signal competence to
+     that reader in a way generous whitespace does not.
+
+  The palette is inherited unchanged from the live site on purpose, so what
+  is being compared is register -- not colour.
+
+  Content is still placeholder. The measure is the thing being judged.
+-->
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+
+  :root {
+    color-scheme: light;
+    --bg: #efece4; --surface: #e7e3d9; --surface-2: #ddd8cb;
+    --text: #1c1e24; --text-dim: #55575f; --text-faint: #6f7078;
+    --border: #d5cfc1; --border-strong: #c3bcab;
+    --accent: #5a5e96; --accent-soft: #8a8fc7;
+    --moss: #4f6a55; --moss-soft: #7d9a80;
+    --on-accent: #f7f6f2;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #131519; --surface: #1a1d23; --surface-2: #22262e;
+      --text: #e9e6df; --text-dim: #a2a4ad; --text-faint: #797b85;
+      --border: #2a2e37; --border-strong: #3a3f4a;
+      --accent: #989dd8; --accent-soft: #7a7eb4;
+      --moss: #8aa88d; --moss-soft: #6d8a71;
+      --on-accent: #16181d;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #131519; --surface: #1a1d23; --surface-2: #22262e;
+    --text: #e9e6df; --text-dim: #a2a4ad; --text-faint: #797b85;
+    --border: #2a2e37; --border-strong: #3a3f4a;
+    --accent: #989dd8; --accent-soft: #7a7eb4;
+    --moss: #8aa88d; --moss-soft: #6d8a71;
+    --on-accent: #16181d;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 15.5px;
+    line-height: 1.66;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* A single strict measure. Everything hangs off the same left edge --
+     that alignment is doing the work cards and shadows do elsewhere. */
+  .doc { max-width: 780px; margin: 0 auto; padding: 0 24px 96px; }
+
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--accent) 32%, transparent); }
+  a:hover { border-bottom-color: var(--accent); }
+  p { margin: 0; }
+
+  .mono { font-family: var(--mono); font-size: 0.82em; letter-spacing: -0.01em; }
+
+  /* ---------- Banner ---------- */
+  .banner {
+    font-family: var(--mono); font-size: 0.74rem;
+    background: var(--accent); color: var(--on-accent);
+    padding: 8px 24px; text-align: center;
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .masthead { padding-top: 64px; }
+  .idline {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 20px; flex-wrap: wrap;
+    font-family: var(--mono); font-size: 0.82rem;
+    color: var(--text-faint);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .idline b { color: var(--text); font-weight: 700; letter-spacing: -0.01em; }
+  .idline .status { color: var(--moss); }
+  .idline .status::before {
+    content: ""; display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--moss); margin-right: 7px;
+    vertical-align: 1px;
+  }
+
+  .thesis {
+    margin-top: 34px;
+    font-size: 1.32rem; line-height: 1.5; letter-spacing: -0.015em;
+    max-width: 62ch;
+  }
+  .thesis em { font-style: normal; color: var(--accent); }
+  .sub { margin-top: 18px; color: var(--text-dim); max-width: 66ch; }
+
+  /* ---------- Section headings: a mono rubric, not a display face ---------- */
+
+  h2 {
+    font-family: var(--mono); font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0 0 18px;
+    padding-bottom: 9px;
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  h2 .count { color: var(--border-strong); font-weight: 400; letter-spacing: 0.06em; }
+  section { margin-top: 62px; }
+
+  /* ---------- Work: a table, not a card grid ---------- */
+
+  .rows { display: grid; }
+  .row {
+    display: grid;
+    grid-template-columns: 92px minmax(0, 1fr) auto;
+    gap: 6px 22px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+  .row:last-child { border-bottom: 0; }
+  .row .year {
+    font-family: var(--mono); font-size: 0.8rem;
+    color: var(--text-faint); font-variant-numeric: tabular-nums;
+  }
+  .row h3 { margin: 0; font-size: 1.02rem; font-weight: 700; letter-spacing: -0.01em; }
+  .row .desc { color: var(--text-dim); font-size: 0.95rem; margin-top: 3px; }
+  .row .tech {
+    font-family: var(--mono); font-size: 0.76rem; color: var(--text-faint);
+    margin-top: 7px;
+  }
+  .row .tech span::after { content: " · "; color: var(--border-strong); }
+  .row .tech span:last-child::after { content: ""; }
+  .row .links { display: flex; gap: 14px; font-family: var(--mono); font-size: 0.76rem; white-space: nowrap; }
+  .row .links a { border-bottom: 0; color: var(--text-faint); }
+  .row .links a:hover { color: var(--accent); }
+
+  /* The one moment of colour in the whole document: a single metric per
+     project. With real numbers in it this is the highest-signal thing on
+     the page, which is why it gets the accent and nothing else does. */
+  .metric {
+    font-family: var(--mono); font-size: 0.78rem;
+    color: var(--moss); margin-top: 7px;
+  }
+  .metric b { color: var(--text); font-weight: 700; }
+
+  /* ---------- Record ---------- */
+
+  .rec { grid-template-columns: 92px minmax(0, 1fr); }
+  .rec .org { color: var(--moss); font-size: 0.9rem; margin-top: 2px; }
+
+  /* ---------- Contact: a key/value block ---------- */
+
+  .kv { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 9px 22px; font-size: 0.95rem; }
+  .kv dt { font-family: var(--mono); font-size: 0.78rem; color: var(--text-faint); }
+  .kv dd { margin: 0; }
+
+  footer {
+    margin-top: 62px; padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono); font-size: 0.74rem; color: var(--text-faint);
+    display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+
+  .toggle {
+    position: fixed; right: 16px; top: 16px; z-index: 20;
+    font-family: var(--mono); font-size: 0.72rem;
+    padding: 6px 11px; border-radius: 6px;
+    border: 1px solid var(--border-strong); background: var(--surface);
+    color: var(--text-dim); cursor: pointer;
+  }
+
+  @media (max-width: 620px) {
+    .masthead { padding-top: 44px; }
+    .thesis { font-size: 1.14rem; }
+    /* The three-column row folds, but the mono year stays on its own line as
+       a label so the table still scans top-down. */
+    .row, .rec { grid-template-columns: 1fr; gap: 2px; }
+    .row .links { margin-top: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">Prototype C — “Engineering Register”. Placeholder content; measure and density are what is being judged.</div>
+
+<button class="toggle" id="toggle">theme</button>
+
+<div class="doc">
+
+  <header class="masthead">
+    <div class="idline">
+      <span><b>Gunpreet Singh</b> — full-stack engineer</span>
+      <span class="status">open to new work</span>
+    </div>
+
+    <p class="thesis">I take products from <em>data model</em> to <em>pixel</em>: designing the API, shipping the interface, and staying for the unglamorous parts that keep it fast and maintainable a year later.</p>
+
+    <p class="sub">Remote. Currently building and shipping. TypeScript, React, distributed backends.</p>
+  </header>
+
+  <section>
+    <h2>Selected work <span class="count">4</span></h2>
+    <div class="rows">
+
+      <article class="row">
+        <div class="year">2024</div>
+        <div>
+          <h3>Project Alpha</h3>
+          <div class="desc">A short description of what this project does and the problem it solves.</div>
+          <div class="tech"><span>TypeScript</span><span>React</span><span>Node.js</span><span>PostgreSQL</span></div>
+          <div class="metric">— <b>0×</b> placeholder for the outcome that matters</div>
+        </div>
+        <div class="links"><a href="#">live ↗</a><a href="#">code ↗</a></div>
+      </article>
+
+      <article class="row">
+        <div class="year">2023</div>
+        <div>
+          <h3>Project Beta</h3>
+          <div class="desc">A short description of what this project does and the problem it solves.</div>
+          <div class="tech"><span>Python</span><span>FastAPI</span><span>Redis</span><span>Docker</span></div>
+          <div class="metric">— <b>0×</b> placeholder for the outcome that matters</div>
+        </div>
+        <div class="links"><a href="#">live ↗</a><a href="#">code ↗</a></div>
+      </article>
+
+      <article class="row">
+        <div class="year">2022</div>
+        <div>
+          <h3>Project Gamma</h3>
+          <div class="desc">A short description of what this project does and the problem it solves.</div>
+          <div class="tech"><span>Go</span><span>gRPC</span><span>AWS</span><span>Terraform</span></div>
+          <div class="metric">— <b>0×</b> placeholder for the outcome that matters</div>
+        </div>
+        <div class="links"><a href="#">live ↗</a><a href="#">code ↗</a></div>
+      </article>
+
+      <article class="row">
+        <div class="year">2021</div>
+        <div>
+          <h3>Project Delta</h3>
+          <div class="desc">A short description of what this project does and the problem it solves.</div>
+          <div class="tech"><span>Rust</span><span>WebAssembly</span><span>SQLite</span></div>
+          <div class="metric">— <b>0×</b> placeholder for the outcome that matters</div>
+        </div>
+        <div class="links"><a href="#">live ↗</a><a href="#">code ↗</a></div>
+      </article>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Record <span class="count">2019 — present</span></h2>
+    <div class="rows">
+      <article class="row rec">
+        <div class="year">2019–2021</div>
+        <div>
+          <h3>Junior Developer</h3>
+          <div class="org">First Company</div>
+          <div class="desc">One or two lines on scope and impact: what you owned, what shipped, what improved.</div>
+        </div>
+      </article>
+      <article class="row rec">
+        <div class="year">2021–2023</div>
+        <div>
+          <h3>Software Engineer</h3>
+          <div class="org">Previous Company</div>
+          <div class="desc">One or two lines on scope and impact: what you owned, what shipped, what improved.</div>
+        </div>
+      </article>
+      <article class="row rec">
+        <div class="year">2023–</div>
+        <div>
+          <h3>Senior Software Engineer</h3>
+          <div class="org">Company Name</div>
+          <div class="desc">One or two lines on scope and impact: what you owned, what shipped, what improved.</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>Contact</h2>
+    <dl class="kv">
+      <dt>email</dt>      <dd><a href="mailto:hello@gunpreet-singh.com">hello@gunpreet-singh.com</a></dd>
+      <dt>github</dt>     <dd><a href="#">github.com/…</a></dd>
+      <dt>linkedin</dt>   <dd><a href="#">linkedin.com/in/…</a></dd>
+      <dt>résumé</dt>     <dd><a href="#">resume.pdf</a></dd>
+      <dt>timezone</dt>   <dd>Remote</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <span>© 2026 Gunpreet Singh</span>
+    <span>Prototype C · not the live site</span>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    try { var s = localStorage.getItem('proto-theme'); if (s) root.setAttribute('data-theme', s); } catch (e) {}
+    document.getElementById('toggle').addEventListener('click', function () {
+      var dark = root.getAttribute('data-theme') === 'dark' ||
+        (!root.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches);
+      var next = dark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('proto-theme', next); } catch (e) {}
+    });
+  })();
+</script>
+</body>
+</html>
