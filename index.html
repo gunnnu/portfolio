@@ -132,7 +132,7 @@
     --shadow-lift: 0 26px 54px -28px rgba(0, 0, 0, 0.85);
   }
 
-  * { box-sizing: border-box; }
+  *, *::before, *::after { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   /* No vertical page snap. Sections are taller than the viewport, so even
      `proximity` fought the reader on the way through a section and tugged at
@@ -466,8 +466,8 @@
   .timeline::before {
     content: "";
     position: absolute;
-    left: 5px; top: 10px; bottom: 10px;
-    width: 1px;
+    left: 6px; top: 10px; bottom: 10px;
+    width: 2px;   /* centre x = 7, matching the dot */
     background: linear-gradient(to top, var(--accent-soft), var(--border));
     transform: scaleY(var(--rail, 1));
     transform-origin: 50% 100%;   /* draws upward, like a climb */
@@ -528,8 +528,8 @@
   .tl-item::before {
     content: "";
     position: absolute;
-    left: 0; top: 7px;
-    width: 11px; height: 11px;
+    left: 0; top: 6px;
+    width: 14px; height: 14px;   /* border-box, so centre x = 7 */
     border-radius: 50%;
     background: var(--bg);
     border: 2px solid var(--accent-soft);
