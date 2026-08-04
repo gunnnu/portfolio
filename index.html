@@ -463,32 +463,62 @@
   /* ---------- Experience ---------- */
 
   .timeline { list-style: none; margin: 0; padding: 0; position: relative; }
+
+  /* The dim track: always present, so the rail never reads as missing. */
   .timeline::before {
     content: "";
     position: absolute;
     left: 6px; top: 10px; bottom: 10px;
     width: 2px;   /* centre x = 7, matching the dot */
-    background: linear-gradient(to top, var(--accent-soft), var(--border));
-    transform: scaleY(var(--rail, 1));
-    transform-origin: 50% 100%;   /* draws upward, like a climb */
-    transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--border);
   }
-  /* Undrawn until the section is reached; the .js gate means no-JS keeps a
-     complete rail rather than an invisible one. */
-  .js .timeline { --rail: 0; }
-  .js .timeline.is-climbed { --rail: 1; }
 
-  /* Dots light bottom-to-top, so the sequence reads as ascending even though
-     the list is newest-first. */
-  .js .tl-item::before {
-    opacity: 0;
-    transform: scale(0.5);
-    transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  /* The lit portion, scrubbed by scroll position rather than played once.
+     A one-shot entrance is easy to scroll straight past; tying it to the
+     scrollbar means the reader is driving it and cannot miss it.
+     Revealed with clip-path rather than scaleY: scaling would squeeze the
+     whole gradient into the lit portion, so the head of the rail would read
+     moss at every position instead of travelling accent -> moss. */
+  .timeline::after {
+    content: "";
+    position: absolute;
+    left: 6px; top: 10px; bottom: 10px;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--accent), var(--moss));
+    clip-path: inset(0 0 calc(100% - var(--climb, 1) * 100%) 0);
   }
-  .js .timeline.is-climbed .tl-item::before { opacity: 1; transform: scale(1); }
-  .js .timeline.is-climbed .tl-item:nth-child(3)::before { transition-delay: 0.18s; }
-  .js .timeline.is-climbed .tl-item:nth-child(2)::before { transition-delay: 0.52s; }
-  .js .timeline.is-climbed .tl-item:nth-child(1)::before { transition-delay: 0.86s; }
+  .js .timeline { --climb: 0; }
+
+  /* The climber: a pip that rides the rail at the reader's position. */
+  .tl-climber {
+    position: absolute;
+    left: 3.5px;
+    top: 12px;
+    width: 7px; height: 7px;   /* centre x = 7; smaller than the 14px dots so
+                                  it reads as a travelling marker, not a
+                                  fourth entry */
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 20%, transparent);
+    transform: translateY(var(--climber-y, 0px));
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    will-change: transform;
+    pointer-events: none;
+  }
+  .js .timeline.is-climbing .tl-climber { opacity: 1; }
+
+  /* Dots fill as the climber passes them, so the column reads as progress
+     rather than as three static markers. */
+  .tl-item::before { transition: background 0.35s ease, border-color 0.35s ease; }
+  .tl-item.is-reached::before {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .tl-item .tl-when,
+  .tl-item .tl-what { transition: opacity 0.4s ease; }
+  .js .timeline.is-climbing .tl-item:not(.is-reached) .tl-when,
+  .js .timeline.is-climbing .tl-item:not(.is-reached) .tl-what { opacity: 0.55; }
 
   /* Reached the top, now looking right for what is next. */
   .tl-peek {
@@ -507,12 +537,12 @@
     white-space: nowrap;
     opacity: 0;
     transform: translateX(-6px);
-    transition: opacity 0.5s ease 1.15s, transform 0.5s ease 1.15s;
+    transition: opacity 0.5s ease 0.15s, transform 0.5s ease 0.15s;
     pointer-events: none;
   }
-  .timeline.is-climbed .tl-peek { opacity: 1; transform: translateX(0); }
+  .tl-item.is-reached .tl-peek { opacity: 1; transform: translateX(0); }
   .tl-peek svg { width: 13px; height: 13px; }
-  .timeline.is-climbed .tl-peek svg { animation: peek-look 2.6s ease-in-out 1.7s infinite; }
+  .tl-item.is-reached .tl-peek svg { animation: peek-look 2.6s ease-in-out 0.6s infinite; }
   @keyframes peek-look {
     0%, 62%, 100% { transform: translateX(0); opacity: 0.75; }
     76%           { transform: translateX(4px); opacity: 1; }
@@ -639,11 +669,13 @@
     .card:hover, .btn:hover { transform: none; }
     .btn:active, .card:active, .nav-links a:active, .theme-toggle:active, .brand:active { transform: none; }
     .scroll-rail { display: none; }
-    .js .timeline { --rail: 1; }
-    .js .tl-item::before { opacity: 1; transform: none; transition: none; }
+    .js .timeline { --climb: 1; }
+    .tl-climber { display: none; }
+    .js .timeline.is-climbing .tl-item:not(.is-reached) .tl-when,
+    .js .timeline.is-climbing .tl-item:not(.is-reached) .tl-what { opacity: 1; }
+    .tl-item::before { opacity: 1; transform: none; transition: none; }
     .tl-peek { opacity: 1; transform: none; transition: none; }
-    .timeline.is-climbed .tl-peek svg { animation: none; }
-    .timeline::before { transition: none; }
+    .tl-item.is-reached .tl-peek svg { animation: none; }
     .cards .card { transform: none !important; filter: none !important; opacity: 1 !important; }
   }
 
@@ -867,6 +899,7 @@
     </div>
 
     <ol class="timeline">
+      <span class="tl-climber" aria-hidden="true"></span>
       <!-- PLACEHOLDER ROLE 1 -->
       <li class="tl-item reveal">
         <div class="tl-when">2023–Present</div>
@@ -1075,20 +1108,56 @@
     }
   })();
 
-  // Experience climb: rail draws upward and the dots light bottom-to-top when
-  // the section is first reached, then the top entry looks right for more.
+  // Experience climb, scrubbed by scroll rather than played once. A one-shot
+  // entrance is easy to scroll straight past; tying the fill, the climber pip
+  // and the dot states to scroll position means the reader drives it.
   (function () {
     var timeline = document.querySelector('.timeline');
     if (!timeline) return;
-    if (!('IntersectionObserver' in window)) { timeline.classList.add('is-climbed'); return; }
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        timeline.classList.add('is-climbed');
-        io.disconnect();
+    var items = Array.prototype.slice.call(timeline.querySelectorAll('.tl-item'));
+    var climber = timeline.querySelector('.tl-climber');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion || !items.length) {
+      timeline.style.setProperty('--climb', '1');
+      items.forEach(function (i) { i.classList.add('is-reached'); });
+      return;
+    }
+
+    var ticking = false;
+
+    function update() {
+      ticking = false;
+      var box = timeline.getBoundingClientRect();
+      // The reading line sits a little above centre, where the eye actually is.
+      var line = window.innerHeight * 0.46;
+      var progress = (line - box.top) / (box.height || 1);
+      progress = Math.max(0, Math.min(1, progress));
+
+      timeline.classList.toggle('is-climbing', box.top < window.innerHeight && box.bottom > 0);
+      timeline.style.setProperty('--climb', progress.toFixed(4));
+      if (climber) {
+        // The track is inset 10px top and bottom; the pip rides that span.
+        var span = Math.max(box.height - 20, 0);
+        climber.style.setProperty('--climber-y', (span * progress).toFixed(1) + 'px');
+      }
+
+      items.forEach(function (item) {
+        var r = item.getBoundingClientRect();
+        // A dot is "reached" once the reading line passes it.
+        item.classList.toggle('is-reached', (r.top + 13) <= line);
       });
-    }, { threshold: 0.2 });
-    io.observe(timeline);
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
   })();
 
   // Keep --header-h honest. The mobile nav wraps to two rows, and the exact
