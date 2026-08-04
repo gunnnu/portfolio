@@ -806,12 +806,22 @@
     .branch::before { left: -22px; width: 16px; }
   }
 
+
   @media (max-width: 700px) {
     section { padding-block: 76px; }
     #about {
       padding-block: 64px calc(68px + env(safe-area-inset-bottom, 0px) + var(--browser-ui, 56px));
     }
-    nav.wrap { height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+    nav.wrap { position: relative; height: auto; flex-wrap: wrap; row-gap: 10px; padding-top: 12px; padding-bottom: 12px; }
+
+    /* The toggle is lifted onto the brand row. Left in flow it is the second
+       child of .nav-right, so it centres itself against the whole links
+       block and sits visibly low beside it. Pinning it to the top right also
+       hands the links the full width, which is what lets them stay on one
+       row. */
+    /* top: 8px, not 12px -- the 38px toggle has to sit 4px higher than the
+       30px brand mark for their centres to agree. */
+    .theme-toggle { position: absolute; top: 8px; right: 26px; }
 
     /* backdrop-filter re-blurs whatever is behind the sticky header on every
        scroll frame, which measured as the second-largest source of dropped
@@ -832,14 +842,13 @@
        silently lose in dark mode -- which it did. */
     #bg-canvas { filter: blur(26px); }
     :root { --header-h: 112px; }
-    .nav-right { width: 100%; justify-content: space-between; }
-    /* Five items need 358px and the widest phone here offers 336px, so they
-       wrap rather than scroll. The previous overflow-x: auto silently parked
-       the last item off-screen with no affordance that it was there --
-       survivable at four items, a hidden nav entry at five. --header-h is
-       measured in JS, so the extra row feeds scroll-margin-top by itself. */
-    .nav-links { flex-wrap: wrap; gap: 2px 1px; }
-    .nav-links a { padding: 7px 10px; }
+    .nav-right { width: 100%; }
+    /* One row, always. Wrapping put Contact on a line of its own and left the
+       toggle centred against a two-row block; scrolling (the version before
+       that) parked Contact off-screen entirely. With the toggle lifted out,
+       the links get the full width and five items fit by tightening instead. */
+    .nav-links { flex-wrap: nowrap; gap: 0; width: 100%; justify-content: space-between; }
+    .nav-links a { padding: 7px 8px; font-size: 0.82rem; white-space: nowrap; }
     .tl-item { grid-template-columns: 1fr; gap: 5px; padding-left: 28px; }
 
     /* ---- Projects revolver ----
@@ -883,6 +892,15 @@
        them up and gives the email pill room it was close to outgrowing. */
     .contact-actions .btn { width: 100%; justify-content: center; }
   }
+
+  /* Narrow phones. Only the nav's own inline padding is pulled in, not
+     .wrap's, so section content keeps its margins at this width. */
+  @media (max-width: 374px) {
+    nav.wrap { padding-inline: 14px; }
+    .theme-toggle { right: 14px; }
+    .nav-links a { padding: 7px 5px; font-size: 0.75rem; }
+  }
+
 
   /* The email pill is the longest string on the page; below ~360px it needs
      to give up a little size to stay inside its own padding. */
