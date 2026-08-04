@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Direction prototypes · Gunpreet Singh</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#efece4" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#131519" media="(prefers-color-scheme: dark)" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  :root {
+    color-scheme: light;
+    --bg: #efece4; --surface: #e7e3d9; --text: #1c1e24; --text-dim: #55575f;
+    --text-faint: #6f7078; --border: #d5cfc1; --border-strong: #c3bcab;
+    --accent: #5a5e96; --moss: #4f6a55;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #131519; --surface: #1a1d23; --text: #e9e6df; --text-dim: #a2a4ad;
+      --text-faint: #797b85; --border: #2a2e37; --border-strong: #3a3f4a;
+      --accent: #989dd8; --moss: #8aa88d;
+    }
+  }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    line-height: 1.62; -webkit-font-smoothing: antialiased;
+  }
+  .doc { max-width: 680px; margin: 0 auto; padding: 72px 24px 96px; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  h1 { font-size: 1.5rem; letter-spacing: -0.02em; margin: 0; }
+  .lede { color: var(--text-dim); margin: 14px 0 0; }
+  .note {
+    margin-top: 22px; padding: 14px 16px;
+    border: 1px dashed var(--border-strong); border-radius: 10px;
+    font-size: 0.9rem; color: var(--text-dim);
+  }
+  ul { list-style: none; margin: 40px 0 0; padding: 0; }
+  li { border-top: 1px solid var(--border); }
+  li:last-child { border-bottom: 1px solid var(--border); }
+  a.card {
+    display: block; padding: 22px 4px; text-decoration: none; color: inherit;
+    transition: background 0.18s ease, padding-left 0.18s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a.card:hover { background: color-mix(in srgb, var(--surface) 70%, transparent); padding-left: 12px; }
+  }
+  .tag {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--moss);
+  }
+  .card h2 { font-size: 1.12rem; margin: 4px 0 0; letter-spacing: -0.01em; }
+  .card p { margin: 6px 0 0; color: var(--text-dim); font-size: 0.94rem; }
+  footer { margin-top: 44px; font-size: 0.84rem; color: var(--text-faint); }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="doc">
+  <h1>Direction prototypes</h1>
+  <p class="lede">Two structural studies for the portfolio. Both use the live site's colour tokens unchanged, so what differs is structure and register — not palette.</p>
+
+  <div class="note">
+    These are <strong>not</strong> the live site and carry placeholder content.
+    The live site is at <a href="/">gunpreet-singh.com</a>.
+  </div>
+
+  <ul>
+    <li>
+      <a class="card" href="/proto/b-systems.html">
+        <span class="tag">Prototype B</span>
+        <h2>The Systems Diagram →</h2>
+        <p>The request path as the signature element, drawn vertically so scroll direction and data-flow direction share an axis. Projects tagged with the parts of the path they moved. Replaces the WebGL blob, and costs no dependency.</p>
+      </a>
+    </li>
+    <li>
+      <a class="card" href="/proto/c-engineering.html">
+        <span class="tag">Prototype C</span>
+        <h2>The Engineering Register →</h2>
+        <p>The page as a well-kept engineering document: dense, tabular, monospace-led, no cards or shadows. Fits the same content in roughly two thirds the height, and tolerates a low word count because a table is meant to be terse.</p>
+      </a>
+    </li>
+  </ul>
+
+  <footer class="mono">unlisted · noindex</footer>
+</div>
+</body>
+</html>
