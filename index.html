@@ -57,7 +57,7 @@
     --surface-2: #ddd8cb;
     --text: #1c1e24;
     --text-dim: #55575f;
-    --text-faint: #6f7078;
+    --text-faint: #696a72;   /* 4.56:1 on --bg; #6f7078 measured 4.17 and missed AA */
     --border: #d5cfc1;
     --border-strong: #c3bcab;
     --accent: #5a5e96;
@@ -88,7 +88,7 @@
       --surface-2: #22262e;
       --text: #e9e6df;
       --text-dim: #a2a4ad;
-      --text-faint: #797b85;
+      --text-faint: #7c7e88;   /* 4.52:1 on --bg; #797b85 measured 4.34 and missed AA */
       --border: #2a2e37;
       --border-strong: #3a3f4a;
       --accent: #989dd8;
@@ -114,7 +114,7 @@
     --surface-2: #22262e;
     --text: #e9e6df;
     --text-dim: #a2a4ad;
-    --text-faint: #797b85;
+    --text-faint: #7c7e88;   /* 4.52:1 on --bg; #797b85 measured 4.34 and missed AA */
     --border: #2a2e37;
     --border-strong: #3a3f4a;
     --accent: #989dd8;
@@ -885,11 +885,14 @@
     #bg-canvas { filter: blur(26px); }
     :root { --header-h: 112px; }
     .nav-right { width: 100%; }
-    /* One row, always. Wrapping put Contact on a line of its own and left the
-       toggle centred against a two-row block; scrolling (the version before
-       that) parked Contact off-screen entirely. With the toggle lifted out,
-       the links get the full width and five items fit by tightening instead. */
-    .nav-links { flex-wrap: nowrap; gap: 0; width: 100%; justify-content: space-between; }
+    /* One row at normal text sizes -- the five items fit in the width freed by
+       lifting the toggle out and tightening the padding, so `wrap` never
+       triggers there. It is `wrap` rather than `nowrap` on purpose: with
+       nowrap the nav could not shrink, so at a raised browser text size it
+       forced the layout viewport wider (390 -> 450px at a 24px default) and
+       the whole page rendered zoomed out, quietly undoing the larger text the
+       reader had asked for. Wrapping costs a second row only in that case. */
+    .nav-links { flex-wrap: wrap; gap: 0; width: 100%; justify-content: space-between; }
     .nav-links a { padding: 7px 8px; font-size: 0.82rem; white-space: nowrap; }
     .tl-item { grid-template-columns: 1fr; gap: 5px; padding-left: 28px; }
 
@@ -1273,11 +1276,31 @@
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
+        reveal(entry.target);
         io.unobserve(entry.target);
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -48px 0px' });
-    els.forEach(function (el) { io.observe(el); });
+
+    // Project cards reveal as a group, keyed off the track rather than each
+    // card, because on mobile the track is a horizontal scroller: cards parked
+    // off to the right are clipped by that ancestor, so they never intersected
+    // and sat at opacity 0 until swiped to -- arriving blank and fading in over
+    // the following ~360ms. Widening rootMargin cannot fix this, since an
+    // observer intersects against every clipping ancestor, not just the root.
+    var track = document.querySelector('.cards');
+    function reveal(el) {
+      el.classList.add('is-visible');
+      if (el === track) {
+        track.querySelectorAll('.card').forEach(function (c) { c.classList.add('is-visible'); });
+      }
+    }
+
+    els.forEach(function (el) {
+      // Skip cards individually; the track reveals them.
+      if (track && el !== track && track.contains(el)) return;
+      io.observe(el);
+    });
+    if (track) io.observe(track);
   })();
 
   // Projects revolver (mobile only). Native scrolling drives it, so momentum
