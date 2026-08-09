@@ -212,6 +212,24 @@
     letter-spacing: -0.025em;
     margin: 0;
     text-wrap: balance;
+    /* Headings set their own leading. Without this they inherited body's 1.6,
+       which is body-copy leading on 27-38px display type -- two headings of
+       almost the same size sat at 1.60 and 1.06 on the same page. Leading
+       tracks size inversely, so h3-scale headings loosen again below. */
+    line-height: 1.14;
+  }
+
+  /* Invisible hit padding. Apple's 44x44 minimum applies to the target, not
+     the ink: these overlays enlarge what is tappable without moving anything
+     or changing how the link looks. */
+  .hit { position: relative; }
+  .hit::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 44px;
+    transform: translateY(-50%);
   }
 
   /* padding-inline, not the `padding` shorthand: .wrap is a class and outranks
@@ -263,7 +281,10 @@
     height: 66px;
   }
 
-  .brand { display: inline-flex; align-items: center; gap: 11px; font-weight: 700; }
+  .brand { position: relative; display: inline-flex; align-items: center; gap: 11px; font-weight: 700; }
+  /* Asymmetric on purpose: 10px up into the nav's top padding, 4px down, so
+     it stops clear of the nav links' overlay across the 10px row gap. */
+  .brand::after { content: ""; position: absolute; left: 0; right: 0; top: -10px; bottom: -4px; }
   .brand .mark {
     width: 30px; height: 30px;
     border-radius: 9px;
@@ -281,6 +302,7 @@
 
   .nav-links { display: flex; gap: 4px; list-style: none; margin: 0; padding: 0; }
   .nav-links a {
+    position: relative;
     display: inline-block;
     font-size: 0.86rem;
     font-weight: 500;
@@ -289,8 +311,14 @@
     border-radius: 999px;
     transition: color 0.18s ease, background 0.18s ease;
   }
+  /* 44px of target on a 35px pill, grown downward into the nav's bottom
+     padding only. Growing it symmetrically pushed the target up into the band
+     beneath the theme toggle, so a slightly low tap on the toggle landed on
+     Contact instead -- verified by hit-testing, not by reading the CSS. */
+  .nav-links a::after { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: -9px; }
 
   .theme-toggle {
+    position: relative;
     width: 38px; height: 38px;
     display: grid;
     place-items: center;
@@ -302,6 +330,7 @@
     padding: 0;
     transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
   }
+  .theme-toggle::after { content: ""; position: absolute; width: 44px; height: 44px; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 999px; }
   .theme-toggle svg { width: 17px; height: 17px; }
   .theme-toggle .moon { display: none; }
   :root[data-theme="dark"] .theme-toggle .moon { display: block; }
@@ -450,7 +479,7 @@
   }
 
   .node-body { padding-top: 4px; transition: opacity 0.45s ease; }
-  .node-name { font-family: 'Bricolage Grotesque', 'Manrope', ui-sans-serif, system-ui, sans-serif; font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em; }
+  .node-name { font-family: 'Bricolage Grotesque', 'Manrope', ui-sans-serif, system-ui, sans-serif; font-size: 1.12rem; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
   .node-kind { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--moss); margin-top: 2px; }
   .node-body p { color: var(--text-dim); font-size: 0.95rem; margin-top: 8px; }
   /* Unreached nodes dim only slightly: at 0.5 the whole diagram read as dead
@@ -502,7 +531,7 @@
   }
 
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
-  .card h3 { font-size: 1.22rem; font-weight: 700; }
+  .card h3 { font-size: 1.22rem; font-weight: 700; line-height: 1.3; }
   .card .glyph {
     width: 34px; height: 34px;
     flex: none;
@@ -526,8 +555,13 @@
     background: var(--surface-2);
   }
 
-  .card-links { display: flex; gap: 16px; margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--border); }
+  .card-links { display: flex; gap: 18px; margin-top: 20px; padding-top: 17px; border-top: 1px solid var(--border); }
+  /* -9px each side against an 18px gap: neighbouring targets meet exactly at
+     the midpoint, so the row is fully covered and nothing overlaps. The gap
+     went 16px -> 18px so the narrowest link ("Live") clears 44px wide too. */
+  .card-links a::after { content: ""; position: absolute; left: -9px; right: -9px; top: 50%; height: 44px; transform: translateY(-50%); }
   .card-links a {
+    position: relative;
     font-size: 0.83rem;
     font-weight: 600;
     color: var(--accent);
@@ -649,7 +683,7 @@
     border: 2px solid var(--accent-soft);
   }
   .tl-when { font-size: 0.85rem; font-weight: 600; color: var(--text-faint); font-variant-numeric: tabular-nums; padding-top: 1px; }
-  .tl-what h3 { font-size: 1.08rem; font-weight: 700; }
+  .tl-what h3 { font-size: 1.08rem; font-weight: 700; line-height: 1.3; }
   .tl-org { display: block; margin-top: 3px; font-size: 0.88rem; font-weight: 600; color: var(--moss); }
   .tl-what p { color: var(--text-dim); font-size: 0.94rem; margin: 10px 0 0; max-width: 58ch; }
 
