@@ -494,10 +494,16 @@
 
   /* A branch off the main path. This is what stops the diagram reading as a
      chronology: the spine stays unbroken and the branch hangs off it. */
+  /* The tick runs from the spine's centre to the branch chip's left edge, so
+     the two numbers are tied: width must equal margin-left minus the spine
+     centre (28px), and left must be its negative. Getting this wrong leaves
+     the connector floating -- it was 8px short on desktop, and on mobile it
+     was drawn on the far side of the spine entirely, pointing away from the
+     chip it is supposed to join. */
   .branch { margin-top: 20px; margin-left: 76px; position: relative; }
   .branch::before {
     content: ""; position: absolute;
-    left: -48px; top: 21px; width: 40px; height: 2px;
+    left: -48px; top: 21px; width: 48px; height: 2px;   /* 28 -> 76 */
     background: var(--border);
   }
   .branch .node { grid-template-columns: 44px minmax(0, 1fr) minmax(0, 190px); gap: 14px; }
@@ -836,8 +842,10 @@
   }
 
   @media (max-width: 700px) {
-    .branch { margin-left: 34px; }
-    .branch::before { left: -22px; width: 16px; }
+    /* 56px, not 34px: at 34 the chip sat only 6px clear of the spine and the
+       branch barely read as a branch. */
+    .branch { margin-left: 56px; }
+    .branch::before { left: -28px; width: 28px; }        /* 28 -> 56 */
   }
 
 
