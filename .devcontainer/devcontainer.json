@@ -1,0 +1,74 @@
+// Dev container for the portfolio.
+//
+// Mirrors the sandbox this site is normally developed and tested in, so that
+// screenshots, layout measurements and Playwright runs reproduce rather than
+// drift:
+//
+//   Ubuntu 24.04 · Node 22 · Python 3.11 · Playwright 1.56 (Chromium r1194)
+//
+// The Chromium build matters more than it looks. Layout measurements taken in
+// this repo (rail geometry, tap-target sizes, contrast ratios) are compared
+// against fixed numbers, and a different Chromium can shift sub-pixel results
+// enough to make a passing check fail. 1.56.0 is pinned because it is the
+// release that ships Chromium 141.0.7390.37 / revision 1194.
+//
+// The site itself still has no build step. Everything installed here is test
+// and tooling only, and the Pages workflow stages just index.html, .nojekyll,
+// CNAME and proto/ — none of this reaches production.
+{
+  "name": "Portfolio — Gunpreet Singh",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-24.04",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "22" },
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.11" },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+
+  // Same location the sandbox uses, so PLAYWRIGHT_BROWSERS_PATH-aware scripts
+  // and any hard-coded executablePath behave the same in both places.
+  "containerEnv": {
+    "PLAYWRIGHT_BROWSERS_PATH": "/opt/pw-browsers"
+  },
+
+  // onCreateCommand (rather than postCreateCommand) so Codespaces prebuilds
+  // bake the browser download and submodule checkout into the image. Without a
+  // prebuild this is a few minutes once; with one it is close to instant.
+  "onCreateCommand": "bash .devcontainer/setup.sh",
+  "waitFor": "onCreateCommand",
+
+  "postAttachCommand": "bash .devcontainer/welcome.sh",
+
+  "forwardPorts": [8899],
+  "portsAttributes": {
+    "8899": {
+      "label": "Portfolio preview",
+      "onAutoForward": "notify"
+    }
+  },
+
+  // Playwright needs room for the browser bundle plus the four skill
+  // submodules; the default 32 GB is fine, this just fails fast if not.
+  "hostRequirements": {
+    "cpus": 2,
+    "storage": "32gb"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-playwright.playwright",
+        "github.vscode-github-actions"
+      ],
+      "settings": {
+        "files.eol": "\n",
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "[html]": { "editor.formatOnSave": false },
+        "files.associations": { "*.html": "html" }
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

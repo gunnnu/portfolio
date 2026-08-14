@@ -1,0 +1,14 @@
+{
+  "name": "portfolio-devtools",
+  "private": true,
+  "description": "Test tooling for the portfolio. Deliberately kept out of the repo root: the site itself has no build step and no runtime dependencies.",
+  "type": "module",
+  "scripts": {
+    "serve": "python3 -m http.server 8899 --bind 0.0.0.0 --directory ..",
+    "verify": "node verify.mjs",
+    "detect": "node ../.impeccable/.claude/skills/impeccable/scripts/detector/detect-antipatterns.mjs ../index.html"
+  },
+  "devDependencies": {
+    "playwright": "1.56.0"
+  }
+}

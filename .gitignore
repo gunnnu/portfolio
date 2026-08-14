@@ -1,0 +1,9 @@
+# Dev-container tooling. package.json and package-lock.json are tracked so
+# `npm ci` is reproducible; the installed tree is not.
+.devcontainer/node_modules/
+
+# Playwright artefacts, if any script is pointed at the repo rather than /tmp.
+test-results/
+playwright-report/
+
+.DS_Store
